@@ -1,0 +1,88 @@
+{
+  "id": "dependency-upgrade",
+  "name": "Dependency Upgrade",
+  "description": "Safe package upgrades with breaking change analysis and regression testing",
+  "tags": ["dependencies", "npm", "upgrade", "packages"],
+  "variables": [
+    {
+      "name": "package_name",
+      "description": "NPM package to upgrade",
+      "required": true
+    },
+    {
+      "name": "from_version",
+      "description": "Current version",
+      "required": true
+    },
+    {
+      "name": "to_version",
+      "description": "Target version",
+      "required": true
+    },
+    {
+      "name": "breaking_changes",
+      "description": "Known breaking changes to address",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Impact Analysis",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_UPGRADE_{{package_name}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Map all usage of {{package_name}} in codebase. Identify import locations, API usage patterns, and affected components.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Review {{package_name}} changelog from v{{from_version}} to v{{to_version}}. Document breaking changes and migration steps.",
+          "agentType": "context7",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 10000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Upgrade",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Run npm install {{package_name}}@{{to_version}}. Address breaking changes: {{breaking_changes}}. Update affected code to use new APIs.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 30000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "parallelizable": false,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "E2E regression tests on features using {{package_name}}. Verify functionality unchanged after upgrade from v{{from_version}} to v{{to_version}}.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 20000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 80000
+}

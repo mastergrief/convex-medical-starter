@@ -1,0 +1,12 @@
+{
+  "id": "8047740e-9108-43f4-86fd-6df9739d6073",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251225_09-51_89d149a4-1d78-4f71-8b2d-28366d9e0838",
+    "timestamp": "2025-12-25T09:52:14.785Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Browser-CLI Phase 2 DX features (REPL, tracing, JSON logging, browser pool, headless toggle, shell autocomplete). Test manually with browser-cmd.ts commands. Document with Serena write_memory."
+  }
+}

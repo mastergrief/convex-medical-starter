@@ -1,0 +1,8 @@
+
+
+Console messages:
+  [22:40:30] [LOG] App ready to work offline! @ main.tsx?t=1767307222706:15:12
+  [22:40:38] [DEBUG] [vite] connecting... @ client:788:8
+  [22:40:38] [DEBUG] [vite] connected. @ client:911:14
+  [22:40:39] [LOG] Service Worker registered ServiceWorkerRegistration @ main.tsx?t=1767307222706:18:12
+  [22:40:40] [LOG] WebSocket reconnected at t=1.8s @ chunk-IIDBOM7I.js?v=d981b176:93:16

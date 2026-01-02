@@ -1,0 +1,12 @@
+{
+  "id": "e4892a24-76fd-4bdb-a744-9fd4a4231353",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251226_19-34_af77f837-174b-4b2b-af16-d3a4ebe03d6f",
+    "timestamp": "2025-12-26T19:34:53.753Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "ORCH Performance Phase 1 - Critical Fixes: Enable test parallelization, add 5-minute gate timeout, async subprocess refactor with streaming progress, debug logging for silent catch blocks"
+  }
+}

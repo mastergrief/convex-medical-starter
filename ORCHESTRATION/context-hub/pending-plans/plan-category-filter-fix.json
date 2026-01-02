@@ -1,0 +1,210 @@
+{
+  "id": "plan-category-filter-fix",
+  "created": "2026-01-02T11:25:00Z",
+  "title": "Category Filter Bug Fix",
+  "description": "Fix the 'Add Exercise' modal category dropdown showing only 'All Categories' due to categories=[] being passed",
+  "status": "archived",
+  "totalEstimate": "2.5 hours",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Core Frontend Fix",
+      "priority": "P0",
+      "objective": "Make the category dropdown functional in AddExerciseModal",
+      "estimatedTime": "15 min",
+      "steps": [
+        {
+          "id": "1.1",
+          "description": "Add getCategories query to useWorkoutQueries hook",
+          "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutQueries.ts",
+          "lines": "44, 58-64",
+          "changes": "Add useQuery(api.exercises.getCategories) and include in return object",
+          "risk": "LOW"
+        },
+        {
+          "id": "1.2",
+          "description": "Pass categories prop to AddExerciseModal",
+          "file": "src/components/WorkoutLogger.tsx",
+          "lines": "214",
+          "changes": "Change categories={[]} to categories={queries.categories || []}",
+          "risk": "LOW",
+          "dependsOn": [
+            "1.1"
+          ]
+        }
+      ],
+      "verificationGate": "npm run typecheck"
+    },
+    {
+      "id": "phase-2",
+      "name": "Backend Bug Fix",
+      "priority": "P0",
+      "objective": "Fix deleteCategory to use correct index (by_coach_category_id)",
+      "estimatedTime": "15 min",
+      "steps": [
+        {
+          "id": "2.1",
+          "description": "Fix deleteCategory wrong index",
+          "file": "convex/exercises.ts",
+          "lines": "853-860",
+          "changes": "Replace by_coach_category with by_coach_category_id, use categoryId instead of category.name",
+          "risk": "MEDIUM"
+        }
+      ],
+      "verificationGate": "npm run typecheck && npx convex dev --once"
+    },
+    {
+      "id": "phase-3",
+      "name": "Frontend Type Safety",
+      "priority": "P0",
+      "objective": "Ensure category filtering uses consistent ID comparison",
+      "estimatedTime": "10 min",
+      "steps": [
+        {
+          "id": "3.1",
+          "description": "Fix type mismatch in AddExerciseModal filter",
+          "file": "src/components/WorkoutLoggerModules/components/AddExerciseModal.tsx",
+          "lines": "80-87",
+          "changes": "Remove exercise.category === selectedCategory comparison, keep only categoryId",
+          "risk": "LOW"
+        }
+      ],
+      "verificationGate": "npm run typecheck"
+    },
+    {
+      "id": "phase-4",
+      "name": "Security Hardening",
+      "priority": "P1",
+      "objective": "Add FK validation to prevent cross-tenant data access",
+      "estimatedTime": "30 min",
+      "steps": [
+        {
+          "id": "4.1",
+          "description": "Add FK validation to createCategory",
+          "file": "convex/exercises.ts",
+          "lines": "650",
+          "changes": "Validate trainingTypeId exists and belongs to coach or is system default",
+          "risk": "MEDIUM"
+        },
+        {
+          "id": "4.2",
+          "description": "Add FK validation to createExercise",
+          "file": "convex/exercises.ts",
+          "lines": "37-42",
+          "changes": "Validate categoryId exists and belongs to coach",
+          "risk": "MEDIUM"
+        }
+      ],
+      "verificationGate": "npm run typecheck && npx convex dev --once"
+    },
+    {
+      "id": "phase-5",
+      "name": "Performance Optimization",
+      "priority": "P1",
+      "objective": "Eliminate N+1 query in getCategories (51→2 queries)",
+      "estimatedTime": "30 min",
+      "steps": [
+        {
+          "id": "5.1",
+          "description": "Batch fetch optimization for getCategories",
+          "file": "convex/exercises.ts",
+          "lines": "687-704",
+          "changes": "Collect unique trainingTypeIds, batch fetch, use Map for lookup",
+          "risk": "LOW"
+        }
+      ],
+      "verificationGate": "npm run typecheck && npx convex dev --once"
+    },
+    {
+      "id": "phase-6",
+      "name": "E2E Testing",
+      "priority": "P2",
+      "objective": "Verify fix via Browser-CLI automation",
+      "estimatedTime": "45 min",
+      "steps": [
+        {
+          "id": "6.1",
+          "description": "Execute E2E test script",
+          "testScript": [
+            "restoreState authenticated-coach",
+            "navigate http://localhost:5173/workout-logger",
+            "wait 1000",
+            "snapshot",
+            "click '[data-testid=\"add-exercise-button\"]'",
+            "wait 500",
+            "snapshot --full",
+            "click '#category-filter'",
+            "wait 300",
+            "assertCount '[role=\"option\"]' gt 1",
+            "screenshot category-filter-working.png"
+          ],
+          "risk": "LOW"
+        }
+      ],
+      "verificationGate": "E2E assertions pass"
+    }
+  ],
+  "criticalFiles": [
+    {
+      "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutQueries.ts",
+      "lines": 68,
+      "change": "Add getCategories query (root cause fix)"
+    },
+    {
+      "path": "src/components/WorkoutLogger.tsx",
+      "lines": 244,
+      "change": "Pass categories prop at line 214"
+    },
+    {
+      "path": "convex/exercises.ts",
+      "lines": 1557,
+      "change": "Backend fixes: deleteCategory, createCategory, createExercise, getCategories"
+    },
+    {
+      "path": "src/components/WorkoutLoggerModules/components/AddExerciseModal.tsx",
+      "lines": 205,
+      "change": "Fix type mismatch in filter (lines 80-87)"
+    }
+  ],
+  "dependencies": {
+    "phase-1": [],
+    "phase-2": [
+      "phase-1"
+    ],
+    "phase-3": [
+      "phase-1"
+    ],
+    "phase-4": [
+      "phase-2"
+    ],
+    "phase-5": [
+      "phase-4"
+    ],
+    "phase-6": [
+      "phase-3",
+      "phase-5"
+    ]
+  },
+  "risks": [
+    {
+      "phase": "phase-4",
+      "description": "FK validation may reject previously valid requests if data integrity issues exist",
+      "mitigation": "Test with existing data first, can disable validation if needed"
+    },
+    {
+      "phase": "phase-2",
+      "description": "deleteCategory behavioral change",
+      "mitigation": "Verify by_coach_category_id index exists in schema (line 541)"
+    }
+  ],
+  "rollbackStrategy": "Each phase independently deployable with verification gate. Revert individual phase if failed.",
+  "relatedMemories": [
+    "CATEGORY_FILTER_BUG_INDEX",
+    "CATEGORY_FILTER_BUG_SPRINT_01_OVERVIEW",
+    "CATEGORY_FILTER_BUG_SPRINT_02_ARCHITECTURE",
+    "CATEGORY_FILTER_BUG_SPRINT_03_BACKEND",
+    "CATEGORY_FILTER_BUG_SPRINT_04_FRONTEND",
+    "CATEGORY_FILTER_BUG_SPRINT_05_E2E_TESTING",
+    "CATEGORY_FILTER_BUG_SPRINT_06_PERFORMANCE"
+  ]
+}

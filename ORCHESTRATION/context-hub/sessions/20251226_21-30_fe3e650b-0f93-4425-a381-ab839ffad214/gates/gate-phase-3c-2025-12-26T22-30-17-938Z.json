@@ -1,0 +1,20 @@
+{
+  "phaseId": "phase-3c",
+  "passed": false,
+  "checkedAt": "2025-12-26T22:30:17.938Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    },
+    {
+      "check": "tests",
+      "passed": false,
+      "message": "Tests failed"
+    }
+  ],
+  "blockers": [
+    "Tests failed"
+  ]
+}

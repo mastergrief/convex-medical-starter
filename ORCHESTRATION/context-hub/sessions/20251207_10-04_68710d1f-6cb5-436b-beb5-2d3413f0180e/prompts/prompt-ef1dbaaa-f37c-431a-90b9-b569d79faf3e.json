@@ -1,0 +1,12 @@
+{
+  "id": "ef1dbaaa-f37c-431a-90b9-b569d79faf3e",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-30T12:35:02.811Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Fix 3 Browser-CLI bugs: 1) Type by ref fails on non-unique names - add tiered fallback, 2) Video recording not persisted - wire context to feature, 3) countElements shows unknown - include selector in response"
+  }
+}

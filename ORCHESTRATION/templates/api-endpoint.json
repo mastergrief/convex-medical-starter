@@ -1,0 +1,110 @@
+{
+  "id": "api-endpoint",
+  "name": "API Endpoint",
+  "description": "End-to-end API development from schema design to integration testing",
+  "tags": ["api", "convex", "backend", "frontend"],
+  "variables": [
+    {
+      "name": "endpoint_name",
+      "description": "Name of the API endpoint/function to create",
+      "required": true
+    },
+    {
+      "name": "table_name",
+      "description": "Database table the endpoint operates on",
+      "required": true
+    },
+    {
+      "name": "operation_type",
+      "description": "Type of operation (query, mutation, action)",
+      "required": true
+    },
+    {
+      "name": "input_schema",
+      "description": "Description of expected input parameters",
+      "default": "",
+      "required": false
+    },
+    {
+      "name": "output_schema",
+      "description": "Description of expected return value",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Schema Design",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_{{endpoint_name}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Review existing patterns for {{operation_type}} operations on {{table_name}}. Analyze schema.ts for table structure. Identify validators and type definitions needed for {{endpoint_name}}.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Gather Convex documentation for {{operation_type}} best practices. Check existing {{table_name}} module for patterns to follow.",
+          "agentType": "analyst",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Backend Implementation",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Implement Convex {{operation_type}} {{endpoint_name}} for {{table_name}}. Input: {{input_schema}}. Output: {{output_schema}}. Follow patterns identified in analysis phase. Add validators and proper error handling.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 35000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Frontend Integration",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create frontend integration for {{endpoint_name}}. Add useQuery/useMutation hook or component that calls the {{operation_type}}. Handle loading, error, and success states. Connect to UI in appropriate location.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 30000
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "Testing",
+      "parallelizable": false,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "E2E test {{endpoint_name}} API endpoint. Verify {{operation_type}} on {{table_name}} works via UI. Check network requests match expected payload. Test error handling and edge cases. Capture request/response evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 30000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 130000
+}

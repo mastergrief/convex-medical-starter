@@ -1,0 +1,12 @@
+{
+  "id": "90f5c414-fbf3-49d4-affe-fc0d9ff2ef3c",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2026-01-01T21:49:55.956Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Add Exercise from Library & Swap Exercise from Library: Enable athletes to add exercises from coach library during active workouts and swap exercises while preserving logged set data"
+  }
+}

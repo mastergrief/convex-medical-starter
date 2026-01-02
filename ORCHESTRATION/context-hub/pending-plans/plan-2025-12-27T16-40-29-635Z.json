@@ -1,0 +1,250 @@
+{
+  "id": "37b08db1-92d5-448b-bda1-b70dd27ce76f",
+  "timestamp": "2025-12-27T16:40:29.635Z",
+  "description": "Fix documentation gaps, add 12 missing feature tests, wire 2 plugin hooks",
+  "design": {
+    "id": "browser-cli-shortterm-remediation-20251227",
+    "title": "BROWSER-CLI Short-Term Remediation",
+    "description": "Fix documentation gaps, add 12 missing feature tests, wire 2 plugin hooks",
+    "createdAt": "2025-12-27T16:35:00Z",
+    "status": "pending",
+    "phases": [
+      {
+        "id": "phase-1-docs",
+        "name": "Documentation Fixes",
+        "description": "Fix command name mismatches and add 6 missing commands",
+        "priority": "HIGH",
+        "estimatedHours": 2,
+        "status": "pending",
+        "tasks": [
+          {
+            "id": "task-1-1",
+            "description": "Fix disableMocking → disableMock on line 153",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          },
+          {
+            "id": "task-1-2",
+            "description": "Fix enableMocking → enableMock on line 154",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          },
+          {
+            "id": "task-1-3",
+            "description": "Add start command to Navigation section",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          },
+          {
+            "id": "task-1-4",
+            "description": "Add close command to Utility section",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          },
+          {
+            "id": "task-1-5",
+            "description": "Add handleDialog command to Events section",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          },
+          {
+            "id": "task-1-6",
+            "description": "Add setHeadless command to Performance section",
+            "file": ".claude/rules/cli-suite/browser-cli.md",
+            "type": "edit"
+          }
+        ]
+      },
+      {
+        "id": "phase-2-tests",
+        "name": "Missing Feature Tests",
+        "description": "Create 12 feature test files with 100+ test cases",
+        "priority": "HIGH",
+        "estimatedHours": 10,
+        "status": "pending",
+        "tasks": [
+          {
+            "id": "task-2-1",
+            "description": "Add mock factories to setup.ts (A11y, VisualRegression, Tabs)",
+            "file": "BROWSER-CLI/tests/setup.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-2-2",
+            "description": "Create visual-regression.test.ts (P1)",
+            "file": "BROWSER-CLI/tests/features/visual-regression.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-3",
+            "description": "Create a11y-audit.test.ts (P1)",
+            "file": "BROWSER-CLI/tests/features/a11y-audit.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-4",
+            "description": "Create tabs.test.ts (P1)",
+            "file": "BROWSER-CLI/tests/features/tabs.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-5",
+            "description": "Create video-recording.test.ts (P2)",
+            "file": "BROWSER-CLI/tests/features/video-recording.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-6",
+            "description": "Create har-export.test.ts (P2)",
+            "file": "BROWSER-CLI/tests/features/har-export.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-7",
+            "description": "Create event-listener.test.ts (P2)",
+            "file": "BROWSER-CLI/tests/features/event-listener.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-8",
+            "description": "Create dom-inspection.test.ts (P2)",
+            "file": "BROWSER-CLI/tests/features/dom-inspection.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-9",
+            "description": "Create device-emulation.test.ts (P2)",
+            "file": "BROWSER-CLI/tests/features/device-emulation.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-10",
+            "description": "Create flaky-detection.test.ts (P3)",
+            "file": "BROWSER-CLI/tests/features/flaky-detection.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-11",
+            "description": "Create orchestration.test.ts (P3)",
+            "file": "BROWSER-CLI/tests/features/orchestration.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-12",
+            "description": "Create content-capture.test.ts (P3)",
+            "file": "BROWSER-CLI/tests/features/content-capture.test.ts",
+            "type": "create"
+          },
+          {
+            "id": "task-2-13",
+            "description": "Create snapshot-comparison.test.ts (P3)",
+            "file": "BROWSER-CLI/tests/features/snapshot-comparison.test.ts",
+            "type": "create"
+          }
+        ]
+      },
+      {
+        "id": "phase-3-hooks",
+        "name": "Wire Plugin Hooks",
+        "description": "Connect onNavigate and onSnapshot hooks to their triggers",
+        "priority": "MEDIUM",
+        "estimatedHours": 2,
+        "status": "pending",
+        "tasks": [
+          {
+            "id": "task-3-1",
+            "description": "Add setPluginsFeature setter to CoreActionsFeature",
+            "file": "BROWSER-CLI/SCRIPTS/features/coreActionsModules/CoreActionsFeature.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-3-2",
+            "description": "Wire triggerOnNavigate in handleNavigate method",
+            "file": "BROWSER-CLI/SCRIPTS/features/coreActionsModules/CoreActionsFeature.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-3-3",
+            "description": "Add setPluginsFeature setter to SnapshotFeature",
+            "file": "BROWSER-CLI/SCRIPTS/features/snapshotModules/SnapshotFeature.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-3-4",
+            "description": "Wire triggerOnSnapshot after snapshot capture",
+            "file": "BROWSER-CLI/SCRIPTS/features/snapshotModules/SnapshotFeature.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-3-5",
+            "description": "Wire PluginsFeature to CoreActions and Snapshot in feature-registry",
+            "file": "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts",
+            "type": "edit"
+          },
+          {
+            "id": "task-3-6",
+            "description": "Add plugin hook wiring tests",
+            "file": "BROWSER-CLI/tests/features/plugins.test.ts",
+            "type": "edit"
+          }
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": ".claude/rules/cli-suite/browser-cli.md",
+        "lines": 313,
+        "changes": "Fix 2 command names, add 4 missing commands"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/features/coreActionsModules/CoreActionsFeature.ts",
+        "lines": 500,
+        "changes": "Add pluginsFeature setter + onNavigate hook trigger"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/features/snapshotModules/SnapshotFeature.ts",
+        "lines": 400,
+        "changes": "Add pluginsFeature setter + onSnapshot hook trigger"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts",
+        "lines": 300,
+        "changes": "Wire PluginsFeature dependencies"
+      },
+      {
+        "path": "BROWSER-CLI/tests/setup.ts",
+        "lines": 350,
+        "changes": "Add mock factories for A11y, VisualRegression, Tabs"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Documentation typos",
+        "probability": "Low",
+        "impact": "Low",
+        "mitigation": "Grep verification after edits"
+      },
+      {
+        "risk": "Test mock incompatibility",
+        "probability": "Medium",
+        "impact": "Low",
+        "mitigation": "Follow existing patterns in plugins.test.ts"
+      },
+      {
+        "risk": "Hook wiring breaks commands",
+        "probability": "Low",
+        "impact": "Medium",
+        "mitigation": "Fire-and-forget pattern with .catch(() => {})"
+      }
+    ],
+    "successCriteria": [
+      "161/161 commands documented (100%)",
+      "0 command name mismatches",
+      "20/20 features with tests (100%)",
+      "100+ new test cases added",
+      "5/5 plugin hooks wired (100%)",
+      "All tests passing"
+    ]
+  },
+  "status": "pending"
+}

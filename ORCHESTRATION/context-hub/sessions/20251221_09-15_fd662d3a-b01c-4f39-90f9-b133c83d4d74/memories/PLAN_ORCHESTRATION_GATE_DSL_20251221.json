@@ -1,0 +1,30 @@
+{
+  "memoryName": "PLAN_ORCHESTRATION_GATE_DSL_20251221",
+  "linkedAt": "2025-12-21T09:15:32.908Z",
+  "serenaPath": ".serena/memories/PLAN_ORCHESTRATION_GATE_DSL_20251221.md",
+  "summary": "Memory PLAN_ORCHESTRATION_GATE_DSL_20251221 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "z.object",
+      "z.array",
+      "z.string",
+      "z.boolean",
+      "z.number",
+      "path.join",
+      "chains.reduce",
+      "avgCoverage.toFixed",
+      "builder.setRequirement",
+      "results.find",
+      "builder.setAnalysis",
+      "builder.build",
+      "console.warn",
+      "condition.match"
+    ],
+    "data_flow_map": {}
+  }
+}

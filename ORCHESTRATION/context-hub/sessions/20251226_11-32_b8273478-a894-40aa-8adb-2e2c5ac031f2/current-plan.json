@@ -1,0 +1,430 @@
+{
+  "id": "c8f91a2b-3d4e-5f67-8901-234567890abc",
+  "type": "plan",
+  "metadata": {
+    "promptId": "5dcdfc2f-f6e7-4e10-a11c-182b29b1c242",
+    "sessionId": "20251226_11-32_b8273478-a894-40aa-8adb-2e2c5ac031f2",
+    "timestamp": "2025-12-26T11:45:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Complete remaining ORCHESTRATION improvements: JSDoc documentation (4 gate methods), CLI documentation (5 commands), and comprehensive unit tests (90-110 tests across 4 modules). Total effort: 24-29 hours.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "JSDoc Documentation",
+      "description": "Add JSDoc documentation to 4 gate-related methods in context-hub.ts (lines 201-236)",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Read context-hub.ts gate methods (checkGate, readGateResult, advancePhase, listGateResults) and understand signatures, return types, and error conditions",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_REMAINING_TODOS_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 4 method signatures documented",
+            "Return types identified",
+            "Error conditions listed"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add JSDoc to checkGate and readGateResult methods with @param, @returns, @throws, @example",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "checkGate has complete JSDoc",
+            "readGateResult has complete JSDoc",
+            "Examples show typical usage"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add JSDoc to advancePhase and listGateResults methods with @param, @returns, @throws, @example",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "advancePhase has complete JSDoc",
+            "listGateResults has complete JSDoc",
+            "All 4 gate methods fully documented"
+          ]
+        },
+        {
+          "id": "task-1.4",
+          "description": "Run typecheck to verify JSDoc additions don't break compilation",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 1000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck passes",
+            "No new errors introduced"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND memory:JSDOC_GATE_METHODS_*"
+    },
+    {
+      "id": "phase-2",
+      "name": "CLI Documentation",
+      "description": "Document 5 missing CLI commands in cli-reference.md and README.md: execute, agents, trace, dashboard, template",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Analyze execute.ts and agents commands (executePhase, executePlan, agentsList, agentsKill) - extract options, arguments, usage examples",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/execute.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All execute subcommands identified",
+            "Options and flags documented",
+            "Usage examples drafted"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Analyze trace.ts commands (traceCreate, traceList, traceRead, traceValidate) - extract options, arguments, usage examples",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/trace.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All trace subcommands identified",
+            "Options and flags documented",
+            "Usage examples drafted"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Analyze template.ts commands (handleTemplateList, handleTemplateShow, handleTemplateValidate) - extract options, arguments, usage examples",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/template.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All template subcommands identified",
+            "Options and flags documented",
+            "Usage examples drafted"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Add execute and agents command sections to cli-reference.md with usage, options tables, and examples",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              ".claude/skills/orchestrate/cli-reference.md"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "execute command fully documented",
+            "agents command fully documented",
+            "Consistent with existing doc style"
+          ]
+        },
+        {
+          "id": "task-2.5",
+          "description": "Add trace command section to cli-reference.md with usage, options tables, and examples",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              ".claude/skills/orchestrate/cli-reference.md"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "trace command fully documented",
+            "All 4 subcommands covered",
+            "Evidence chain integration explained"
+          ]
+        },
+        {
+          "id": "task-2.6",
+          "description": "Add template command section to cli-reference.md with usage, options tables, and examples",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.3"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              ".claude/skills/orchestrate/cli-reference.md"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "template command fully documented",
+            "All 3 subcommands covered",
+            "Validation output explained"
+          ]
+        },
+        {
+          "id": "task-2.7",
+          "description": "Update ORCHESTRATION/README.md with brief summaries of new commands and cross-references to cli-reference.md",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.4",
+            "task-2.5",
+            "task-2.6"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "README references all commands",
+            "Brief usage examples included",
+            "Cross-links to cli-reference.md"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "memory:CLI_DOCS_COMPLETE_*"
+    },
+    {
+      "id": "phase-3",
+      "name": "Unit Tests",
+      "description": "Create comprehensive unit tests for 4 untested modules: evidence-chain, evidenceAutoPopulator, template-processor, gatesModules. Target: 90-110 tests.",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add factory functions to setup.ts: createMockTaskResult, createMockSessionTemplate, createMockEvidenceStage",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/tests/setup.ts"
+            ],
+            "memories": [
+              "ORCHESTRATION_TESTING_ARCHITECTURE_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "createMockTaskResult factory added",
+            "createMockSessionTemplate factory added",
+            "createMockEvidenceStage factory added",
+            "Factories match schema requirements"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create evidence-chain.test.ts with 25-30 tests: constructor, addRequirement, addAnalysis, addImplementation, addValidation, build, validation errors, coverage calculation",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts",
+              "ORCHESTRATION/tests/setup.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "25-30 tests covering EvidenceChainBuilder",
+            "Constructor tests",
+            "Stage addition tests",
+            "Validation error tests",
+            "Coverage calculation tests",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Create evidenceAutoPopulator.test.ts with 20-25 tests: populateFromTaskResult, populateFromHandoff, auto-stage detection, coverage updates",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidenceAutoPopulator.ts",
+              "ORCHESTRATION/tests/setup.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "20-25 tests covering auto-population",
+            "Task result integration tests",
+            "Handoff integration tests",
+            "Stage detection tests",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Create template-processor.test.ts with 30-35 tests: schema validation, variable substitution, registry loading, instantiation, error handling",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 18000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts",
+              "ORCHESTRATION/tests/setup.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "30-35 tests covering template processing",
+            "Schema validation tests",
+            "Variable substitution tests",
+            "Registry management tests",
+            "Error handling tests",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.5",
+          "description": "Create gatesModules.test.ts with 20-25 tests: checkGate, advancePhase, readGateResult, writeGateResult, listGateResults, error conditions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts",
+              "ORCHESTRATION/tests/setup.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "20-25 tests covering gate operations",
+            "checkGate evaluation tests",
+            "advancePhase flow tests",
+            "Gate result I/O tests",
+            "Error condition tests",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.6",
+          "description": "Run full test suite, verify all new tests pass, document coverage improvements",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [
+            "task-3.2",
+            "task-3.3",
+            "task-3.4",
+            "task-3.5"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All tests pass (target: 294-314 tests)",
+            "No regressions in existing tests",
+            "Coverage improvements documented"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "tests AND typecheck AND memory:UNIT_TESTS_COMPLETE_*"
+    }
+  ],
+  "totalEstimatedTokens": 112000,
+  "risks": [
+    {
+      "description": "Template-processor.ts is only 75 LOC (facade) - actual implementation may be in templateProcessorModules/",
+      "mitigation": "Check for module structure before writing tests; adjust file paths if needed",
+      "severity": "medium"
+    },
+    {
+      "description": "Gates.ts is only 42 LOC (facade) - actual logic in gatesModules/",
+      "mitigation": "Write tests against gatesModules/ files instead of facade",
+      "severity": "medium"
+    },
+    {
+      "description": "Test file creation for large test suites (30+ tests) may exceed token limits",
+      "mitigation": "Split test creation into smaller batches if needed; use incremental test writing",
+      "severity": "low"
+    },
+    {
+      "description": "Existing test architecture may have unobserved patterns",
+      "mitigation": "Review existing test files (context-hub.test.ts, parallel-engine.test.ts) before writing new tests",
+      "severity": "low"
+    }
+  ]
+}

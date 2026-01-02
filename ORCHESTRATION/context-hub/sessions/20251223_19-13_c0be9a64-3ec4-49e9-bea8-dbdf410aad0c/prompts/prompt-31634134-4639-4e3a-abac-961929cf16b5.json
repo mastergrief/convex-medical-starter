@@ -1,0 +1,12 @@
+{
+  "id": "31634134-4639-4e3a-abac-961929cf16b5",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251223_19-13_c0be9a64-3ec4-49e9-bea8-dbdf410aad0c",
+    "timestamp": "2025-12-23T19:14:02.529Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Phase 3 Developer Experience from BROWSER-CLI improvement plan: 3.1 Command Discovery --list flag, 3.2 Output Formatting Flags --quiet --json --verbose --raw, 3.3 Selector Format Guide help selectors command, 3.4 Alias Documentation. Test with browser-cli then document with Serena write memory."
+  }
+}

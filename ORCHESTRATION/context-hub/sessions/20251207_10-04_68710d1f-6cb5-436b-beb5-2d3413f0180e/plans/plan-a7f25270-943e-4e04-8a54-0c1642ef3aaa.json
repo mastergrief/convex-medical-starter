@@ -1,0 +1,108 @@
+{
+  "id": "a7f25270-943e-4e04-8a54-0c1642ef3aaa",
+  "type": "plan",
+  "metadata": {
+    "promptId": "62efa0e9-48b9-421c-ba5a-02710caddd69",
+    "sessionId": "20251230_09-06_54ddfd62-f5ac-47e6-a29b-9fb685040616",
+    "timestamp": "2025-12-30T09:10:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Rename 'Actual Time' label to 'Best Time' in speed training exercise logging config. Two string changes in a single file.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Config Modification",
+      "description": "Edit the label and placeholder strings in the speed category config",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Edit src/config/exerciseFields/logging/configs.ts: Change line ~77 label from 'Actual Time' to 'Best Time' and line ~80 placeholder from 'e.g., 12.5' to 'e.g., 4.85'",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "BEST_TIME_FIELD_SPRINT_02_CONFIG"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Label changed from 'Actual Time' to 'Best Time'",
+            "Placeholder changed from 'e.g., 12.5' to 'e.g., 4.85'",
+            "No other changes to the file"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Config file edited successfully"
+    },
+    {
+      "id": "phase-2",
+      "name": "Type Check Verification",
+      "description": "Verify no type errors introduced by the string changes",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Run npm run typecheck and verify zero errors",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck exits with code 0",
+            "No type errors reported"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "E2E Verification",
+      "description": "Verify the label change is visible in the UI when logging a speed exercise",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Browser test: Navigate to workout logger with a speed exercise, snapshot the logging form, assert 'Best Time' label is visible (not 'Actual Time')",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [],
+            "memories": [
+              "BEST_TIME_FIELD_SPRINT_04_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Speed exercise logging form displays 'Best Time' label",
+            "'Actual Time' is NOT present",
+            "Screenshot captured as evidence"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "UI shows correct label"
+    }
+  ],
+  "totalEstimatedTokens": 8000,
+  "risks": [
+    {
+      "description": "Trivial change - minimal risk",
+      "mitigation": "Typecheck will catch any syntax errors",
+      "severity": "low"
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "id": "02b673d9-28b3-4ba4-8429-9e6aca38c720",
+  "timestamp": "2025-12-28T21:24:32.892Z",
+  "description": "Replace 10-button RPE grid with slider, add dynamic set management, fix accessibility, improve error handling",
+  "design": {
+    "title": "Workout Logger RPE Slider & Set Management",
+    "description": "Replace 10-button RPE grid with slider, add dynamic set management, fix accessibility, improve error handling",
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "RPE Slider Conversion",
+        "priority": "HIGH",
+        "effort": "1-2 hours",
+        "dependencies": [],
+        "tasks": [
+          {
+            "id": "task-1-1",
+            "action": "CREATE",
+            "file": "src/components/exercise/RpeSelectorSlider.tsx",
+            "description": "Create slider-based RPE selector with same props interface",
+            "lines": 50
+          },
+          {
+            "id": "task-1-2",
+            "action": "MODIFY",
+            "file": "src/components/exercise/index.ts",
+            "description": "Export RpeSelectorSlider from facade",
+            "lines": 1
+          },
+          {
+            "id": "task-1-3",
+            "action": "MODIFY",
+            "file": "src/components/CategoryLoggingFields.tsx",
+            "description": "Replace RpeSelector import with RpeSelectorSlider",
+            "lines": 5
+          }
+        ]
+      },
+      {
+        "id": "phase-2",
+        "name": "Accessibility Fixes",
+        "priority": "HIGH",
+        "effort": "30 minutes",
+        "dependencies": [],
+        "tasks": [
+          {
+            "id": "task-2-1",
+            "action": "MODIFY",
+            "file": "src/components/exercise/RpeSelector.tsx",
+            "description": "Add ARIA labels, role=radiogroup, aria-checked to buttons",
+            "lines": 20
+          }
+        ]
+      },
+      {
+        "id": "phase-3",
+        "name": "Error Handling",
+        "priority": "MEDIUM",
+        "effort": "1 hour",
+        "dependencies": [
+          "phase-1"
+        ],
+        "tasks": [
+          {
+            "id": "task-3-1",
+            "action": "MODIFY",
+            "file": "src/components/WorkoutLoggerModules/utils.ts",
+            "description": "Add validateRpe helper function",
+            "lines": 10
+          },
+          {
+            "id": "task-3-2",
+            "action": "MODIFY",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts",
+            "description": "Integrate validation in handleLogSet before mutation",
+            "lines": 15
+          }
+        ]
+      },
+      {
+        "id": "phase-4",
+        "name": "Add/Remove Sets",
+        "priority": "MEDIUM",
+        "effort": "4-6 hours",
+        "dependencies": [],
+        "tasks": [
+          {
+            "id": "task-4-1",
+            "action": "MODIFY",
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "description": "Add addSetToWorkoutLog and removeSetFromWorkoutLog mutations",
+            "lines": 100
+          },
+          {
+            "id": "task-4-2",
+            "action": "MODIFY",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutMutations.ts",
+            "description": "Wire addSetMutation and removeSetMutation",
+            "lines": 10
+          },
+          {
+            "id": "task-4-3",
+            "action": "MODIFY",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts",
+            "description": "Add handleAddSet and handleRemoveSet handlers",
+            "lines": 60
+          },
+          {
+            "id": "task-4-4",
+            "action": "MODIFY",
+            "file": "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx",
+            "description": "Add Add Set and Remove Set buttons to UI",
+            "lines": 25
+          }
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Slider precision on mobile",
+        "likelihood": "Medium",
+        "impact": "Low",
+        "mitigation": "Step=1 ensures whole numbers; visual badge shows exact value"
+      },
+      {
+        "risk": "State sync with removed sets",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigation": "Renumber sets in mutation; adjust currentSetByExercise on removal"
+      },
+      {
+        "risk": "Breaking existing RPE workflows",
+        "likelihood": "Low",
+        "impact": "High",
+        "mitigation": "Keep RpeSelector unchanged; new slider is additive"
+      }
+    ],
+    "criticalFiles": [
+      "src/components/exercise/RpeSelector.tsx",
+      "src/components/CategoryLoggingFields.tsx",
+      "convex/workoutLogsModules/mutations.ts",
+      "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts",
+      "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+    ],
+    "totalEffort": "6-9 hours"
+  },
+  "status": "archived"
+}

@@ -1,0 +1,524 @@
+{
+  "id": "plan-browser-cli-phase3-20251227",
+  "type": "plan",
+  "metadata": {
+    "promptId": "fd1c1865-4b0b-4558-81a4-dbc79de2636f",
+    "sessionId": "20251227_12-42_4615682e-ebc4-4604-b9db-6bc3cfba0504",
+    "timestamp": "2025-12-27T12:45:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Browser-CLI Phase 3: Performance & Extensibility - Implement O(1) CircularBuffer for rolling logs, migrate all buffer features, add plugin event hooks infrastructure, hot reload capability, configuration manager, and scaffolding CLI. Organized into 4 tiers with strict sequential dependencies.",
+  "phases": [
+    {
+      "id": "tier-1",
+      "name": "Foundation - CircularBuffer Utility",
+      "description": "Create core CircularBuffer data structure with O(1) insert/remove operations and add buffer capacity constants to core/constants.ts",
+      "parallelizable": false,
+      "estimatedDuration": "2-3 hours",
+      "risk": "low",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create CircularBuffer<T> generic class with O(1) push, toArray, clear, setCapacity, size, and overflowCount. Include TypeScript generics for type safety.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3500,
+          "context": {
+            "memories": ["PLAN_BROWSER_CLI_PHASE3_PERFORMANCE_EXTENSIBILITY"],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/utils/logger.ts",
+              "BROWSER-CLI/SCRIPTS/utils/retry.ts"
+            ],
+            "targetFile": "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+            "action": "CREATE"
+          },
+          "acceptanceCriteria": [
+            "CircularBuffer class implements push() in O(1) time",
+            "toArray() returns items in insertion order",
+            "setCapacity() allows dynamic resizing",
+            "overflowCount tracks discarded items",
+            "TypeScript generics work with any type",
+            "Exports are properly typed"
+          ],
+          "implementation": {
+            "lines": "~80-100",
+            "pattern": "Generic data structure with ring buffer implementation"
+          }
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add buffer capacity constants to core/constants.ts for CONSOLE_BUFFER_CAPACITY (100), NETWORK_BUFFER_CAPACITY (1000), EVENT_BUFFER_CAPACITY (500), MOCK_HISTORY_CAPACITY (1000)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 800,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/core/constants.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "CONSOLE_BUFFER_CAPACITY = 100",
+            "NETWORK_BUFFER_CAPACITY = 1000",
+            "EVENT_BUFFER_CAPACITY = 500",
+            "MOCK_HISTORY_CAPACITY = 1000",
+            "Constants are exported"
+          ],
+          "implementation": {
+            "lines": "+15",
+            "pattern": "Export const with JSDoc comments"
+          }
+        },
+        {
+          "id": "task-1.3",
+          "description": "Create unit tests for CircularBuffer covering push, overflow, toArray, clear, setCapacity, and edge cases",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts"],
+            "targetFile": "BROWSER-CLI/tests/utils/circular-buffer.test.ts",
+            "action": "CREATE"
+          },
+          "acceptanceCriteria": [
+            "Tests cover push and automatic overflow",
+            "Tests verify O(1) complexity with 100k inserts < 50ms",
+            "Tests cover toArray ordering",
+            "Tests cover setCapacity shrink/grow",
+            "Tests cover clear",
+            "All tests pass"
+          ],
+          "implementation": {
+            "lines": "~100-120",
+            "pattern": "Vitest test suite with performance tests"
+          }
+        }
+      ],
+      "gateCondition": "typecheck passes AND unit tests pass for CircularBuffer"
+    },
+    {
+      "id": "tier-2",
+      "name": "Buffer Migrations",
+      "description": "Migrate console, network, and event capture features to use CircularBuffer. Cap mock history and increase LCP timeout.",
+      "parallelizable": true,
+      "estimatedDuration": "3-4 hours",
+      "risk": "low",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Migrate ConsoleCaptureFeature to use CircularBuffer<ConsoleMessage> instead of array with shift(). Update getBufferStats and setBufferCapacity to use CircularBuffer API.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/console-capture.ts",
+              "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+              "BROWSER-CLI/SCRIPTS/core/constants.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Import CircularBuffer and CONSOLE_BUFFER_CAPACITY",
+            "Replace array messages with CircularBuffer<ConsoleMessage>",
+            "Remove manual shift() overflow handling",
+            "getBufferStats returns overflowCount from buffer",
+            "setBufferCapacity calls buffer.setCapacity()"
+          ],
+          "implementation": {
+            "currentLines": 166,
+            "changedLines": "~20",
+            "pattern": "Replace array with CircularBuffer, update stats methods"
+          }
+        },
+        {
+          "id": "task-2.2",
+          "description": "Migrate NetworkCaptureFeature to use CircularBuffer<NetworkRequest>. Update getBufferStats and setBufferCapacity.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/network-capture.ts",
+              "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+              "BROWSER-CLI/SCRIPTS/core/constants.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Import CircularBuffer and NETWORK_BUFFER_CAPACITY",
+            "Replace array requests with CircularBuffer<NetworkRequest>",
+            "Remove manual shift() overflow handling",
+            "getBufferStats returns overflowCount from buffer",
+            "setBufferCapacity calls buffer.setCapacity()"
+          ],
+          "implementation": {
+            "currentLines": 210,
+            "changedLines": "~25",
+            "pattern": "Replace array with CircularBuffer, update stats methods"
+          }
+        },
+        {
+          "id": "task-2.3",
+          "description": "Migrate EventListenerFeature to use CircularBuffer<BrowserEvent>. Update getBufferStats and setBufferCapacity.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/event-listener.ts",
+              "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+              "BROWSER-CLI/SCRIPTS/core/constants.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Import CircularBuffer and EVENT_BUFFER_CAPACITY",
+            "Replace array events with CircularBuffer<BrowserEvent>",
+            "Remove manual shift() overflow handling",
+            "getBufferStats returns overflowCount from buffer",
+            "setBufferCapacity calls buffer.setCapacity()"
+          ],
+          "implementation": {
+            "currentLines": 263,
+            "changedLines": "~25",
+            "pattern": "Replace array with CircularBuffer, update stats methods"
+          }
+        },
+        {
+          "id": "task-2.4",
+          "description": "Cap mockHistory in NetworkMockingFeature at MOCK_HISTORY_CAPACITY (1000). Add private addToHistory method with slice when exceeding limit.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-1.2"],
+          "estimatedTokens": 1200,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/network-mocking.ts",
+              "BROWSER-CLI/SCRIPTS/core/constants.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Import MOCK_HISTORY_CAPACITY",
+            "Add private addToHistory method",
+            "Cap history at 1000 entries using slice",
+            "All mockHistory.push calls use addToHistory"
+          ],
+          "implementation": {
+            "currentLines": 501,
+            "changedLines": "~15",
+            "pattern": "Add capacity check method, replace direct pushes"
+          }
+        },
+        {
+          "id": "task-2.5",
+          "description": "Increase LCP timeout in PerformanceMetricsFeature from 100ms to 1000ms to catch late Largest Contentful Paint on slow pages.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [],
+          "estimatedTokens": 600,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/features/performance-metrics.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "LCP wait timeout changed from 100 to 1000",
+            "Add comment explaining the timeout value"
+          ],
+          "implementation": {
+            "currentLines": 100,
+            "changedLines": "~3",
+            "pattern": "Update constant value"
+          }
+        }
+      ],
+      "gateCondition": "typecheck passes AND buffer commands work (getConsoleBufferStats, getNetworkBufferStats, getEventBufferStats) AND mock history capped at 1000"
+    },
+    {
+      "id": "tier-3",
+      "name": "Network O(1) + Plugin Infrastructure",
+      "description": "Implement O(1) response matching in NetworkCapture using Map, add PluginEventHooks interface, create plugin configuration manager, and scaffolding CLI.",
+      "parallelizable": true,
+      "estimatedDuration": "4-5 hours",
+      "risk": "medium",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add O(1) response matching in NetworkCaptureFeature using Map<string, NetworkRequest> for pending requests. Generate unique request keys, store in Map on request, lookup and delete on response.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.2"],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/features/network-capture.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Add pendingRequests: Map<string, NetworkRequest>",
+            "Add generateRequestKey method (method:url:timestamp)",
+            "Store _key on request data for response matching",
+            "Response handler uses O(1) Map.get instead of Array.find",
+            "Clean up Map entry after response received"
+          ],
+          "implementation": {
+            "changedLines": "~30",
+            "pattern": "Add Map for O(1) lookup, update request/response handlers"
+          }
+        },
+        {
+          "id": "task-3.2",
+          "description": "Add PluginEventHooks interface to plugin-interface.ts with beforeCommand, afterCommand, onError, onNavigate, onSnapshot hooks. Add optional hooks property to BrowserCLIPlugin interface.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 1800,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "PluginEventHooks interface defined with all 5 hooks",
+            "Each hook is optional and async",
+            "beforeCommand returns void | { skip: boolean }",
+            "afterCommand receives CommandResponse",
+            "BrowserCLIPlugin has optional hooks property"
+          ],
+          "implementation": {
+            "currentLines": 104,
+            "changedLines": "~25",
+            "pattern": "Add new interface, extend existing interface"
+          }
+        },
+        {
+          "id": "task-3.3",
+          "description": "Create PluginConfigManager class for persistent plugin configuration. Support getConfig with defaults, setConfig, config directory management.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "targetFile": "BROWSER-CLI/SCRIPTS/plugins/plugin-config.ts",
+            "action": "CREATE"
+          },
+          "acceptanceCriteria": [
+            "PluginConfigManager class with static methods",
+            "getConfig<T> returns defaults if no config file",
+            "setConfig<T> creates directory and writes JSON",
+            "Config stored in BROWSER-CLI/plugin-configs/",
+            "Error handling for malformed JSON"
+          ],
+          "implementation": {
+            "lines": "~80-100",
+            "pattern": "Static class with fs operations"
+          }
+        },
+        {
+          "id": "task-3.4",
+          "description": "Create plugin scaffolding CLI that generates a new plugin from template with name, version, example command, onLoad, and onUnload hooks.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-3.2"],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts"],
+            "targetFile": "BROWSER-CLI/SCRIPTS/plugins/scaffold.ts",
+            "action": "CREATE"
+          },
+          "acceptanceCriteria": [
+            "CLI takes plugin name as argument",
+            "Generates TypeScript plugin file from template",
+            "Template includes example command handler",
+            "Template includes onLoad and onUnload hooks",
+            "Outputs usage instructions after creation",
+            "Prevents overwriting existing plugins"
+          ],
+          "implementation": {
+            "lines": "~80-100",
+            "pattern": "CLI script with template string interpolation"
+          }
+        }
+      ],
+      "gateCondition": "typecheck passes AND hooks interface defined AND plugin-config.ts works AND scaffold.ts generates valid plugin"
+    },
+    {
+      "id": "tier-4",
+      "name": "Plugin Hooks + Preloading",
+      "description": "Implement plugin hook triggering in command dispatcher, add hot reload with fs.watch, and feature preloading hints for anticipated lazy features.",
+      "parallelizable": false,
+      "estimatedDuration": "4-5 hours",
+      "risk": "medium",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add triggerHook methods to PluginsFeature for calling beforeCommand, afterCommand, onError, onNavigate, onSnapshot across all loaded plugins.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-3.2"],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/plugins-feature.ts",
+              "BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Add triggerBeforeCommand method returning skip flag",
+            "Add triggerAfterCommand method",
+            "Add triggerOnError method",
+            "Add triggerOnNavigate method",
+            "Add triggerOnSnapshot method",
+            "All methods iterate loaded plugins safely"
+          ],
+          "implementation": {
+            "currentLines": 291,
+            "changedLines": "~60",
+            "pattern": "Add async methods that iterate plugins and call hooks"
+          }
+        },
+        {
+          "id": "task-4.2",
+          "description": "Integrate plugin hooks into CommandDispatcher dispatch method. Call beforeCommand before execution (respect skip), afterCommand after, and onError on exception.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-4.1"],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/browserManagerModules/command-dispatcher.ts",
+              "BROWSER-CLI/SCRIPTS/features/plugins-feature.ts"
+            ],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Get PluginsFeature reference",
+            "Call triggerBeforeCommand before command execution",
+            "Respect skip flag from beforeCommand",
+            "Call triggerAfterCommand after successful execution",
+            "Call triggerOnError in catch block",
+            "Maintain existing error handling"
+          ],
+          "implementation": {
+            "currentLines": 79,
+            "changedLines": "~30",
+            "pattern": "Wrap dispatch with hook calls"
+          }
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add hot reload capability to PluginLoader using fs.watch when BROWSER_CLI_HOT_RELOAD=true. Watch loaded plugin files for changes and auto-reload.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Add watchers Map<string, FSWatcher>",
+            "watchPlugin method creates file watcher",
+            "On change event, unload and reload plugin",
+            "Only enable when BROWSER_CLI_HOT_RELOAD=true",
+            "Close watcher on unload",
+            "Debounce to prevent rapid reloads"
+          ],
+          "implementation": {
+            "currentLines": 347,
+            "changedLines": "~50",
+            "pattern": "Add fs.watch integration with debounce"
+          }
+        },
+        {
+          "id": "task-4.4",
+          "description": "Add preloadAnticipatedFeatures function to feature-registry.ts. Preload likely-needed features in background after commands (navigate -> NetworkCapture, snapshot -> Drag/BrowserState).",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [],
+          "estimatedTokens": 1800,
+          "context": {
+            "files": ["BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts"],
+            "action": "MODIFY"
+          },
+          "acceptanceCriteria": [
+            "Add PRELOAD_HINTS Record<string, string[]>",
+            "Add preloadAnticipatedFeatures function",
+            "Preload is non-blocking (Promise.all with catch)",
+            "navigate hints NetworkCapture",
+            "snapshot hints Drag, BrowserState"
+          ],
+          "implementation": {
+            "currentLines": 269,
+            "changedLines": "~25",
+            "pattern": "Add hints object and async preload function"
+          }
+        }
+      ],
+      "gateCondition": "typecheck passes AND plugin hooks trigger correctly AND hot reload works with env flag AND preloading is non-blocking"
+    }
+  ],
+  "totalEstimatedTokens": 32700,
+  "estimatedDuration": "13-17 hours",
+  "risks": [
+    {
+      "description": "CircularBuffer may have edge cases with setCapacity during active use",
+      "mitigation": "Comprehensive unit tests before migration, test with existing buffer commands",
+      "severity": "low"
+    },
+    {
+      "description": "O(1) network response matching may not handle all edge cases (redirects, retries)",
+      "mitigation": "Use composite key (method:url:timestamp) and fallback to find() if Map lookup fails",
+      "severity": "medium"
+    },
+    {
+      "description": "Plugin hook integration may affect command dispatch performance",
+      "mitigation": "Early-return if no plugins loaded, async hooks to prevent blocking",
+      "severity": "medium"
+    },
+    {
+      "description": "Hot reload with fs.watch may cause issues on Windows/WSL",
+      "mitigation": "Guard with environment flag, add debounce, graceful error handling",
+      "severity": "low"
+    },
+    {
+      "description": "Feature preloading may cause unexpected side effects if features have setup() calls",
+      "mitigation": "Only preload features known to be safe, use catch() to suppress errors",
+      "severity": "low"
+    }
+  ],
+  "successCriteria": [
+    "CircularBuffer unit tests pass with 100k inserts < 50ms",
+    "Buffer commands (getConsoleBufferStats, etc.) work correctly",
+    "Mock history capped at 1000 entries",
+    "Plugin scaffolding generates valid TypeScript plugin",
+    "Plugin hooks fire before/after commands",
+    "Hot reload works when BROWSER_CLI_HOT_RELOAD=true",
+    "typecheck passes for all modified files"
+  ],
+  "fileManifest": {
+    "create": [
+      "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+      "BROWSER-CLI/tests/utils/circular-buffer.test.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-config.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/scaffold.ts"
+    ],
+    "modify": [
+      "BROWSER-CLI/SCRIPTS/core/constants.ts",
+      "BROWSER-CLI/SCRIPTS/features/console-capture.ts",
+      "BROWSER-CLI/SCRIPTS/features/network-capture.ts",
+      "BROWSER-CLI/SCRIPTS/features/event-listener.ts",
+      "BROWSER-CLI/SCRIPTS/features/network-mocking.ts",
+      "BROWSER-CLI/SCRIPTS/features/performance-metrics.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts",
+      "BROWSER-CLI/SCRIPTS/features/plugins-feature.ts",
+      "BROWSER-CLI/SCRIPTS/browserManagerModules/command-dispatcher.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts",
+      "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts"
+    ]
+  }
+}

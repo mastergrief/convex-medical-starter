@@ -1,0 +1,147 @@
+{
+  "id": "7bdbb1f7-20ed-4d1d-9fe9-29c1a01cee2f",
+  "type": "plan",
+  "metadata": {
+    "promptId": "76915124-05a5-4cea-b64d-01901dabc96e",
+    "sessionId": "20251208_21-25_7d430eb8-d66b-4b52-a79b-7354fd4c12a6",
+    "timestamp": "2025-12-08T21:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement P2 Parallel Execution Engine and P3 Real-Time Dashboard for orchestration system",
+  "totalEstimatedTokens": 125000,
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "P2: Parallel Execution Engine - Core Library",
+      "description": "Create ParallelEngine class and DispatchInstruction schemas",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create ParallelEngine class in lib/parallel-engine.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 25000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add DispatchInstructionSchema to schemas/index.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 8000
+        }
+      ],
+      "gateCondition": "lib/parallel-engine.ts exists && schemas updated && typecheck passes"
+    },
+    {
+      "id": "phase-2",
+      "name": "P2: Parallel Execution Engine - CLI Integration",
+      "description": "Add execute, execute-plan, and agents commands to CLI",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add execute, execute-plan, agents commands to CLI",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.2"],
+          "estimatedTokens": 15000
+        },
+        {
+          "id": "task-2.2",
+          "description": "Test P2 implementation",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 10000
+        }
+      ],
+      "gateCondition": "All execute commands functional && valid JSON output"
+    },
+    {
+      "id": "phase-3",
+      "name": "P3: Real-Time Dashboard - Data Collection",
+      "description": "Create DashboardDataCollector for gathering orchestration state",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create DashboardDataCollector in lib/dashboard-data.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        }
+      ],
+      "gateCondition": "DashboardDataCollector functional"
+    },
+    {
+      "id": "phase-4",
+      "name": "P3: Real-Time Dashboard - Terminal UI",
+      "description": "Create terminal dashboard with blessed library",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add blessed dependency to package.json",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 2000
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create OrchestrationDashboard in cli/dashboard.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-4.1"],
+          "estimatedTokens": 30000
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add dashboard command to CLI",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-4.2"],
+          "estimatedTokens": 5000
+        },
+        {
+          "id": "task-4.4",
+          "description": "Test P3 dashboard implementation",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": ["task-4.3"],
+          "estimatedTokens": 7000
+        }
+      ],
+      "gateCondition": "Dashboard displays live data && responds to keyboard"
+    },
+    {
+      "id": "phase-5",
+      "name": "Documentation and Memory Update",
+      "description": "Update documentation and persist completion memory",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Update orchestrator.md with new commands",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [],
+          "estimatedTokens": 4000
+        },
+        {
+          "id": "task-5.2",
+          "description": "Write completion memory to Serena",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [],
+          "estimatedTokens": 4000
+        }
+      ],
+      "gateCondition": "Documentation complete && memory persisted"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "id": "feature-implementation",
+  "name": "Feature Implementation",
+  "description": "Full-stack feature development with analysis, implementation, and E2E testing",
+  "tags": ["feature", "full-stack", "e2e"],
+  "variables": [
+    {
+      "name": "feature_name",
+      "description": "Name of the feature to implement",
+      "required": true
+    },
+    {
+      "name": "component_path",
+      "description": "Path to the primary component or module",
+      "required": true
+    },
+    {
+      "name": "acceptance_criteria",
+      "description": "Comma-separated list of acceptance criteria",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Analysis",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_{{feature_name}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze codebase for {{feature_name}} implementation. Focus on {{component_path}} and related components. Identify entry points, data flow, and affected symbols.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 25000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Gather documentation and best practices for implementing {{feature_name}}. Check existing patterns in the codebase.",
+          "agentType": "analyst",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Implementation",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Implement {{feature_name}} in {{component_path}}. Use traceability data from analyst to modify correct symbols. Ensure all type safety requirements are met.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 40000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "parallelizable": true,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "E2E test {{feature_name}} functionality. Verify acceptance criteria: {{acceptance_criteria}}. Capture screenshots as evidence. Test happy path and edge cases.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 30000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 110000
+}

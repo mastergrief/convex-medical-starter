@@ -1,0 +1,89 @@
+{
+  "id": "3df8bdba-330d-492b-a5ea-3b1e850efcd1",
+  "timestamp": "2025-12-30T17:45:58.290Z",
+  "description": "Orchestration plan",
+  "design": {
+    "id": "plan-security-remediation-best-time",
+    "name": "Best Time Security Remediation",
+    "created": "2025-12-30T17:45:00Z",
+    "status": "pending",
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "C1: getWorkoutById Authorization",
+        "description": "Add authentication and ownership/relationship checks to getWorkoutById query",
+        "file": "convex/workoutLogsModules/queries.ts",
+        "lines": "170-178",
+        "effort": "30 min",
+        "priority": "CRITICAL",
+        "dependencies": []
+      },
+      {
+        "id": "phase-2",
+        "name": "C2: getAthleteHistory Relationship Check",
+        "description": "Add coach-athlete relationship verification to getAthleteHistory query",
+        "file": "convex/workoutLogsModules/queries.ts",
+        "lines": "143-167",
+        "effort": "30 min",
+        "priority": "CRITICAL",
+        "dependencies": []
+      },
+      {
+        "id": "phase-2b",
+        "name": "C2b: getWorkoutLogForDate Relationship Check",
+        "description": "Add coach-athlete relationship verification to getWorkoutLogForDate query",
+        "file": "convex/workoutLogsModules/queries.ts",
+        "lines": "181-216",
+        "effort": "15 min",
+        "priority": "CRITICAL",
+        "dependencies": []
+      },
+      {
+        "id": "phase-3",
+        "name": "C3: 6-Field Input Validation",
+        "description": "Add validation for actualTime, actualDistance, actualVelocity, actualJumpHeight, actualPowerOutput, actualAverageHeartRate",
+        "file": "convex/workoutLogsModules/mutations.ts",
+        "lines": "198+",
+        "effort": "15 min",
+        "priority": "HIGH",
+        "dependencies": []
+      },
+      {
+        "id": "phase-4",
+        "name": "Verification",
+        "description": "Run typecheck, verify auth patterns, count validation throws",
+        "effort": "10 min",
+        "priority": "REQUIRED",
+        "dependencies": [
+          "phase-1",
+          "phase-2",
+          "phase-2b",
+          "phase-3"
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Breaking existing functionality",
+        "likelihood": "LOW",
+        "mitigation": "Changes are additive"
+      },
+      {
+        "risk": "Performance regression",
+        "likelihood": "LOW",
+        "mitigation": "Indexed lookups O(log n)"
+      },
+      {
+        "risk": "Missing edge case",
+        "likelihood": "MEDIUM",
+        "mitigation": "Test cases defined"
+      }
+    ],
+    "totalEffort": "100 min",
+    "criticalFiles": [
+      "convex/workoutLogsModules/queries.ts",
+      "convex/workoutLogsModules/mutations.ts"
+    ]
+  },
+  "status": "archived"
+}

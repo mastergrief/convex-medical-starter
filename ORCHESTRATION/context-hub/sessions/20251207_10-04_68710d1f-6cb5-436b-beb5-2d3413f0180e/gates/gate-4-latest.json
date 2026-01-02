@@ -1,0 +1,16 @@
+{
+  "phaseId": "4",
+  "passed": false,
+  "checkedAt": "2025-12-30T17:00:08.274Z",
+  "results": [
+    {
+      "check": "tests",
+      "passed": false,
+      "message": "Timed out (>120s)"
+    }
+  ],
+  "blockers": [
+    "Tests timed out"
+  ],
+  "duration": 161439
+}

@@ -1,0 +1,97 @@
+{
+  "id": "bug-investigation",
+  "name": "Bug Investigation",
+  "description": "Systematic bug reproduction, root cause analysis, fix, and verification",
+  "tags": ["bug", "debugging", "fix"],
+  "variables": [
+    {
+      "name": "bug_description",
+      "description": "Description of the bug and its symptoms",
+      "required": true
+    },
+    {
+      "name": "affected_area",
+      "description": "Component, module, or feature affected by the bug",
+      "required": true
+    },
+    {
+      "name": "reproduction_steps",
+      "description": "Steps to reproduce the bug",
+      "default": "",
+      "required": false
+    },
+    {
+      "name": "expected_behavior",
+      "description": "What should happen instead",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Reproduce",
+      "parallelizable": false,
+      "gate": { "dsl": "evidence:reproduction exists" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Reproduce the bug: {{bug_description}}. Navigate to {{affected_area}} and follow reproduction steps: {{reproduction_steps}}. Capture screenshots, console errors, and network requests as evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Trace",
+      "parallelizable": false,
+      "gate": { "dsl": "memory:ANALYSIS_{{affected_area}}*" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Trace root cause of bug: {{bug_description}}. Analyze {{affected_area}} codebase. Use console errors and stack traces from reproduction phase. Identify the exact symbol and line causing the issue.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 25000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Fix",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Fix bug: {{bug_description}}. Apply fix to symbols identified by analyst. Expected behavior: {{expected_behavior}}. Ensure type safety and no regressions.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 30000
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "Verify",
+      "parallelizable": false,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Verify fix for: {{bug_description}}. Confirm bug no longer reproduces using same steps: {{reproduction_steps}}. Run regression tests on {{affected_area}}. Capture evidence that expected behavior: {{expected_behavior}} now works.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 25000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 100000
+}

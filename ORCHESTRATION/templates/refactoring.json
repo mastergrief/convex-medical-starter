@@ -1,0 +1,80 @@
+{
+  "id": "refactoring",
+  "name": "Refactoring",
+  "description": "Safe code refactoring with impact analysis and regression testing",
+  "tags": ["refactor", "cleanup", "migration"],
+  "variables": [
+    {
+      "name": "refactor_target",
+      "description": "Symbol, function, or component to refactor",
+      "required": true
+    },
+    {
+      "name": "refactor_type",
+      "description": "Type of refactoring (rename, extract, inline, restructure, split)",
+      "required": true
+    },
+    {
+      "name": "target_path",
+      "description": "File or directory path containing the refactor target",
+      "required": true
+    },
+    {
+      "name": "new_structure",
+      "description": "Description of the desired new structure or naming",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Impact Analysis",
+      "parallelizable": false,
+      "gate": { "dsl": "memory:ANALYSIS_{{refactor_target}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze impact of {{refactor_type}} refactoring on {{refactor_target}}. Map all references and dependents in {{target_path}}. Identify breaking changes and migration requirements. Document safe refactoring order.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 30000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Migration",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Execute {{refactor_type}} refactoring on {{refactor_target}} in {{target_path}}. New structure: {{new_structure}}. Follow safe refactoring order from analyst. Update all references. Ensure type safety throughout.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 40000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "parallelizable": false,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Regression test after {{refactor_type}} refactoring of {{refactor_target}}. Verify all functionality in {{target_path}} works as before. Test edge cases identified in impact analysis. Capture evidence of working state.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 30000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 100000
+}

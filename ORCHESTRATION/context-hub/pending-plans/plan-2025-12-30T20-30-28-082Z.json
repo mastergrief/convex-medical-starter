@@ -1,0 +1,158 @@
+{
+  "id": "74a7362d-1708-4c52-b47a-5781bbab4641",
+  "timestamp": "2025-12-30T20:30:28.083Z",
+  "description": "Enable coaches to create custom metrics beyond 19 hardcoded system metrics",
+  "design": {
+    "feature": "Custom Metrics",
+    "description": "Enable coaches to create custom metrics beyond 19 hardcoded system metrics",
+    "totalEffort": "14 hours",
+    "phases": [
+      {
+        "id": "sprint-02",
+        "name": "Schema & Security",
+        "effort": "2 hours",
+        "dependencies": [],
+        "tasks": [
+          {
+            "file": "convex/schema.ts",
+            "action": "Add customMetricValues field to 6 tables",
+            "lines": "630, 1734, 926, 877, 1524, 1847"
+          },
+          {
+            "file": "convex/trainingTypes.ts",
+            "action": "Add VALID_KEY_PATTERN and validation logic",
+            "lines": "99-133"
+          }
+        ]
+      },
+      {
+        "id": "sprint-03",
+        "name": "Backend Mutations",
+        "effort": "2 hours",
+        "dependencies": [
+          "sprint-02"
+        ],
+        "tasks": [
+          {
+            "file": "convex/lib/customMetricValidation.ts",
+            "action": "Create validation helper (NEW FILE)",
+            "lines": "~80"
+          },
+          {
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "action": "Add customMetricValues to exercise args"
+          },
+          {
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "action": "Add customMetricValues to exercise args"
+          },
+          {
+            "file": "convex/trainingBlockMarkersModules/mutations.ts",
+            "action": "Add customMetricValues passthrough"
+          }
+        ]
+      },
+      {
+        "id": "sprint-04",
+        "name": "Frontend UI",
+        "effort": "4 hours",
+        "dependencies": [
+          "sprint-02"
+        ],
+        "tasks": [
+          {
+            "file": "src/components/CustomMetricDialog.tsx",
+            "action": "Create dialog component (NEW FILE)",
+            "lines": "~150"
+          },
+          {
+            "file": "src/components/MetricsConfigForm.tsx",
+            "action": "Add Custom Metrics section",
+            "lines": "173 -> ~233"
+          },
+          {
+            "file": "src/components/TrainingTypeDialog.tsx",
+            "action": "Wire customMetrics state",
+            "lines": "309"
+          },
+          {
+            "file": "src/utils/exerciseTransformers.ts",
+            "action": "Add custom metrics extraction loop",
+            "lines": "180+"
+          }
+        ]
+      },
+      {
+        "id": "sprint-05",
+        "name": "Unit Testing",
+        "effort": "3 hours",
+        "dependencies": [
+          "sprint-03"
+        ],
+        "tasks": [
+          {
+            "file": "src/lib/__tests__/customMetricValidation.test.ts",
+            "action": "Backend validation tests (NEW FILE)"
+          },
+          {
+            "file": "src/hooks/__tests__/useTrainingTypeMetrics.test.ts",
+            "action": "Hook transformation tests"
+          },
+          {
+            "file": "src/utils/__tests__/exerciseTransformers.test.ts",
+            "action": "Extraction tests"
+          }
+        ]
+      },
+      {
+        "id": "sprint-06",
+        "name": "E2E Testing",
+        "effort": "3 hours",
+        "dependencies": [
+          "sprint-04"
+        ],
+        "tasks": [
+          {
+            "file": "e2e/custom-metrics-create.spec.ts",
+            "action": "Create custom metric flow (NEW FILE)"
+          },
+          {
+            "file": "e2e/custom-metrics-validation.spec.ts",
+            "action": "Validation tests (NEW FILE)"
+          },
+          {
+            "file": "e2e/custom-metrics-full-flow.spec.ts",
+            "action": "Full E2E workflow (NEW FILE)"
+          }
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Breaking existing data",
+        "mitigation": "customMetricValues is additive, no migration"
+      },
+      {
+        "risk": "Key injection",
+        "mitigation": "Backend regex validation /^[a-z][a-z0-9_]{0,49}$/"
+      },
+      {
+        "risk": "Performance",
+        "mitigation": "Custom metrics cached with training type"
+      },
+      {
+        "risk": "Type safety",
+        "mitigation": "FieldConfig already supports all custom types"
+      }
+    ],
+    "successCriteria": [
+      "Coach can create custom metric in Training Type dialog",
+      "Custom metric appears in exercise forms",
+      "Custom metric values persist to database",
+      "Security: Key format validated, XSS prevented",
+      "Unit tests >80% coverage",
+      "E2E tests pass"
+    ]
+  },
+  "status": "archived"
+}

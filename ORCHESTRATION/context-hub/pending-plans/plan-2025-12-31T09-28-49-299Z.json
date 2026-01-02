@@ -1,0 +1,239 @@
+{
+  "id": "19bf1811-8e02-42e6-8ca8-1caba62fb1d3",
+  "timestamp": "2025-12-31T09:28:49.300Z",
+  "description": "Enable coaches to select which metrics athletes must log per exercise, bridging the gap between coach programming and athlete logging",
+  "design": {
+    "title": "Configurable Logging Metrics Implementation",
+    "description": "Enable coaches to select which metrics athletes must log per exercise, bridging the gap between coach programming and athlete logging",
+    "phases": [
+      {
+        "id": "phase-1-schema",
+        "name": "Schema Changes",
+        "sprint": "02",
+        "effort": "2h",
+        "dependencies": [],
+        "deliverables": [
+          "Add loggingMetrics field to calendarExercises (line 1759)",
+          "Add loggingMetrics field to workoutLogs.exercises (line 941)",
+          "Add loggingMetrics field to blockExercises (line 633)"
+        ],
+        "files": [
+          {
+            "path": "convex/schema.ts",
+            "lines": 1894,
+            "action": "modify",
+            "changes": "3 field additions"
+          }
+        ]
+      },
+      {
+        "id": "phase-2-backend",
+        "name": "Backend Mutations",
+        "sprint": "03",
+        "effort": "3h",
+        "dependencies": [
+          "phase-1-schema"
+        ],
+        "deliverables": [
+          "Create loggingMetricsValidation.ts with 3 functions",
+          "Update startWorkout to copy loggingMetrics",
+          "Update updateCalendarWorkout to accept loggingMetrics",
+          "Update createCalendarWorkout to accept loggingMetrics"
+        ],
+        "files": [
+          {
+            "path": "convex/lib/loggingMetricsValidation.ts",
+            "lines": 60,
+            "action": "create",
+            "changes": "Validation helpers"
+          },
+          {
+            "path": "convex/workoutLogsModules/mutations.ts",
+            "lines": 532,
+            "action": "modify",
+            "changes": "Args + copy logic"
+          },
+          {
+            "path": "convex/calendarWorkoutsModules/mutations.ts",
+            "lines": 795,
+            "action": "modify",
+            "changes": "Args + PATCH/INSERT"
+          }
+        ]
+      },
+      {
+        "id": "phase-3-edit-ui",
+        "name": "Coach Edit UI",
+        "sprint": "04",
+        "effort": "4h",
+        "dependencies": [
+          "phase-1-schema"
+        ],
+        "deliverables": [
+          "Create LoggingMetricsSelector component",
+          "Create loggingMetricsDefaults.ts helper",
+          "Integrate selector into DynamicExerciseFields",
+          "Update useWorkoutForm with loggingMetrics state"
+        ],
+        "files": [
+          {
+            "path": "src/components/exercise/LoggingMetricsSelector.tsx",
+            "lines": 120,
+            "action": "create",
+            "changes": "Checkbox UI"
+          },
+          {
+            "path": "src/lib/loggingMetricsDefaults.ts",
+            "lines": 40,
+            "action": "create",
+            "changes": "Default helpers"
+          },
+          {
+            "path": "src/components/shared/DynamicExerciseFields.tsx",
+            "lines": 252,
+            "action": "modify",
+            "changes": "Import + render selector"
+          },
+          {
+            "path": "src/hooks/useWorkoutForm.ts",
+            "lines": 201,
+            "action": "modify",
+            "changes": "State + handler"
+          }
+        ]
+      },
+      {
+        "id": "phase-4-logger-ui",
+        "name": "Athlete Logger UI",
+        "sprint": "05",
+        "effort": "4h",
+        "dependencies": [
+          "phase-2-backend",
+          "phase-3-edit-ui"
+        ],
+        "deliverables": [
+          "Create configBuilder.ts for dynamic field config",
+          "Update CategoryLoggingFields with conditional rendering",
+          "Update ExerciseCard to pass loggingMetrics",
+          "Update WorkoutExercise type"
+        ],
+        "files": [
+          {
+            "path": "src/config/exerciseFields/logging/configBuilder.ts",
+            "lines": 150,
+            "action": "create",
+            "changes": "Dynamic config builder"
+          },
+          {
+            "path": "src/components/CategoryLoggingFields.tsx",
+            "lines": 177,
+            "action": "modify",
+            "changes": "Props + conditional logic"
+          },
+          {
+            "path": "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx",
+            "lines": 312,
+            "action": "modify",
+            "changes": "Pass loggingMetrics prop"
+          },
+          {
+            "path": "src/components/WorkoutLoggerModules/types.ts",
+            "lines": 24,
+            "action": "modify",
+            "changes": "Add loggingMetrics to type"
+          }
+        ]
+      },
+      {
+        "id": "phase-5-unit-tests",
+        "name": "Unit Tests",
+        "sprint": "06",
+        "effort": "3h",
+        "dependencies": [
+          "phase-2-backend",
+          "phase-3-edit-ui",
+          "phase-4-logger-ui"
+        ],
+        "deliverables": [
+          "Validation function tests (12+ cases)",
+          "Config builder tests (8+ cases)",
+          "LoggingMetricsSelector tests (8+ cases)",
+          "CategoryLoggingFields tests (6+ cases)"
+        ],
+        "files": [
+          {
+            "path": "src/lib/__tests__/loggingMetricsValidation.test.ts",
+            "lines": 120,
+            "action": "create",
+            "changes": "Validation tests"
+          },
+          {
+            "path": "src/config/exerciseFields/logging/__tests__/configBuilder.test.ts",
+            "lines": 100,
+            "action": "create",
+            "changes": "Builder tests"
+          }
+        ]
+      },
+      {
+        "id": "phase-6-e2e",
+        "name": "E2E Tests",
+        "sprint": "07",
+        "effort": "4h",
+        "dependencies": [
+          "phase-5-unit-tests"
+        ],
+        "deliverables": [
+          "Coach configures logging metrics test",
+          "Default behavior preserved test",
+          "Selected metrics in logger test",
+          "Custom metrics flow test",
+          "Persistence verification test"
+        ],
+        "files": [
+          {
+            "path": "e2e/logging-metrics-workflow.sh",
+            "lines": 100,
+            "action": "create",
+            "changes": "Browser CLI E2E tests"
+          }
+        ]
+      }
+    ],
+    "totalEffort": "20h",
+    "risks": [
+      {
+        "risk": "Breaking existing logging",
+        "impact": "HIGH",
+        "probability": "LOW",
+        "mitigation": "loggingMetrics is additive with optional field; empty/undefined preserves category defaults"
+      },
+      {
+        "risk": "Performance degradation",
+        "impact": "MEDIUM",
+        "probability": "LOW",
+        "mitigation": "No extra queries; config computed client-side with useMemo"
+      },
+      {
+        "risk": "UI complexity",
+        "impact": "MEDIUM",
+        "probability": "MEDIUM",
+        "mitigation": "Progressive disclosure - section collapsed by default"
+      },
+      {
+        "risk": "Data migration needed",
+        "impact": "LOW",
+        "probability": "NONE",
+        "mitigation": "Optional field requires no migration"
+      }
+    ],
+    "criticalFiles": [
+      "convex/schema.ts",
+      "convex/workoutLogsModules/mutations.ts",
+      "convex/calendarWorkoutsModules/mutations.ts",
+      "src/components/CategoryLoggingFields.tsx",
+      "src/components/shared/DynamicExerciseFields.tsx"
+    ]
+  },
+  "status": "archived"
+}

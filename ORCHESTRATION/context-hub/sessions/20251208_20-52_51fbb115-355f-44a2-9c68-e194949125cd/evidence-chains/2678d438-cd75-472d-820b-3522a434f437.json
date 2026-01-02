@@ -1,0 +1,22 @@
+{
+  "id": "2678d438-cd75-472d-820b-3522a434f437",
+  "sessionId": "20251208_20-52_51fbb115-355f-44a2-9c68-e194949125cd",
+  "createdAt": "2025-12-08T20:52:35.985Z",
+  "updatedAt": "2025-12-08T20:52:35.989Z",
+  "requirement": {
+    "taskId": "test-task-1",
+    "description": "Test task",
+    "acceptanceCriteria": [
+      "criterion1",
+      "criterion2"
+    ]
+  },
+  "chainStatus": {
+    "analysisLinked": false,
+    "implementationLinked": false,
+    "validationLinked": false,
+    "coveragePercent": 0,
+    "acceptanceCriteriaVerified": 0,
+    "acceptanceCriteriaTotal": 2
+  }
+}

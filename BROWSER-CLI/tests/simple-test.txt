@@ -1,0 +1,4 @@
+navigate http://localhost:5173
+wait 500
+snapshot
+screenshot BROWSER-CLI/screenshots/orch-test.png

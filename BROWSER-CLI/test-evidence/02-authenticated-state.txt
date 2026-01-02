@@ -1,0 +1,38 @@
+
+
+### Page state
+- Snapshot ID: 2e52c4c2
+- Page URL: unknown
+- Page Title: unknown
+- Page Snapshot:
+```yaml
+=== SNAPSHOT+ ===
+
+ELEMENT STATE
+Invalid (1):
+  [e2] Full Name: Please fill out this field.
+With Values (2):
+  [e3] Email = "coach@zenith.co.uk"
+  [e4] Password = "Testpass1234"
+
+
+FORMS
+Form: signin-form [ref=form1]
+├── [e2] Full Name * = "" ❌ → Please fill out this field.
+├── [e3] Email * = "coach@zenith.co.uk" ✓
+├── [e4] Password * = "Testpass1234" ✓
+QUICK FILL: type e2 "Full Name"
+
+
+
+ACCESSIBILITY TREE
+- heading "Zenith Performance" [level=1]
+- paragraph: Start your journey to peak performance
+- button "✕" [ref=e1]
+- heading "Sign Up" [level=2]
+- textbox "Full Name" [ref=e2]
+- textbox "Email": coach@zenith.co.uk [ref=e3]
+- textbox "Password": Testpass1234 [ref=e4]
+- button "Sign Up" [ref=e5]
+- text: Already have an account? Sign in instead
+```

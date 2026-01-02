@@ -1,0 +1,181 @@
+{
+  "id": "1361b425-1d46-42a2-bf0b-40dd27d7b25b",
+  "timestamp": "2025-12-31T18:24:02.999Z",
+  "description": "Fix bug at DynamicExerciseFields.tsx:175 where custom metric keys extracted without custom_ prefix, causing validation failures and silent data loss",
+  "design": {
+    "title": "Custom Metrics Prefix Bug Fix",
+    "description": "Fix bug at DynamicExerciseFields.tsx:175 where custom metric keys extracted without custom_ prefix, causing validation failures and silent data loss",
+    "phases": [
+      {
+        "id": "phase-1-p0-fix",
+        "name": "P0 Critical Fix",
+        "description": "Add custom_ prefix when extracting custom metric keys",
+        "estimatedEffort": "5 minutes",
+        "priority": "P0",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "description": "Edit DynamicExerciseFields.tsx line 175: change .map((m) => m.key) to .map((m) => `custom_${m.key}`)",
+            "file": "src/components/shared/DynamicExerciseFields.tsx",
+            "line": 175
+          },
+          {
+            "id": "1.2",
+            "description": "Run typecheck to verify no type errors"
+          }
+        ],
+        "successCriteria": [
+          "TypeScript compiles",
+          "customMetricKeys returns prefixed keys"
+        ]
+      },
+      {
+        "id": "phase-2-p1-logging",
+        "name": "P1 Silent Filtering Logging",
+        "description": "Add console.warn when startWorkout silently filters invalid metrics",
+        "estimatedEffort": "10 minutes",
+        "priority": "P1",
+        "subtasks": [
+          {
+            "id": "2.1",
+            "description": "Edit startWorkout handler at line 145: extract removed metrics and log warning",
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "line": 145
+          }
+        ],
+        "successCriteria": [
+          "Console shows warning when invalid metrics filtered"
+        ]
+      },
+      {
+        "id": "phase-3-p1-unit-test",
+        "name": "P1 Unit Test",
+        "description": "Add unit test for customMetricKeys extraction logic",
+        "estimatedEffort": "30 minutes",
+        "priority": "P1",
+        "subtasks": [
+          {
+            "id": "3.1",
+            "description": "Create test file for DynamicExerciseFields customMetricKeys",
+            "file": "src/components/shared/__tests__/DynamicExerciseFields.test.tsx"
+          },
+          {
+            "id": "3.2",
+            "description": "Test: prefixes keys with custom_"
+          },
+          {
+            "id": "3.3",
+            "description": "Test: handles empty/undefined customMetrics"
+          }
+        ],
+        "successCriteria": [
+          "All unit tests pass"
+        ]
+      },
+      {
+        "id": "phase-4-p2-duplicate-fix",
+        "name": "P2 duplicateWorkout Validation Gap",
+        "description": "Add loggingMetrics to duplicateWorkoutToDate exercise copy",
+        "estimatedEffort": "5 minutes",
+        "priority": "P2",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "description": "Add loggingMetrics: exercise.loggingMetrics to insert at line 726",
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "line": 726
+          }
+        ],
+        "successCriteria": [
+          "Duplicated workouts retain loggingMetrics"
+        ]
+      },
+      {
+        "id": "phase-5-p2-integration-test",
+        "name": "P2 Integration Test Enhancement",
+        "description": "Add test case for non-prefixed custom metric rejection",
+        "estimatedEffort": "15 minutes",
+        "priority": "P2",
+        "subtasks": [
+          {
+            "id": "5.1",
+            "description": "Add test: rejects non-prefixed custom metric keys",
+            "file": "convex/lib/__tests__/loggingMetrics.integration.test.ts"
+          },
+          {
+            "id": "5.2",
+            "description": "Add test: accepts properly prefixed custom metric keys"
+          }
+        ],
+        "successCriteria": [
+          "Integration tests pass"
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "src/components/shared/DynamicExerciseFields.tsx",
+        "lines": 287,
+        "change": "BUG FIX at line 175"
+      },
+      {
+        "path": "convex/workoutLogsModules/mutations.ts",
+        "lines": 538,
+        "change": "Add logging at line 145"
+      },
+      {
+        "path": "convex/calendarWorkoutsModules/mutations.ts",
+        "lines": 815,
+        "change": "Add loggingMetrics copy at line 726"
+      },
+      {
+        "path": "src/components/shared/__tests__/DynamicExerciseFields.test.tsx",
+        "lines": 50,
+        "change": "NEW FILE"
+      },
+      {
+        "path": "convex/lib/__tests__/loggingMetrics.integration.test.ts",
+        "lines": 75,
+        "change": "Add test cases"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Regression in core metrics",
+        "likelihood": "Low",
+        "mitigation": "Existing tests cover 14 core metrics"
+      },
+      {
+        "risk": "Label display changes",
+        "likelihood": "Low",
+        "mitigation": "Label logic already expects prefix"
+      },
+      {
+        "risk": "Existing data with wrong keys",
+        "likelihood": "Medium",
+        "mitigation": "Silent filter handles gracefully"
+      }
+    ],
+    "dependencies": {
+      "phase-1-p0-fix": [],
+      "phase-2-p1-logging": [],
+      "phase-3-p1-unit-test": [
+        "phase-1-p0-fix"
+      ],
+      "phase-4-p2-duplicate-fix": [],
+      "phase-5-p2-integration-test": [
+        "phase-1-p0-fix"
+      ]
+    },
+    "successCriteria": [
+      "Custom metrics extracted with custom_ prefix",
+      "Backend validation passes for custom metrics",
+      "Frontend renders custom metric fields",
+      "Athlete logger shows custom fields",
+      "Data persists through full workflow",
+      "No regression in core metrics",
+      "Unit tests cover extraction logic"
+    ]
+  },
+  "status": "archived"
+}

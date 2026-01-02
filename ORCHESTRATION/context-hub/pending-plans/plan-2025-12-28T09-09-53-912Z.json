@@ -1,0 +1,167 @@
+{
+  "id": "993a5e17-10e8-4dcf-b829-36151d241047",
+  "timestamp": "2025-12-28T09:09:53.913Z",
+  "description": "Timer fix, error handling, memoization, testing, refactoring across 4 phases",
+  "design": {
+    "title": "Workout Logger Optimization",
+    "description": "Timer fix, error handling, memoization, testing, refactoring across 4 phases",
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "Critical Performance & Reliability Fixes",
+        "description": "Timer extraction, error handling, handler memoization, React.memo",
+        "subtasks": [
+          {
+            "id": "1.1",
+            "title": "Timer Performance Fix",
+            "description": "Extract timer to isolated useElapsedTime hook to eliminate 360 re-renders/min",
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts",
+              "src/components/WorkoutLoggerModules/hooks/useElapsedTime.ts"
+            ],
+            "agent": "developer"
+          },
+          {
+            "id": "1.2",
+            "title": "Error Handling",
+            "description": "Add try/catch with toast feedback to handleLogSet, handleLogAllSets, handleEditSet",
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts"
+            ],
+            "agent": "developer"
+          },
+          {
+            "id": "1.3",
+            "title": "Handler Memoization",
+            "description": "Wrap 12 handlers in useCallback with appropriate dependencies",
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts"
+            ],
+            "agent": "developer"
+          },
+          {
+            "id": "1.4",
+            "title": "React.memo ExerciseCard",
+            "description": "Wrap ExerciseCard in React.memo to prevent unnecessary re-renders",
+            "files": [
+              "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+            ],
+            "agent": "developer"
+          }
+        ]
+      },
+      {
+        "id": "phase-2",
+        "name": "Test Coverage",
+        "description": "Expand utils tests from 11% to 100%, add component tests",
+        "subtasks": [
+          {
+            "id": "2.1",
+            "title": "Utils Tests",
+            "description": "Add tests for 8 missing util functions: formatDuration, formatSetDisplay, normalizeExerciseData, etc.",
+            "files": [
+              "src/components/WorkoutLoggerModules/__tests__/utils.test.ts"
+            ],
+            "agent": "developer"
+          },
+          {
+            "id": "2.2",
+            "title": "Component Tests",
+            "description": "Add tests for ExerciseCard, WorkoutHeader, WorkoutCompletion components",
+            "files": [
+              "src/components/WorkoutLoggerModules/__tests__/components.test.tsx"
+            ],
+            "agent": "developer"
+          }
+        ]
+      },
+      {
+        "id": "phase-3",
+        "name": "Refactoring",
+        "description": "Split useWorkoutLogger hook, remove any types",
+        "subtasks": [
+          {
+            "id": "3.1",
+            "title": "Split Hook",
+            "description": "Split 555 LOC hook into facade + 6 modules: useWorkoutState, useWorkoutQueries, useWorkoutMutations, useWorkoutEffects, useSetHandlers, useSessionHandlers",
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/"
+            ],
+            "agent": "developer"
+          },
+          {
+            "id": "3.2",
+            "title": "Remove any Types",
+            "description": "Replace 3 index signatures in types.ts, fix 10 any usages in hook",
+            "files": [
+              "src/components/WorkoutLoggerModules/types.ts",
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts"
+            ],
+            "agent": "developer"
+          }
+        ]
+      },
+      {
+        "id": "phase-4",
+        "name": "E2E Testing",
+        "description": "Full workout logging E2E test with Playwright",
+        "subtasks": [
+          {
+            "id": "4.1",
+            "title": "E2E Test",
+            "description": "Complete workout flow: start, log sets, edit set, complete, abandon scenarios",
+            "files": [
+              "e2e/workout-logger.spec.ts"
+            ],
+            "agent": "browser"
+          }
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Timer extraction breaks elapsed time display",
+        "probability": "Low",
+        "impact": "Medium",
+        "mitigation": "Unit test useElapsedTime hook"
+      },
+      {
+        "risk": "Memoization dependencies missing",
+        "probability": "Medium",
+        "impact": "Low",
+        "mitigation": "React DevTools profiler verification"
+      },
+      {
+        "risk": "Hook split introduces import errors",
+        "probability": "Low",
+        "impact": "High",
+        "mitigation": "Maintain barrel exports, incremental commits"
+      },
+      {
+        "risk": "Type removal causes compile errors",
+        "probability": "Medium",
+        "impact": "Medium",
+        "mitigation": "Gradual typing, add explicit fields first"
+      }
+    ],
+    "metrics": {
+      "reRendersPerMin": {
+        "target": "<10",
+        "current": "360"
+      },
+      "testCoverage": {
+        "target": "80%+",
+        "current": "11.1%"
+      },
+      "hookLOC": {
+        "target": "<400",
+        "current": "555"
+      },
+      "anyTypes": {
+        "target": "0",
+        "current": "13"
+      }
+    }
+  },
+  "status": "archived"
+}

@@ -1,0 +1,336 @@
+{
+  "id": "7bdbb1f7-20ed-4d1d-9fe9-29c1a01cee2f",
+  "type": "plan",
+  "metadata": {
+    "promptId": "da375c21-939e-488f-bf4c-27a23347770d",
+    "sessionId": "20251208_21-25_7d430eb8-d66b-4b52-a79b-7354fd4c12a6",
+    "timestamp": "2025-12-08T21:45:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implementation plan for remaining orchestration system enhancements: P2 Parallel Execution Engine (~750 lines total) and P3 Real-Time Dashboard (~650 lines total). Builds on completed P1 foundation (EvidenceChainBuilder, TemplateProcessor, updated schemas).",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "P2: Parallel Execution Engine - Core Library",
+      "description": "Create lib/parallel-engine.ts with ParallelEngine class, execution config, spawn requests, result aggregation, and dependency injection. ~500 lines.",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Implement ParallelEngine core class with interfaces (ParallelExecutionConfig, AgentSpawnRequest, ExecutionResult, AggregatedContext). Include buildParallelGroups(), executeParallelGroup(), aggregateResults(), and injectDependencies() methods.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 25000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts",
+              "ORCHESTRATION/lib/template-processor.ts",
+              "ORCHESTRATION/lib/context-hub.ts",
+              "ORCHESTRATION/schemas/index.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_ENHANCEMENTS_20251208",
+              "IMPL_ORCHESTRATION_ENHANCEMENTS_P1_20251208"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ParallelEngine class exports from lib/parallel-engine.ts",
+            "createParallelEngine() factory function available",
+            "ParallelExecutionConfig with maxConcurrentAgents, waitForAll, timeoutMs, retryOnFailure",
+            "AgentSpawnRequest with taskId, agentType, prompt, runInBackground, dependencies",
+            "ExecutionResult with taskId, agentId, success, handoff, error, tokensUsed",
+            "buildParallelGroups(phase) returns ParallelGroup[] respecting dependencies",
+            "injectDependencies(task, priorResults) substitutes {result:taskId} placeholders",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add DispatchInstructionSchema to schemas/index.ts with groupId, spawnTogether, agents array, and afterSpawn instructions. Include safe validation function.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/schemas/index.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "DispatchInstructionSchema added to schemas/index.ts",
+            "Includes groupId, spawnTogether, agents[], afterSpawn fields",
+            "validateDispatchInstruction() function exported",
+            "safeValidateDispatchInstruction() function exported",
+            "DispatchInstruction type exported",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "lib/parallel-engine.ts exists with all interfaces and methods, schemas updated, typecheck passes"
+    },
+    {
+      "id": "phase-2",
+      "name": "P2: Parallel Execution Engine - CLI Integration",
+      "description": "Add execute, execute-plan, and agents commands to orch.ts. ~150 lines additions.",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add CLI commands to orch.ts: 'execute <phaseId> [--parallel] [--max-agents=N]', 'execute-plan [--resume-from=phaseId]', 'agents list', 'agents kill <agentId>'. Commands should generate DispatchInstructions JSON output.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orch.ts",
+              "ORCHESTRATION/lib/parallel-engine.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "'npx tsx orch.ts execute <phaseId>' generates dispatch instructions",
+            "'npx tsx orch.ts execute <phaseId> --parallel' spawns parallel group",
+            "'npx tsx orch.ts execute-plan' executes all phases sequentially",
+            "'npx tsx orch.ts agents list' shows running agents",
+            "--json flag outputs parseable JSON",
+            "Help text updated for new commands",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Test P2 implementation: verify execute command generates valid dispatch instructions, test execute-plan with sample plan, verify agents list shows session agents.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orch.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "'execute phase-1' returns valid DispatchInstruction JSON",
+            "'execute-plan' processes all phases in order",
+            "'agents list' returns agent status array",
+            "Error handling for invalid phase IDs",
+            "All commands return success/error consistently"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All execute commands functional, output valid JSON, typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "P3: Real-Time Dashboard - Data Collection",
+      "description": "Create lib/dashboard-data.ts with DashboardDataCollector for aggregating session state, agent status, token budgets, and events. ~200 lines.",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Implement DashboardDataCollector class with DashboardState interface. Include collectState(), watch() with file system watcher, getRecentEvents() from log.jsonl. Uses ContextHub for state access.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts",
+              "ORCHESTRATION/schemas/index.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"
+            ]
+          },
+          "acceptanceCriteria": [
+            "DashboardDataCollector class exports from lib/dashboard-data.ts",
+            "createDashboardCollector() factory function",
+            "DashboardState interface with session, currentPhase, agents[], tokenBudget, recentEvents[]",
+            "collectState() returns current DashboardState from context hub",
+            "watch(callback) uses fs.watch on session directory",
+            "getRecentEvents(limit) parses log.jsonl",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "DashboardDataCollector fully functional, can collect state and watch for changes"
+    },
+    {
+      "id": "phase-4",
+      "name": "P3: Real-Time Dashboard - Terminal UI",
+      "description": "Create cli/dashboard.ts with blessed-based terminal UI showing progress, agents, tokens, and events. ~400 lines. Add blessed dependency.",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add blessed dependency to package.json devDependencies. Verify installation and types availability.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "package.json"
+            ]
+          },
+          "acceptanceCriteria": [
+            "blessed added to devDependencies",
+            "@types/blessed added if needed",
+            "npm install succeeds",
+            "Import blessed works in TypeScript"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Implement OrchestrationDashboard class with blessed terminal UI. Include renderHeader(), renderPhaseProgress(), renderAgentList(), renderTokenBudget(), renderEventLog(), renderHelpBar(). Handle keyboard input for quit, refresh, detail, logs.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 25000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/dashboard-data.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "OrchestrationDashboard class in cli/dashboard.ts",
+            "createDashboard(sessionId) factory function",
+            "Renders header with session ID and status",
+            "Shows phase progress bar with percentage",
+            "Lists agents with status icons (running/idle/complete/failed)",
+            "Displays token budget with per-phase breakdown",
+            "Scrollable event log with timestamps",
+            "Keyboard shortcuts: q=quit, r=refresh, l=logs",
+            "Auto-refresh loop with configurable interval",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add dashboard command to orch.ts CLI. Support --session and --refresh options. Launch blessed UI from command.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orch.ts",
+              "ORCHESTRATION/cli/dashboard.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "'npx tsx orch.ts dashboard' launches UI for latest session",
+            "'npx tsx orch.ts dashboard --session <id>' for specific session",
+            "'npx tsx orch.ts dashboard --refresh 2000' sets refresh interval",
+            "Help text documents dashboard command",
+            "Graceful exit on q key or Ctrl+C"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Test P3 implementation: verify dashboard launches, displays current session state, auto-refreshes, and responds to keyboard input. Create test session with sample data if needed.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 8000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Dashboard launches without errors",
+            "Displays session info, phase, agents, tokens",
+            "Event log scrolls and updates",
+            "Keyboard shortcuts work",
+            "Clean exit on quit"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Dashboard fully functional, displays live data, responds to keyboard input"
+    },
+    {
+      "id": "phase-5",
+      "name": "Documentation and Memory Update",
+      "description": "Update orchestrator.md documentation and write completion memory for P2/P3 enhancements.",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Update .claude/agents/orchestrator.md with new execute and dashboard commands. Document dispatch instruction workflow and dashboard usage.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-4.4"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              ".claude/agents/orchestrator.md"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Execute commands documented in orchestrator.md",
+            "Dashboard command documented",
+            "Dispatch instruction format explained",
+            "Usage examples provided"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Write Serena memory IMPL_ORCHESTRATION_P2_P3_COMPLETE documenting all completed enhancements, file locations, and usage patterns.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Memory written with mcp__serena__write_memory",
+            "Lists all new files created",
+            "Documents CLI commands",
+            "Includes usage examples"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Documentation complete, memory persisted"
+    }
+  ],
+  "totalEstimatedTokens": 125000,
+  "risks": [
+    {
+      "description": "blessed library compatibility with Node.js ESM modules",
+      "mitigation": "Check for ESM-compatible version or use dynamic import(). Fallback to simple text output if terminal UI fails.",
+      "severity": "medium"
+    },
+    {
+      "description": "Complex state management in parallel execution with race conditions",
+      "mitigation": "Use file locks via context-hub atomic operations. Keep state in single JSON files per session.",
+      "severity": "medium"
+    },
+    {
+      "description": "Dashboard performance with large event logs",
+      "mitigation": "Limit event buffer to 100 entries, use rolling window. Implement pagination for log.jsonl reads.",
+      "severity": "low"
+    },
+    {
+      "description": "DispatchInstructions may need refinement based on actual Claude Code Task tool behavior",
+      "mitigation": "Design schema to be extensible. Test with sample Task tool invocations before full integration.",
+      "severity": "medium"
+    }
+  ]
+}

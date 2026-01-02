@@ -1,0 +1,127 @@
+{
+  "id": "12261dc6-dcb8-4d4b-9381-9d964d5c6ef7",
+  "timestamp": "2025-12-26T21:18:21.569Z",
+  "description": "Orchestration plan",
+  "design": {
+    "metadata": {
+      "id": "phase3-docs-testing",
+      "name": "Phase 3: Documentation & Testing",
+      "description": "JSDoc documentation for 30+ ContextHub methods, README expansion, test file splits, benchmarks, and CI/CD pipeline",
+      "createdAt": "2025-12-26T21:15:00Z",
+      "estimatedTokens": 160000
+    },
+    "phases": [
+      {
+        "id": "phase-3a",
+        "name": "JSDoc Documentation",
+        "description": "Add comprehensive JSDoc to all public API methods",
+        "subtasks": [
+          {
+            "id": "3a.1",
+            "agentType": "developer",
+            "description": "Add JSDoc to ContextHub session methods (8 methods in session.ts)",
+            "estimatedTokens": 8000
+          },
+          {
+            "id": "3a.2",
+            "agentType": "developer",
+            "description": "Add JSDoc to ContextHub artifact methods (9 methods in prompts.ts, plans.ts, handoffs.ts)",
+            "estimatedTokens": 12000
+          },
+          {
+            "id": "3a.3",
+            "agentType": "developer",
+            "description": "Add JSDoc to ContextHub gate methods (7 methods in gates.ts, checking.ts)",
+            "estimatedTokens": 10000
+          },
+          {
+            "id": "3a.4",
+            "agentType": "developer",
+            "description": "Add JSDoc to ContextHub memory methods (4 methods in memory.ts)",
+            "estimatedTokens": 6000
+          },
+          {
+            "id": "3a.5",
+            "agentType": "developer",
+            "description": "Add JSDoc to CLI modules (9 orchModules + 5 dashboardModules)",
+            "estimatedTokens": 25000
+          }
+        ],
+        "gateCondition": "typecheck",
+        "parallel": true
+      },
+      {
+        "id": "phase-3b",
+        "name": "README Documentation",
+        "description": "Expand README with configuration docs, Gate DSL spec, and integration examples",
+        "subtasks": [
+          {
+            "id": "3b.1",
+            "agentType": "developer",
+            "description": "Add configuration documentation (DashboardConfig, ParallelExecutionConfig, GateCheckConfig)",
+            "estimatedTokens": 10000
+          },
+          {
+            "id": "3b.2",
+            "agentType": "developer",
+            "description": "Add complete Gate DSL specification (BNF grammar, operators, examples)",
+            "estimatedTokens": 8000
+          },
+          {
+            "id": "3b.3",
+            "agentType": "developer",
+            "description": "Add integration examples and error handling reference",
+            "estimatedTokens": 15000
+          }
+        ],
+        "gateCondition": "typecheck",
+        "parallel": false,
+        "dependsOn": [
+          "phase-3a"
+        ]
+      },
+      {
+        "id": "phase-3c",
+        "name": "Test Infrastructure",
+        "description": "Split large test files, add benchmarks, regression guards, and CI/CD",
+        "subtasks": [
+          {
+            "id": "3c.1",
+            "agentType": "developer",
+            "description": "Split 8 test files >500 LOC into focused modules (template-processor, evidenceAutoPopulator, gatesModules, evidence-chain, context-hub, validators, parallel-engine, evaluator)",
+            "estimatedTokens": 40000
+          },
+          {
+            "id": "3c.2",
+            "agentType": "developer",
+            "description": "Add performance benchmarks (gate-parsing.bench.ts, context-hub.bench.ts, parallel-engine.bench.ts)",
+            "estimatedTokens": 12000
+          },
+          {
+            "id": "3c.3",
+            "agentType": "developer",
+            "description": "Add regression timing guards (timing.test.ts)",
+            "estimatedTokens": 8000
+          },
+          {
+            "id": "3c.4",
+            "agentType": "developer",
+            "description": "Create CI/CD pipeline (.github/workflows/orchestration.yml)",
+            "estimatedTokens": 6000
+          }
+        ],
+        "gateCondition": "tests",
+        "parallel": false
+      }
+    ],
+    "validation": {
+      "finalGate": "typecheck AND tests",
+      "requiredMemories": [
+        "JSDOC_CONTEXTHUB_*",
+        "JSDOC_CLI_*"
+      ],
+      "targetCoverage": 75
+    }
+  },
+  "status": "archived"
+}

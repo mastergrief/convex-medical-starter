@@ -1,0 +1,88 @@
+{
+  "id": "4dba1fd5-c28d-40eb-9598-e165b1bb2725",
+  "type": "plan",
+  "metadata": {
+    "promptId": "abdacb60-70bf-4745-ad7f-5853cc74aeb5",
+    "sessionId": "20251209_09-30_fbeaa950-a4ec-4211-8f91-05744269d123",
+    "timestamp": "2025-12-09T09:30:32.421Z",
+    "version": "1.0.0"
+  },
+  "summary": "Systematic bug reproduction, root cause analysis, fix, and verification",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Reproduce",
+      "description": "Reproduce",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Reproduce the bug: Test bug for E2E. Navigate to orchestration CLI and follow reproduction steps: . Capture screenshots, console errors, and network requests as evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "bug reproduced with evidence captured"
+    },
+    {
+      "id": "phase-2",
+      "name": "Trace",
+      "description": "Trace",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Trace root cause of bug: Test bug for E2E. Analyze orchestration CLI codebase. Use console errors and stack traces from reproduction phase. Identify the exact symbol and line causing the issue.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 25000
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "root cause identified in memory ANALYSIS_*"
+    },
+    {
+      "id": "phase-3",
+      "name": "Fix",
+      "description": "Fix",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Fix bug: Test bug for E2E. Apply fix to symbols identified by analyst. Expected behavior: . Ensure type safety and no regressions.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 30000
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck passes AND fix implements expected behavior"
+    },
+    {
+      "id": "phase-4",
+      "name": "Verify",
+      "description": "Verify",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Verify fix for: Test bug for E2E. Confirm bug no longer reproduces using same steps: . Run regression tests on orchestration CLI. Capture evidence that expected behavior:  now works.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 25000
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "bug no longer reproduces AND regression tests pass"
+    }
+  ],
+  "totalEstimatedTokens": 100000
+}

@@ -1,0 +1,312 @@
+{
+  "id": "browser-cli-phase2-20251227",
+  "title": "Browser-CLI Phase 2: Parity & Documentation",
+  "created": "2025-12-27T12:04:00Z",
+  "priority": "P2",
+  "estimatedEffort": "9 hours",
+  "status": "archived",
+  "summary": {
+    "problem": "Command parity gaps between validator/parser/help/formatter layers cause user confusion",
+    "solution": "Clean up validator orphans, create missing formatters, align documentation",
+    "impact": "User experience improvement, no functional changes"
+  },
+  "scoutResults": {
+    "ui": {
+      "validator": {
+        "file": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+        "lines": 193,
+        "commands": 124,
+        "orphans": 19
+      },
+      "formatters": {
+        "directory": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/",
+        "modules": 15,
+        "lines": 1935,
+        "missing": 4
+      },
+      "help": {
+        "directory": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/",
+        "modules": 24,
+        "lines": 2231
+      }
+    },
+    "api": {
+      "parser": {
+        "directory": "BROWSER-CLI/SCRIPTS/cli/commandParserModules/",
+        "modules": 16,
+        "lines": 1981,
+        "commands": 103
+      },
+      "tabs": "VERIFIED - implemented via 'tabs <action>' pattern"
+    },
+    "documentation": {
+      "main": {
+        "file": ".claude/rules/cli-suite/browser-cli.md",
+        "lines": 284
+      },
+      "helpText": {
+        "file": "BROWSER-CLI/SCRIPTS/cli/help-text.ts",
+        "lines": 141
+      }
+    }
+  },
+  "phases": [
+    {
+      "id": "A",
+      "name": "Validator Cleanup",
+      "effort": "1.5 hours",
+      "risk": "LOW",
+      "tasks": [
+        {
+          "id": "A.1",
+          "description": "Remove 12 orphan selector variant commands",
+          "file": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+          "commands": [
+            "clickByRef",
+            "clickBySemantic",
+            "dblclickByRef",
+            "dblclickBySemantic",
+            "typeByRef",
+            "typeBySemantic",
+            "hoverByRef",
+            "hoverBySemantic",
+            "dragByRef",
+            "dragByCSS",
+            "waitForSelectorByRef",
+            "waitForSelectorBySemantic"
+          ]
+        },
+        {
+          "id": "A.2",
+          "description": "Remove 4 deprecated browserState commands",
+          "file": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+          "commands": [
+            "saveBrowserState",
+            "restoreBrowserState",
+            "listBrowserStates",
+            "deleteBrowserState"
+          ]
+        },
+        {
+          "id": "A.3",
+          "description": "Remove 3 tab shortcut orphans",
+          "file": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+          "commands": [
+            "newTab",
+            "switchTab",
+            "closeTab"
+          ]
+        },
+        {
+          "id": "A.4",
+          "description": "Add 2 missing commands",
+          "file": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+          "commands": [
+            "snapshot+",
+            "stopRecording"
+          ]
+        }
+      ],
+      "expectedResult": "VALID_COMMANDS count: 124 - 19 + 2 = 107"
+    },
+    {
+      "id": "B",
+      "name": "Response Formatter Completion",
+      "effort": "4 hours",
+      "risk": "MEDIUM",
+      "tasks": [
+        {
+          "id": "B.1",
+          "description": "Create content.ts formatter",
+          "file": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/content.ts",
+          "commands": [
+            "getPageHTML",
+            "getPageText",
+            "getElementHTML",
+            "getElementText"
+          ]
+        },
+        {
+          "id": "B.2",
+          "description": "Create events.ts formatter",
+          "file": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/events.ts",
+          "commands": [
+            "getEventLog",
+            "clearEventLog",
+            "waitForEvent",
+            "dismissDialog",
+            "acceptDialog"
+          ]
+        },
+        {
+          "id": "B.3",
+          "description": "Create dom.ts formatter",
+          "file": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/dom.ts",
+          "commands": [
+            "countElements",
+            "getElementVisibility",
+            "getComputedStyle",
+            "getOverlayingElements"
+          ]
+        },
+        {
+          "id": "B.4",
+          "description": "Create buffer.ts formatter",
+          "file": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/buffer.ts",
+          "commands": [
+            "getConsoleBufferStats",
+            "setConsoleBufferCapacity",
+            "getNetworkBufferStats",
+            "setNetworkBufferCapacity",
+            "getEventBufferStats",
+            "setEventBufferCapacity"
+          ]
+        },
+        {
+          "id": "B.5",
+          "description": "Update formatter index.ts with new imports and switch cases",
+          "file": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/index.ts"
+        }
+      ],
+      "expectedResult": "All 103 commands have dedicated formatters"
+    },
+    {
+      "id": "C",
+      "name": "Help Text & Naming Alignment",
+      "effort": "1 hour",
+      "risk": "LOW",
+      "tasks": [
+        {
+          "id": "C.1",
+          "description": "Fix flaky detection naming (runFlaky -> runTestMultipleTimes)",
+          "file": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/flaky-detection.ts"
+        },
+        {
+          "id": "C.2",
+          "description": "Add snapshot+ help text",
+          "file": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/snapshot.ts"
+        },
+        {
+          "id": "C.3",
+          "description": "Add setHeadless help text",
+          "file": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/utility.ts"
+        }
+      ],
+      "expectedResult": "All commands have accurate help text"
+    },
+    {
+      "id": "D",
+      "name": "Documentation Synchronization",
+      "effort": "2.5 hours",
+      "risk": "LOW",
+      "tasks": [
+        {
+          "id": "D.1",
+          "description": "Add implementation status table",
+          "file": ".claude/rules/cli-suite/browser-cli.md"
+        },
+        {
+          "id": "D.2",
+          "description": "Correct flaky detection command names",
+          "file": ".claude/rules/cli-suite/browser-cli.md"
+        },
+        {
+          "id": "D.3",
+          "description": "Clarify tab command usage pattern",
+          "file": ".claude/rules/cli-suite/browser-cli.md"
+        }
+      ],
+      "expectedResult": "Documentation accurately reflects implementation"
+    }
+  ],
+  "criticalFiles": [
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+      "lines": 193,
+      "action": "modify"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/index.ts",
+      "lines": 339,
+      "action": "modify"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/content.ts",
+      "lines": 0,
+      "action": "create"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/events.ts",
+      "lines": 0,
+      "action": "create"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/dom.ts",
+      "lines": 0,
+      "action": "create"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/buffer.ts",
+      "lines": 0,
+      "action": "create"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/flaky-detection.ts",
+      "lines": 33,
+      "action": "modify"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/snapshot.ts",
+      "lines": 146,
+      "action": "modify"
+    },
+    {
+      "path": "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/utility.ts",
+      "lines": 165,
+      "action": "modify"
+    },
+    {
+      "path": ".claude/rules/cli-suite/browser-cli.md",
+      "lines": 284,
+      "action": "modify"
+    }
+  ],
+  "risks": [
+    {
+      "phase": "A",
+      "level": "LOW",
+      "description": "Validator cleanup - well-defined, isolated file"
+    },
+    {
+      "phase": "B",
+      "level": "MEDIUM",
+      "description": "Formatter creation - need to match existing patterns"
+    },
+    {
+      "phase": "C",
+      "level": "LOW",
+      "description": "Help text - additive changes only"
+    },
+    {
+      "phase": "D",
+      "level": "LOW",
+      "description": "Documentation - no code impact"
+    }
+  ],
+  "successCriteria": [
+    "VALID_COMMANDS count = ~107 (matches parser)",
+    "All 103 commands have dedicated formatters (0 generic fallback)",
+    "All commands have help text entries",
+    "All command names in docs match implementation",
+    "npm run typecheck passes",
+    "npm run test passes"
+  ],
+  "validation": {
+    "commands": [
+      "npm run typecheck",
+      "npm run test",
+      "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts help runTestMultipleTimes",
+      "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts help snapshot+"
+    ]
+  }
+}

@@ -1,0 +1,327 @@
+{
+  "id": "f8a7b6c5-d4e3-4f21-a0b9-c8d7e6f5a4b3",
+  "type": "plan",
+  "metadata": {
+    "promptId": "d1b28e19-307d-4246-8dcc-390c10e78501",
+    "sessionId": "20251231_16-01_539c7dec-1f6e-4dad-92b5-a8f59f904a93",
+    "timestamp": "2025-12-31T16:05:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Remediate critical validation gap in Athlete Logging Configuration system by wiring validateLoggingMetrics() to backend mutations, adding console warnings for unknown metrics in frontend, and wiring customMetrics prop through the component chain",
+  "phases": [
+    {
+      "id": "phase-0-backend-validation",
+      "name": "Backend Validation Wiring (CRITICAL)",
+      "description": "Wire validateLoggingMetrics() function to all mutation paths that handle loggingMetrics data. This prevents invalid metric keys from persisting to the database.",
+      "subtasks": [
+        {
+          "id": "p0-1-import-validation",
+          "description": "Import validateLoggingMetrics from '../lib/loggingMetricsValidation' in convex/calendarWorkoutsModules/mutations.ts",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts",
+              "convex/lib/loggingMetricsValidation.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND",
+              "LOGGING_METRICS_SPRINT_07_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import statement added at top of mutations.ts",
+            "No TypeScript errors",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "p0-2-wire-create-mutation",
+          "description": "Wire validation in createCalendarWorkout mutation (line 192) - validate each exercise.loggingMetrics before insert",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "p0-1-import-validation"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ],
+            "symbols": [
+              "createCalendarWorkout"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateLoggingMetrics() called for each exercise before insert",
+            "Validated metrics used in insert (not raw input)",
+            "TypeScript types satisfied",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "p0-3-wire-update-patch",
+          "description": "Wire validation in updateCalendarWorkout PATCH path (line 456) - validate loggingMetrics before patch operation",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "p0-1-import-validation"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ],
+            "symbols": [
+              "updateCalendarWorkout"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateLoggingMetrics() called before ctx.db.patch",
+            "Validated metrics used in patch object",
+            "Existing PATCH logic preserved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "p0-4-wire-update-insert",
+          "description": "Wire validation in updateCalendarWorkout INSERT path (line 494) - validate loggingMetrics before new exercise insert",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "p0-1-import-validation"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ],
+            "symbols": [
+              "updateCalendarWorkout"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateLoggingMetrics() called before ctx.db.insert",
+            "Validated metrics used in insert object",
+            "Existing INSERT logic preserved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "p0-5-wire-start-workout",
+          "description": "Wire validation in startWorkout mutation (workoutLogsModules/mutations.ts line 144) - validate and filter metrics when copying from calendarExercises",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts",
+              "convex/lib/loggingMetricsValidation.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ],
+            "symbols": [
+              "startWorkout"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import validateLoggingMetrics in workoutLogsModules/mutations.ts",
+            "Validation called when mapping exercises",
+            "Invalid metrics filtered gracefully (not throw) since data comes from DB",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All backend validation subtasks complete, npx convex typecheck passes, npx tsc --noEmit passes"
+    },
+    {
+      "id": "phase-1-frontend-warnings",
+      "name": "Frontend Console Warnings (HIGH)",
+      "description": "Add console.warn for unknown metrics in buildConfigFromMetrics to aid debugging when coach-configured metrics don't match field definitions",
+      "subtasks": [
+        {
+          "id": "p1-1-add-console-warn",
+          "description": "Add console.warn in buildConfigFromMetrics (configBuilder.ts) when unknown metrics are encountered - should list metrics that were silently ignored",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configBuilder.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_SECURITY"
+            ],
+            "symbols": [
+              "buildConfigFromMetrics",
+              "FIELD_DEFINITIONS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "console.warn called when metrics not in FIELD_DEFINITIONS",
+            "Warning includes list of unknown metric keys",
+            "Warning excludes 'rpe' and 'custom_*' (handled separately)",
+            "Format: [LoggingConfig] Unknown metrics ignored: metric1, metric2",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Console warning implemented, npx tsc --noEmit passes"
+    },
+    {
+      "id": "phase-2-custom-metrics-wiring",
+      "name": "Custom Metrics Prop Wiring (HIGH)",
+      "description": "Wire customMetrics from trainingType through DynamicExerciseFields to LoggingMetricsSelector so future custom metrics can be displayed",
+      "subtasks": [
+        {
+          "id": "p2-1-extract-custom-metrics",
+          "description": "In DynamicExerciseFields.tsx, extract customMetrics from trainingType query result and pass to LoggingMetricsSelector",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/shared/DynamicExerciseFields.tsx",
+              "src/components/exercise/LoggingMetricsSelector.tsx"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_04_EDIT_UI",
+              "ATHLETE_LOGGING_CONFIGURATION_INTEGRATION_MAP_20251231"
+            ],
+            "symbols": [
+              "DynamicExerciseFields",
+              "LoggingMetricsSelector",
+              "useTrainingTypeMetrics"
+            ]
+          },
+          "acceptanceCriteria": [
+            "trainingType.customMetrics extracted from hook result",
+            "customMetrics array (of key strings) derived from customMetrics objects",
+            "customMetrics prop passed to LoggingMetricsSelector",
+            "Handles undefined/null customMetrics gracefully",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Custom metrics wiring complete, npx tsc --noEmit passes"
+    },
+    {
+      "id": "phase-3-component-tests",
+      "name": "Component Tests (MEDIUM)",
+      "description": "Add unit tests for LoggingMetricsSelector component covering selection, toggle, reset, and custom metrics display",
+      "subtasks": [
+        {
+          "id": "p3-1-create-selector-tests",
+          "description": "Create LoggingMetricsSelector.test.tsx with 5 test cases: renders available metrics, toggles metric selection, resets to defaults, renders custom metrics, handles empty state",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "p2-1-extract-custom-metrics"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/exercise/LoggingMetricsSelector.tsx",
+              "src/lib/loggingMetricsDefaults.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_05_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test file created at src/components/exercise/__tests__/LoggingMetricsSelector.test.tsx",
+            "Test: renders available metrics for category",
+            "Test: toggles metric on/off via checkbox",
+            "Test: reset button restores category defaults",
+            "Test: renders custom_* metrics with formatted labels",
+            "Test: handles empty metrics array",
+            "All tests pass with npm run test"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All component tests pass, npm run test succeeds"
+    },
+    {
+      "id": "phase-4-integration-tests",
+      "name": "Integration Tests (LOW)",
+      "description": "Add integration tests for mutation validation - test that invalid metrics are rejected at API boundary",
+      "subtasks": [
+        {
+          "id": "p4-1-mutation-validation-tests",
+          "description": "Create integration tests for calendarWorkouts mutations validating loggingMetrics rejection and acceptance",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "p0-2-wire-create-mutation",
+            "p0-3-wire-update-patch",
+            "p0-4-wire-update-insert"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts",
+              "convex/lib/loggingMetricsValidation.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test file at convex/calendarWorkoutsModules/__tests__/mutations.loggingMetrics.test.ts",
+            "Test: createCalendarWorkout rejects invalid metrics",
+            "Test: updateCalendarWorkout rejects invalid metrics in PATCH",
+            "Test: updateCalendarWorkout rejects invalid metrics in INSERT",
+            "Test: valid core metrics accepted",
+            "Test: valid custom_* pattern accepted",
+            "Test: duplicates are deduplicated",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All integration tests pass"
+    }
+  ],
+  "totalEstimatedTokens": 43000,
+  "risks": [
+    {
+      "description": "Backend validation may break existing workflows if invalid metrics already in database",
+      "mitigation": "startWorkout uses filter approach (graceful) rather than throw to handle legacy data",
+      "severity": "medium"
+    },
+    {
+      "description": "calendarWorkoutsModules/mutations.ts is 807 lines - may need careful symbol navigation",
+      "mitigation": "Use Serena find_symbol with specific name_path patterns to locate exact insertion points",
+      "severity": "low"
+    },
+    {
+      "description": "Custom metrics infrastructure not fully tested since coach UI doesn't exist",
+      "mitigation": "Wire props defensively with null checks, document for future use",
+      "severity": "low"
+    },
+    {
+      "description": "Component tests may require mocking Convex hooks",
+      "mitigation": "Follow existing test patterns in codebase, use vitest mocking",
+      "severity": "low"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "17cfd7cf-4f37-4dfb-9a23-845eb5566751",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251221_20-05_400f1164-74c9-4796-83b8-a8fface5f71d",
+    "timestamp": "2025-12-21T20:05:20.430Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Browser-CLI improvements from ANALYSIS_BROWSER_CLI_IMPROVEMENTS_20251221 memory: Split command-help.ts (814L) into modular architecture, add unit test framework with Vitest, and document with Serena memory write"
+  }
+}

@@ -1,0 +1,415 @@
+{
+  "id": "a1b2c3d4-e5f6-4789-abcd-ef0123456789",
+  "type": "plan",
+  "metadata": {
+    "promptId": "00000000-0000-0000-0000-000000000000",
+    "sessionId": "20251208_20-29_6d32d1c0-0bb4-4bc4-bf93-be48b2c6f3b9",
+    "timestamp": "2025-12-08T20:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement 4 orchestration enhancements: Evidence Chain Validation, Session Templates, Parallel Execution Engine, and Real-Time Dashboard. Priority order reflects dependency chain and value delivery.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Evidence Chain - Schema Extensions",
+      "description": "Extend schemas/index.ts with EvidenceChainSchema and related types for traceability",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze existing schema patterns and agent handoff structures to understand integration points",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": ["ORCHESTRATION/schemas/index.ts"],
+            "memories": ["PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"]
+          },
+          "acceptanceCriteria": [
+            "Schema integration points documented",
+            "Handoff linkage patterns identified"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Review agent handoff protocols in analyst.md, developer.md, browser.md for linksTo extension requirements",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [".claude/agents/analyst.md", ".claude/agents/developer.md", ".claude/agents/browser.md"]
+          },
+          "acceptanceCriteria": [
+            "Current handoff output structures catalogued",
+            "linksTo extension requirements defined"
+          ]
+        }
+      ],
+      "gateCondition": "All analysis subtasks complete with documented integration points"
+    },
+    {
+      "id": "phase-2",
+      "name": "Evidence Chain - Implementation",
+      "description": "Implement EvidenceChainSchema and evidence-chain.ts library",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add EvidenceChainSchema to schemas/index.ts with full traceability support",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": ["ORCHESTRATION/schemas/index.ts"],
+            "symbols": ["EvidenceChainSchema", "TraceabilityDataSchema"]
+          },
+          "acceptanceCriteria": [
+            "EvidenceChainSchema exported",
+            "Validator functions created",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Create lib/evidence-chain.ts with EvidenceChainBuilder class",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": ["ORCHESTRATION/lib/context-hub.ts"]
+          },
+          "acceptanceCriteria": [
+            "buildChain() implemented",
+            "validateLinks() implemented",
+            "validateSymbolCoverage() implemented",
+            "generateReport() produces readable output"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add trace and evidence CLI commands to orch.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.2"],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": ["ORCHESTRATION/cli/orch.ts"]
+          },
+          "acceptanceCriteria": [
+            "trace <taskId> command works",
+            "trace --phase command works",
+            "evidence validate command works",
+            "evidence report command produces markdown"
+          ]
+        }
+      ],
+      "gateCondition": "All trace/evidence CLI commands execute successfully"
+    },
+    {
+      "id": "phase-3",
+      "name": "Evidence Chain - Agent Integration",
+      "description": "Update agent handoff protocols with linksTo output extensions",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Update analyst.md with linksTo handoff extension for requirement-to-analysis linking",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-2.3"],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [".claude/agents/analyst.md"]
+          },
+          "acceptanceCriteria": [
+            "linksTo output documented in handoff section",
+            "requirementTaskId field specified"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Update developer.md with linksTo handoff extension for analysis-to-implementation linking",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-2.3"],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [".claude/agents/developer.md"]
+          },
+          "acceptanceCriteria": [
+            "linksTo output documented in handoff section",
+            "analysisMemory field specified"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Update browser.md with linksTo handoff extension for implementation-to-validation linking",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-2.3"],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [".claude/agents/browser.md"]
+          },
+          "acceptanceCriteria": [
+            "linksTo output documented in handoff section",
+            "acceptanceCriteriaVerified field specified"
+          ]
+        }
+      ],
+      "gateCondition": "All agent configs updated with linksTo extensions"
+    },
+    {
+      "id": "phase-4",
+      "name": "Session Templates - Implementation",
+      "description": "Create template storage, processor, and CLI integration",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create templates/ directory with 4 base templates (feature-implementation, bug-investigation, refactoring, api-endpoint)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "memories": ["PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"]
+          },
+          "acceptanceCriteria": [
+            "4 template JSON files created",
+            "index.json registry created",
+            "Templates follow PlanSchema structure"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create lib/template-processor.ts with TemplateProcessor class",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-4.1"],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": ["ORCHESTRATION/lib/context-hub.ts", "ORCHESTRATION/schemas/index.ts"]
+          },
+          "acceptanceCriteria": [
+            "listTemplates() returns available templates",
+            "loadTemplate() loads and validates template",
+            "instantiate() substitutes variables",
+            "createFromPlan() generates template from existing plan"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add template CLI commands to orch.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-4.2"],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": ["ORCHESTRATION/cli/orch.ts"]
+          },
+          "acceptanceCriteria": [
+            "template list command works",
+            "template show command works",
+            "session new --template command works",
+            "template create --from-plan command works"
+          ]
+        }
+      ],
+      "gateCondition": "Template CLI commands execute successfully with variable substitution"
+    },
+    {
+      "id": "phase-5",
+      "name": "Parallel Execution Engine - Core",
+      "description": "Implement parallel-engine.ts with concurrency control and dispatch instructions",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Analyze existing orchestration patterns and task tool integration for parallel dispatch design",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": ["ORCHESTRATION/cli/orch.ts", "ORCHESTRATION/lib/context-hub.ts"],
+            "memories": ["PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"]
+          },
+          "acceptanceCriteria": [
+            "Dispatch instruction format documented",
+            "Task tool integration pattern defined"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Add DispatchInstructionSchema and ParallelExecutionConfigSchema to schemas/index.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-5.1"],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": ["ORCHESTRATION/schemas/index.ts"]
+          },
+          "acceptanceCriteria": [
+            "DispatchInstructionSchema exported",
+            "ParallelExecutionConfigSchema exported",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Create lib/parallel-engine.ts with ParallelEngine class",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-5.2"],
+          "estimatedTokens": 20000,
+          "context": {
+            "files": ["ORCHESTRATION/lib/context-hub.ts", "ORCHESTRATION/lib/token-tracker.ts"]
+          },
+          "acceptanceCriteria": [
+            "buildParallelGroups() correctly groups parallel tasks",
+            "executeParallelGroup() generates dispatch instructions",
+            "aggregateResults() combines handoffs",
+            "injectDependencies() passes prior results to prompts"
+          ]
+        }
+      ],
+      "gateCondition": "ParallelEngine class instantiates and buildParallelGroups returns valid groups"
+    },
+    {
+      "id": "phase-6",
+      "name": "Parallel Execution Engine - CLI Integration",
+      "description": "Add execute commands to orch.ts",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Add execute <phaseId> and execute-plan commands to orch.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-5.3"],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": ["ORCHESTRATION/cli/orch.ts"]
+          },
+          "acceptanceCriteria": [
+            "execute <phaseId> --parallel command works",
+            "execute-plan --resume-from command works",
+            "agents list command works",
+            "execute --watch displays progress"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "Update orchestrator.md to document new parallel execution workflow",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-6.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [".claude/agents/orchestrator.md"]
+          },
+          "acceptanceCriteria": [
+            "Dispatch instruction handling documented",
+            "Parallel group workflow explained"
+          ]
+        }
+      ],
+      "gateCondition": "execute-plan command successfully generates dispatch instructions for multi-phase plan"
+    },
+    {
+      "id": "phase-7",
+      "name": "Real-Time Dashboard - Data Layer",
+      "description": "Implement dashboard data collection from context hub",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-7.1",
+          "description": "Create lib/dashboard-data.ts with DashboardDataCollector class",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": ["ORCHESTRATION/lib/context-hub.ts"],
+            "memories": ["PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"]
+          },
+          "acceptanceCriteria": [
+            "collectState() returns DashboardState",
+            "watch() emits on file changes",
+            "getRecentEvents() parses log.jsonl"
+          ]
+        }
+      ],
+      "gateCondition": "DashboardDataCollector successfully polls session state"
+    },
+    {
+      "id": "phase-8",
+      "name": "Real-Time Dashboard - Terminal UI",
+      "description": "Implement blessed-based terminal dashboard",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-8.1",
+          "description": "Add blessed dependency and create cli/dashboard.ts with OrchestrationDashboard class",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-7.1"],
+          "estimatedTokens": 18000,
+          "context": {
+            "memories": ["PLAN_ORCHESTRATION_ENHANCEMENTS_20251208"]
+          },
+          "acceptanceCriteria": [
+            "Dashboard renders header, progress, agents, tokens, events",
+            "Keyboard navigation works (q, r, d, l, g)",
+            "Auto-refresh at configurable interval"
+          ]
+        },
+        {
+          "id": "task-8.2",
+          "description": "Add dashboard command to orch.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-8.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": ["ORCHESTRATION/cli/orch.ts"]
+          },
+          "acceptanceCriteria": [
+            "dashboard command launches UI",
+            "--session flag selects session",
+            "--refresh flag sets interval"
+          ]
+        }
+      ],
+      "gateCondition": "Dashboard displays live session state with auto-refresh"
+    }
+  ],
+  "totalEstimatedTokens": 164000,
+  "risks": [
+    {
+      "description": "blessed dependency may have compatibility issues with current Node version",
+      "mitigation": "Fallback to simple text output mode if blessed fails",
+      "severity": "medium"
+    },
+    {
+      "description": "Parallel execution race conditions in file writes to context hub",
+      "mitigation": "Use file locks and atomic writes via fs-extra",
+      "severity": "high"
+    },
+    {
+      "description": "Template variable injection may produce invalid plans if validation missed",
+      "mitigation": "Strict Zod validation after every instantiation",
+      "severity": "medium"
+    },
+    {
+      "description": "Evidence chain gaps when agents skip linksTo output",
+      "mitigation": "Add schema validation on handoff write to enforce linksTo presence",
+      "severity": "medium"
+    }
+  ]
+}

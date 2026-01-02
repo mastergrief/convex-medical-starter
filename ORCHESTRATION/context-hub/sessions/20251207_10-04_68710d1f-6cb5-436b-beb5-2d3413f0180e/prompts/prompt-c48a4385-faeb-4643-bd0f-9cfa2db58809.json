@@ -1,0 +1,12 @@
+{
+  "id": "c48a4385-faeb-4643-bd0f-9cfa2db58809",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2026-01-01T14:51:00.840Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Deprecate Set Notes from Athlete Logging Configuration: Remove notes from configurable logging metrics because athletes always have hardcoded Set Notes (Optional) textarea in ExerciseCard.tsx"
+  }
+}

@@ -1,0 +1,609 @@
+{
+  "id": "a1b2c3d4-e5f6-4789-abcd-ef0123456789",
+  "type": "plan",
+  "metadata": {
+    "promptId": "3dfdd884-5e0e-4d1f-9574-0a8b47fdaf2c",
+    "sessionId": "20251229_18-45_eafb2512-c208-41c4-ab6f-ea1f18073324",
+    "timestamp": "2025-12-29T18:50:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix AI Training Advisor contradictory recommendations by implementing TODAY > 10-day > 30-day priority hierarchy with race condition fix, tiered weighting (40/35/25), floor system safety net, prompt validation, and comprehensive E2E testing",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Race Condition Fix (CRITICAL)",
+      "description": "Eliminate fire-and-forget useEffect that triggers AI generation before assessment is saved. Move AI generation to handleSubmit after save completion.",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Remove useEffect AI pre-fetch from PreWorkoutAssessment.tsx (lines 43-50). This useEffect fires generateRecommendations on mount BEFORE user saves assessment, causing todayReadiness=null in context.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/PreWorkoutAssessment.tsx"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_02_RACE_CONDITION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "useEffect block (lines 43-50) removed",
+            "No fire-and-forget AI call on component mount",
+            "Component still renders and allows assessment input"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add AI generation to handleSubmit AFTER assessment save. Add isGeneratingAI state for loading feedback. Ensure AI only triggers after savePreWorkoutAssessment mutation completes.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/PreWorkoutAssessment.tsx"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_02_RACE_CONDITION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "isGeneratingAI state added",
+            "generateRecommendations called in handleSubmit after save",
+            "Button shows 'Generating AI Advice...' during AI call",
+            "Error handling for AI generation (non-blocking)",
+            "onComplete() only called after both save and AI complete"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add cache invalidation in savePreWorkoutAssessment mutation to expire stale pending recommendations before new assessment is saved.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/assessments.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_02_RACE_CONDITION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Query for pending recommendations added",
+            "Stale recommendations patched to status='expired'",
+            "Cache invalidation runs before new assessment insert",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All race condition fixes complete, typecheck passes, assessment form submits correctly"
+    },
+    {
+      "id": "phase-2",
+      "name": "Tiered Weighting Implementation",
+      "description": "Implement TODAY > 10-day > 30-day weighting hierarchy (40/35/25) in readiness score calculation. Current weighting is 60/40 for 10-day/30-day with TODAY at 0%.",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add READINESS_WEIGHTS constant with tiered weights: today=0.40, shortTerm=0.35, longTerm=0.25. Place after MODIFIER_RANGES constant (around line 18).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_03_TIERED_WEIGHTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "READINESS_WEIGHTS const added with today/shortTerm/longTerm",
+            "Values: 0.40, 0.35, 0.25 (sum to 1.0)",
+            "TypeScript const assertion applied",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Calculate TODAY's readiness score in getAutoRegulationContext. Use todayPreWorkout values (sleepQuality, energyLevel, recoveryStatus) to compute overallToday score via calculateReadinessScore.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_03_TIERED_WEIGHTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "overallToday calculated when todayPreWorkout exists",
+            "componentsToday captured for detailed breakdown",
+            "mapRecoveryStatusToScore used for recovery conversion",
+            "Fallback to historical averages for soreness/fatigue from latest post-workout",
+            "Null handling when no today assessment"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Update weighted composite calculation to use tiered weights. Replace line 204 (60/40 split) with new formula: TODAY*0.40 + 10-day*0.35 + 30-day*0.25. Include fallback when TODAY unavailable.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_03_TIERED_WEIGHTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "weightedOverall uses READINESS_WEIGHTS when TODAY available",
+            "Fallback to 60/40 when TODAY unavailable",
+            "Math.round applied for integer result",
+            "Comment explains tiered weighting logic"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Update return object in getAutoRegulationContext to include TODAY readiness breakdown and weighting info. Add readiness.today object with overall and components.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.3"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_03_TIERED_WEIGHTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "readiness.today object added to return",
+            "Contains overall and components when available",
+            "Null when no today assessment",
+            "weighting field updated to use READINESS_WEIGHTS",
+            "TypeScript types updated if needed"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Tiered weighting implemented, TODAY score calculated and weighted at 40%, typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Floor System Safety Net",
+      "description": "Implement guaranteed modifier caps based on TODAY's acute values. Even if AI generates optimistic modifiers, floor system enforces minimum reductions for poor values.",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add TODAY_FLOORS constant with floor rules for sleep, energy, recovery, and combined severe states. Define thresholds and corresponding volumeMax/intensityMax caps.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_04_FLOOR_SYSTEM"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TODAY_FLOORS constant added after READINESS_WEIGHTS",
+            "Sleep floors: severe (<=3) -> 0.7, poor (<=5) -> 0.85",
+            "Energy floors: severe (<=3) -> 0.85, poor (<=5) -> 0.95",
+            "Recovery floor: poor -> 0.8",
+            "Combined severe: both -> 0.7",
+            "TypeScript const assertion applied"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create calculateTodayFloors function that evaluates todayReadiness and returns volumeMax, intensityMax, and reasons array. Apply cascading floor logic for each metric.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_04_FLOOR_SYSTEM"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TodayFloors interface defined",
+            "calculateTodayFloors function implemented",
+            "Returns {volumeMax, intensityMax, reasons[]}",
+            "Default returns no restrictions when todayReadiness null",
+            "Reasons array captures which floor rules triggered",
+            "Math.min used for cascading floor application"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Apply floor restrictions after AI response clamping in generateRecommendations. Use Math.min to enforce floor caps on final modifiers. Log floor applications for debugging.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_04_FLOOR_SYSTEM"
+            ]
+          },
+          "acceptanceCriteria": [
+            "calculateTodayFloors called with context.todayReadiness",
+            "finalVolumeModifier = Math.min(clamped, todayFloors.volumeMax)",
+            "finalIntensityModifier = Math.min(clamped, todayFloors.intensityMax)",
+            "Console.log when floor restrictions applied",
+            "Uses final modifiers in recommendation object"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Include floor restriction info in recommendation object for UI display and debugging. Track aiSuggestedModifier vs final, floorApplied boolean, and reasons.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_04_FLOOR_SYSTEM"
+            ]
+          },
+          "acceptanceCriteria": [
+            "volumeRecommendation.aiSuggestedModifier field added",
+            "volumeRecommendation.floorApplied boolean added",
+            "intensityRecommendation same fields added",
+            "floorRestrictions object with applied, reasons, caps",
+            "Schema updated if needed for new fields"
+          ]
+        },
+        {
+          "id": "task-3.5",
+          "description": "Add floor restriction warning UI to AutoRegulationCard.tsx. Display amber warning box when floorRestrictions.applied is true with reasons list.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-3.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/AutoRegulationCard.tsx"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_04_FLOOR_SYSTEM"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Conditional render when floorRestrictions?.applied",
+            "Amber warning styling (bg-amber-500/10, border-amber-500/20)",
+            "Warning icon and title",
+            "Reasons listed as bullet points",
+            "Graceful handling when floorRestrictions null"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Floor system enforces caps, UI shows warnings, typecheck passes"
+    },
+    {
+      "id": "phase-4",
+      "name": "Prompt Priority + Text Validation",
+      "description": "Add explicit TODAY priority instructions to AI prompt and implement post-generation text validation to catch contradictory language.",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add PRIORITY HIERARCHY section to buildAutoRegulationPrompt. Include explicit TODAY > 10-day > 30-day instructions with forbidden/required text examples.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_05_PROMPT_VALIDATION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "PRIORITY HIERARCHY section added to prompt",
+            "TODAY 40%, 10-day 35%, 30-day 25% stated",
+            "FORBIDDEN TEXT list for poor values",
+            "REQUIRED ACKNOWLEDGMENTS for poor values",
+            "Example correct vs incorrect text included"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Update prompt TODAY'S READINESS section to show tiered weights and component breakdown. Include weighted overall calculation explanation.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_05_PROMPT_VALIDATION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TODAY section shows weight percentage",
+            "Component breakdown displayed",
+            "Short-Term and Long-Term sections updated",
+            "Weighted Overall calculation shown"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Create validateAITextConsistency function to check AI response text for contradictions with TODAY values. Check reasoning and all rationale fields.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_05_PROMPT_VALIDATION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TextValidationResult interface defined",
+            "validateAITextConsistency function implemented",
+            "Checks sleep-related phrases when sleep <= 5",
+            "Checks energy-related phrases when energy <= 5",
+            "Checks recovery-related phrases when recovery poor/fair",
+            "Returns {valid: boolean, violations: string[]}"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Integrate text validation after AI response parsing. Log violations for debugging. Store validation result in recommendation for monitoring.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/autoRegulation.ts"
+            ],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_05_PROMPT_VALIDATION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateAITextConsistency called after AI parsing",
+            "Violations logged with console.warn",
+            "Validation result stored in _debug field",
+            "Does not block recommendation save (floor system provides safety)",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Prompt includes priority hierarchy, text validation catches contradictions, typecheck passes"
+    },
+    {
+      "id": "phase-5",
+      "name": "E2E Testing with Browser-CLI",
+      "description": "Comprehensive end-to-end testing of all fix components using Browser-CLI. Verify poor values result in reduced recommendations, floor system enforces caps, race condition eliminated, and text consistency maintained.",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Test Scenario 1: Poor Values -> Reduced Recommendation. Enter sleep=3, energy=3, recovery=poor and verify AI generates appropriate reductions with no contradictory text.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2",
+            "task-2.3",
+            "task-3.3",
+            "task-4.4"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_06_E2E_TESTING",
+              "22_BROWSER_CLI_DISCOVERY_SUMMARY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Login as test athlete successful",
+            "Navigate to Workout Logger",
+            "Enter poor readiness values (3/3/poor)",
+            "Submit assessment and wait for AI",
+            "Verify volume reduction >= 20%",
+            "Verify no 'good sleep' or 'excellent' in text",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Test Scenario 2: Floor System Enforcement. Enter severe values (sleep=2, energy=2, recovery=poor) and verify floor caps are applied and warning UI displayed.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 7000,
+          "context": {
+            "files": [],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_06_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Enter severe values (2/2/poor)",
+            "Submit and wait for AI",
+            "Verify volume modifier <= 0.7 (-30%)",
+            "Verify intensity modifier <= 0.7 (-30%)",
+            "Verify 'Safety adjustment' warning visible",
+            "Screenshot captured"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Test Scenario 3: Race Condition Verification. Start with good values, pause, change to poor values before submit, verify AI uses final poor values.",
+          "agentType": "browser",
+          "priority": "critical",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_06_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Enter initial good values (sleep=8, energy=8)",
+            "Wait 3 seconds (simulate user thinking)",
+            "Change to poor values (sleep=3, energy=3, recovery=poor)",
+            "Submit assessment",
+            "Verify AI text reflects FINAL poor values",
+            "No 'good sleep' text present",
+            "Reduction recommendation generated"
+          ]
+        },
+        {
+          "id": "task-5.4",
+          "description": "Test Scenario 4: Good Values -> Normal/Increased Recommendation. Enter good values (sleep=8, energy=8, recovery=good) and verify no severe reductions applied.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "AI_ADVISOR_TODAY_PRIORITY_SPRINT_06_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Enter good values (8/8/good)",
+            "Submit and wait for AI",
+            "Verify no severe reduction text",
+            "Verify no 'consider rest' recommendation",
+            "Modifiers near 1.0 or positive",
+            "Screenshot captured"
+          ]
+        },
+        {
+          "id": "task-5.5",
+          "description": "Capture evidence and generate test summary report. Collect all screenshots, console logs, and network requests for documentation.",
+          "agentType": "analyst",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1",
+            "task-5.2",
+            "task-5.3",
+            "task-5.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/screenshots/"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All 4 test scenarios passed",
+            "Screenshots saved to BROWSER-CLI/screenshots/",
+            "No console errors during tests",
+            "Test summary documented",
+            "Any failures investigated and documented"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All 4 E2E test scenarios pass with evidence captured"
+    }
+  ],
+  "totalEstimatedTokens": 95500,
+  "risks": [
+    {
+      "description": "AI may still generate occasionally contradictory text despite prompt improvements",
+      "mitigation": "Floor system provides guaranteed safety net regardless of AI text. Text validation logs violations for monitoring.",
+      "severity": "medium"
+    },
+    {
+      "description": "Race condition fix changes user flow timing - AI generation now blocks submit",
+      "mitigation": "Add clear loading state ('Generating AI Advice...') and ensure non-blocking error handling",
+      "severity": "low"
+    },
+    {
+      "description": "Floor system may be too aggressive for edge cases",
+      "mitigation": "Conservative thresholds chosen. Logging tracks all floor applications for tuning.",
+      "severity": "low"
+    },
+    {
+      "description": "Schema changes for floor restriction fields may require migration",
+      "mitigation": "New fields are optional with null default. No migration needed.",
+      "severity": "low"
+    },
+    {
+      "description": "E2E tests depend on test user credentials and scheduled workouts",
+      "mitigation": "Verify test credentials from .env.local. Create test workout if needed.",
+      "severity": "medium"
+    }
+  ]
+}

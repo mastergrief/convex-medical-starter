@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase1",
+  "passed": true,
+  "checkedAt": "2025-12-30T09:11:14.862Z",
+  "results": [
+    {
+      "check": "default",
+      "passed": true,
+      "message": "No gate conditions defined"
+    }
+  ],
+  "blockers": []
+}

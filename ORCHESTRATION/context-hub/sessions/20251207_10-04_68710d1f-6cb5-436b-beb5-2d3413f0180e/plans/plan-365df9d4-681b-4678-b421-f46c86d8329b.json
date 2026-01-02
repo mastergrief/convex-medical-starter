@@ -1,0 +1,468 @@
+{
+  "id": "365df9d4-681b-4678-b421-f46c86d8329b",
+  "type": "plan",
+  "metadata": {
+    "promptId": "d1679fba-862c-426f-8be3-d6ed498e26e7",
+    "sessionId": "20251207_21-50_c0d2aef4-0041-4b1f-8be2-5ad013c4c274",
+    "timestamp": "2025-12-07T22:15:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement Community Forum fixes across 5 phases: (1) Security fix for createReply isLocked check, (2) Delete feature with deleteThread/deleteReply mutations and UI, (3) UI fixes for dialog close, toasts, search, upgrade button, and view debounce, (4) Performance TODO comment for getForumStats, (5) Data cleanup for profane test threads. Estimated ~230 lines of changes across convex/forum.ts and src/components/CommunityForum.tsx.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Security Fix - createReply isLocked Check",
+      "description": "Add missing thread.isLocked validation in createReply mutation to prevent replies to locked threads. This is a BLOCKING security fix.",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add isLocked check to createReply mutation in convex/forum.ts. Fetch thread, validate not locked, throw error if locked.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/forum.ts"
+            ],
+            "memories": [
+              "ANALYSIS_COMMUNITY_FORUM_20251207",
+              "PLAN_COMMUNITY_FORUM_FIXES_20251207"
+            ],
+            "symbols": [
+              "createReply:182"
+            ]
+          },
+          "acceptanceCriteria": [
+            "createReply fetches thread before insert",
+            "Throws error 'Thread not found' if thread does not exist",
+            "Throws error 'This thread is locked' if thread.isLocked is true",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Typecheck passes AND createReply mutation includes isLocked validation"
+    },
+    {
+      "id": "phase-2",
+      "name": "Delete Feature - Backend Mutations",
+      "description": "Add deleteThread and deleteReply mutations with proper authorization (author OR coach can delete).",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add deleteThread mutation after toggleLockThread. Auth: author OR coach. Cascade delete all replies first, then delete thread.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/forum.ts"
+            ],
+            "memories": [
+              "PLAN_COMMUNITY_FORUM_FIXES_20251207"
+            ],
+            "symbols": [
+              "toggleLockThread:271"
+            ]
+          },
+          "acceptanceCriteria": [
+            "deleteThread mutation exists after toggleLockThread",
+            "Requires authentication",
+            "Author OR coach can delete",
+            "Non-author/non-coach throws error",
+            "Cascade deletes all replies via by_thread index",
+            "Returns { deleted: true, repliesDeleted: number }",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add deleteReply mutation after deleteThread. Auth: author OR coach. Update thread replyCount after delete.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "convex/forum.ts"
+            ],
+            "memories": [
+              "PLAN_COMMUNITY_FORUM_FIXES_20251207"
+            ],
+            "symbols": [
+              "deleteThread"
+            ]
+          },
+          "acceptanceCriteria": [
+            "deleteReply mutation exists after deleteThread",
+            "Requires authentication",
+            "Author OR coach can delete",
+            "Updates thread.replyCount -= 1 (Math.max(0, count-1))",
+            "Updates thread.updatedAt",
+            "Returns { deleted: true }",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Both mutations exist AND typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Delete Feature - Frontend UI",
+      "description": "Add delete buttons to ThreadViewDialog (thread + replies) and ThreadList (thread cards) with confirmation dialogs.",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add delete UI to CommunityForum.tsx: imports (Trash2, AlertDialog), mutations (deleteThread, deleteReply), author/coach checks, delete buttons with confirmation dialogs in ThreadViewDialog and ThreadList.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1",
+            "task-2.2"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "memories": [
+              "PLAN_COMMUNITY_FORUM_FIXES_20251207"
+            ],
+            "symbols": [
+              "ThreadViewDialog:330",
+              "ThreadList:158"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Trash2 icon imported from lucide-react",
+            "AlertDialog components imported from @/components/ui/alert-dialog",
+            "deleteThread and deleteReply mutations wired up",
+            "getCurrentUser query for author check",
+            "Delete button shows only for author OR coach",
+            "AlertDialog confirmation before delete",
+            "Thread delete in header area",
+            "Reply delete on hover for each reply",
+            "Thread list delete button with stopPropagation",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Delete UI renders AND typecheck passes"
+    },
+    {
+      "id": "phase-4",
+      "name": "UI Fixes - Dialog, Toasts, Search, Upgrade, Debounce",
+      "description": "Fix 5 UI issues: NewThreadDialog close on success, error toast notifications, search functionality, upgrade button handler, view count debounce.",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Fix NewThreadDialog to close on success: convert to controlled dialog with open/onOpenChange props, call onOpenChange(false) after successful createThread.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "symbols": [
+              "NewThreadDialog:234",
+              "CommunityForum:17"
+            ]
+          },
+          "acceptanceCriteria": [
+            "isNewThreadOpen state in parent CommunityForum",
+            "NewThreadDialog accepts open and onOpenChange props",
+            "Dialog closes on successful thread creation",
+            "Form resets after success",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Add toast notifications for all error handlers: import useToast, replace console.error with toast({ variant: 'destructive', ... }) in NewThreadDialog, ThreadViewDialog, and delete handlers.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "symbols": [
+              "NewThreadDialog",
+              "ThreadViewDialog"
+            ]
+          },
+          "acceptanceCriteria": [
+            "useToast imported from @/components/ui/use-toast",
+            "All catch blocks show destructive toast",
+            "Error message extracted from Error instance",
+            "No more console.error-only error handling",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Implement search functionality: add searchTerm state, conditional useQuery for searchThreads when term >= 2 chars, Input field with clear button, display search results.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "symbols": [
+              "CommunityForum:17"
+            ]
+          },
+          "acceptanceCriteria": [
+            "searchTerm state added",
+            "useQuery(api.forum.searchThreads) conditional on term length",
+            "Search Input replaces decorative Search button",
+            "Clear button (X icon) when searchTerm present",
+            "ThreadList shows searchResults when searching",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Add upgrade button handler: navigate to /pricing when 'View Subscription Plans' button clicked.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "symbols": [
+              "CommunityForum:17"
+            ]
+          },
+          "acceptanceCriteria": [
+            "useNavigate imported from react-router-dom",
+            "Button onClick navigates to /pricing",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.5",
+          "description": "Add view count debounce: use useRef Set to track viewed threads per session, only call incrementView on first view.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-4.4"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ],
+            "symbols": [
+              "ThreadViewDialog:330"
+            ]
+          },
+          "acceptanceCriteria": [
+            "viewedThreads ref with Set<string> type",
+            "Check if threadId in set before incrementView",
+            "Add threadId to set after increment",
+            "Prevents duplicate increments in same session",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All 5 UI fixes implemented AND typecheck passes"
+    },
+    {
+      "id": "phase-5",
+      "name": "Performance - TODO Comment for getForumStats",
+      "description": "Add TODO comment to getForumStats noting the full table scan issue and future optimization path.",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Add TODO comment above getForumStats noting O(n) scans and suggesting pre-aggregated stats table for scale.",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              "convex/forum.ts"
+            ],
+            "symbols": [
+              "getForumStats:358"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TODO comment exists above getForumStats",
+            "Comment explains O(n) full table scans",
+            "Comment suggests optimization with stats aggregation table",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "TODO comment added"
+    },
+    {
+      "id": "phase-6",
+      "name": "Data Cleanup - Remove Profane Test Threads",
+      "description": "Remove test threads containing profanity from the database. Can be done via Convex dashboard or cleanup mutation.",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Clean up profane threads via Convex CLI or dashboard. Identify threads with profane content, delete replies first, then delete threads.",
+          "agentType": "analyst",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": [
+              "ANALYSIS_COMMUNITY_FORUM_20251207"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Profane threads identified in database",
+            "Associated replies deleted first",
+            "Profane threads deleted",
+            "Database clean of profanity"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "No profane content remains in forumThreads table"
+    },
+    {
+      "id": "phase-7",
+      "name": "Validation - E2E Testing",
+      "description": "Comprehensive browser testing of all implemented features: security fix, delete functionality, UI fixes.",
+      "subtasks": [
+        {
+          "id": "task-7.1",
+          "description": "Test security fix: attempt to reply to locked thread, verify error displayed.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-4.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx",
+              "convex/forum.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Navigate to forum and find locked thread",
+            "Attempt to submit reply",
+            "Error toast displayed with 'locked' message",
+            "Reply not created in database"
+          ]
+        },
+        {
+          "id": "task-7.2",
+          "description": "Test delete functionality: delete own thread (cascade), delete own reply, verify coach can delete others.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx",
+              "convex/forum.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Delete button visible only for own threads/replies",
+            "Confirmation dialog appears on click",
+            "Thread deleted with all replies",
+            "Reply deleted and count decremented",
+            "Coach can delete any thread/reply"
+          ]
+        },
+        {
+          "id": "task-7.3",
+          "description": "Test UI fixes: dialog close, toast on error, search functionality, upgrade navigation, view debounce.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1",
+            "task-4.2",
+            "task-4.3",
+            "task-4.4",
+            "task-4.5"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/CommunityForum.tsx"
+            ]
+          },
+          "acceptanceCriteria": [
+            "NewThreadDialog closes after successful creation",
+            "Error toast appears on failure",
+            "Search filters threads correctly",
+            "Upgrade button navigates to /pricing",
+            "View count increments only once per session"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E tests pass with evidence (screenshots, network logs)"
+    }
+  ],
+  "totalEstimatedTokens": 62000,
+  "risks": [
+    {
+      "description": "AlertDialog component may not exist in UI library",
+      "mitigation": "Verify component exists before implementation; use alternative confirmation pattern if needed",
+      "severity": "low"
+    },
+    {
+      "description": "getCurrentUser API may not exist or have different shape",
+      "mitigation": "Check existing API patterns in codebase; may need to use different user context",
+      "severity": "medium"
+    },
+    {
+      "description": "Cascade delete could timeout on threads with many replies",
+      "mitigation": "Use batch deletion if needed; current scale likely acceptable",
+      "severity": "low"
+    },
+    {
+      "description": "Search results may conflict with category filter UX",
+      "mitigation": "Clear category when searching or combine filters",
+      "severity": "low"
+    },
+    {
+      "description": "View debounce ref persists across component remounts in same session",
+      "mitigation": "Acceptable for view count accuracy; consider sessionStorage for stricter control",
+      "severity": "low"
+    }
+  ]
+}

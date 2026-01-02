@@ -1,0 +1,12 @@
+{
+  "id": "faafe58d-20c5-49c6-b4a4-e4569c88cfae",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-28T09:13:30.451Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "/tmp/workout-logger-prompt.json"
+  }
+}

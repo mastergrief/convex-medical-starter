@@ -1,0 +1,14 @@
+{
+  "phaseId": "phase-3-empty-guard",
+  "passed": true,
+  "checkedAt": "2026-01-01T16:07:33.128Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    }
+  ],
+  "blockers": [],
+  "duration": 1087
+}

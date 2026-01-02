@@ -1,0 +1,36 @@
+{
+  "memoryName": "SESSION_ORCH_PHASE2_COMPLETE_20251226",
+  "linkedAt": "2025-12-26T21:30:23.345Z",
+  "serenaPath": ".serena/memories/SESSION_ORCH_PHASE2_COMPLETE_20251226.md",
+  "summary": "Memory SESSION_ORCH_PHASE2_COMPLETE_20251226 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "writePrompt/writePlan",
+      "checking.ts",
+      "index.ts",
+      "timeout.ts",
+      "legacy.ts",
+      "modern.ts",
+      "dashboard.ts",
+      "constants.ts",
+      "formatters.ts",
+      "renderer.ts",
+      "class.ts",
+      "artifacts.ts",
+      "prompts.ts",
+      "plans.ts",
+      "handoffs.ts",
+      "chain.ts",
+      "builder.ts",
+      "io.ts",
+      "validation.ts",
+      "evidenceAutoPopulator.ts"
+    ],
+    "data_flow_map": {}
+  }
+}

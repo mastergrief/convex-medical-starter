@@ -1,0 +1,12 @@
+{
+  "id": "98d49cdf-9668-49d0-8ff1-3965672f93ff",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-21T10:05:42.005Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Token Tracker Deprecation: Remove dead code (~372 lines) from orchestration system per PLAN_ORCHESTRATION_TOKEN_DEPRECATION_20251221. Phase 1: Make tokenUsage optional in schemas. Phase 2: Delete token-tracker.ts and remove related functions. Phase 3: Update documentation."
+  }
+}

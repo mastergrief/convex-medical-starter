@@ -1,0 +1,285 @@
+{
+  "id": "plan-lucide-icon-colors-20251228",
+  "created": "2025-12-28T18:15:00Z",
+  "title": "Lucide Icon Category Colors - Dynamic Gradient Implementation",
+  "description": "Add category-based dynamic colors to 67 Lucide icon instances across 6 components",
+  "status": "archived",
+  "totalPhases": 5,
+  "estimatedLines": 130,
+  "phases": [
+    {
+      "id": 1,
+      "name": "Core Infrastructure",
+      "status": "pending",
+      "priority": "P0",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "src/lib/iconMapping.ts",
+          "lines": 49,
+          "action": "add",
+          "changes": [
+            "Add 6 color scale arrays (SLEEP_COLORS, ENERGY_COLORS, SORENESS_COLORS, FATIGUE_COLORS, RECOVERY_COLORS, RPE_COLORS)",
+            "Add getGradientColor(value, colorScale, min, max) utility function"
+          ],
+          "linesAdded": 40
+        }
+      ],
+      "acceptanceCriteria": [
+        "6 color scale arrays exported",
+        "getGradientColor() function exported",
+        "TypeScript compiles without errors"
+      ],
+      "risk": "low"
+    },
+    {
+      "id": 2,
+      "name": "MetricSlider Enhancement",
+      "status": "pending",
+      "priority": "P1",
+      "dependencies": [
+        1
+      ],
+      "files": [
+        {
+          "path": "src/components/MetricSlider.tsx",
+          "lines": 200,
+          "action": "modify",
+          "changes": [
+            "Add colorScale?: string[] prop to MetricSliderProps interface",
+            "Compute iconColor using getGradientColor utility",
+            "Apply iconColor to current icon display span",
+            "Apply colors to visual scale indicator icons",
+            "Update SleepQualitySlider with SLEEP_COLORS",
+            "Update EnergyLevelSlider with ENERGY_COLORS",
+            "Update SorenessSlider with SORENESS_COLORS",
+            "Update FatigueSlider with FATIGUE_COLORS"
+          ],
+          "linesChanged": 30
+        }
+      ],
+      "acceptanceCriteria": [
+        "colorScale prop added to MetricSliderProps",
+        "Current icon display shows dynamic color",
+        "Visual scale icons show respective colors",
+        "All 4 pre-configured variants include color scales",
+        "TypeScript compiles without errors"
+      ],
+      "risk": "medium"
+    },
+    {
+      "id": 3,
+      "name": "Assessment Components",
+      "status": "pending",
+      "priority": "P1",
+      "dependencies": [
+        1
+      ],
+      "files": [
+        {
+          "path": "src/components/PreWorkoutAssessment.tsx",
+          "lines": 232,
+          "action": "modify",
+          "changes": [
+            "Import getGradientColor, SLEEP_COLORS, ENERGY_COLORS from iconMapping",
+            "Update getSleepIcon() to apply SLEEP_COLORS via getGradientColor",
+            "Update getEnergyIcon() to apply ENERGY_COLORS via getGradientColor",
+            "Add static colors to recovery radio icons (red/orange/green/emerald)"
+          ],
+          "linesChanged": 20
+        },
+        {
+          "path": "src/components/PostWorkoutAssessment.tsx",
+          "lines": 328,
+          "action": "modify",
+          "changes": [
+            "Import getGradientColor, SORENESS_COLORS, FATIGUE_COLORS, RPE_COLORS from iconMapping",
+            "Update getSorenessIcon() to apply SORENESS_COLORS",
+            "Update getFatigueIcon() to apply FATIGUE_COLORS",
+            "Update getSessionRpeIcon() to apply RPE_COLORS"
+          ],
+          "linesChanged": 20
+        }
+      ],
+      "acceptanceCriteria": [
+        "PreWorkoutAssessment sleep icons show blue gradient",
+        "PreWorkoutAssessment energy icons show yellow/orange gradient",
+        "PreWorkoutAssessment recovery radio icons have static gradient colors",
+        "PostWorkoutAssessment soreness icons show green-to-red gradient",
+        "PostWorkoutAssessment fatigue icons show emerald-to-slate gradient",
+        "PostWorkoutAssessment RPE icons show green-to-red gradient",
+        "TypeScript compiles without errors"
+      ],
+      "risk": "medium"
+    },
+    {
+      "id": 4,
+      "name": "ReadinessCheck & RecoveryFeedback",
+      "status": "pending",
+      "priority": "P2",
+      "dependencies": [],
+      "files": [
+        {
+          "path": "src/components/ReadinessCheck.tsx",
+          "lines": 212,
+          "action": "modify",
+          "changes": [
+            "Update recovery options icons with static gradient colors (text-red-600, text-orange-500, text-green-500, text-emerald-400)",
+            "Add text-emerald-500 to success Dumbbell icon"
+          ],
+          "linesChanged": 10
+        },
+        {
+          "path": "src/components/RecoveryFeedback.tsx",
+          "lines": 275,
+          "action": "modify",
+          "changes": [
+            "Update MUSCLE_GROUPS icons with semantic colors (blue/purple/indigo/green/orange/pink/teal)",
+            "Add text-emerald-500 to success Dumbbell icon"
+          ],
+          "linesChanged": 10
+        }
+      ],
+      "acceptanceCriteria": [
+        "ReadinessCheck recovery options have gradient colors",
+        "ReadinessCheck success icon has emerald color",
+        "RecoveryFeedback muscle group icons have distinct semantic colors",
+        "RecoveryFeedback success icon has emerald color",
+        "TypeScript compiles without errors"
+      ],
+      "risk": "low"
+    },
+    {
+      "id": 5,
+      "name": "E2E Testing & Visual Regression",
+      "status": "pending",
+      "priority": "P2",
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "files": [],
+      "commands": [
+        "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts start localhost:5173",
+        "Login flow per .env.local credentials",
+        "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts navigate localhost:5173/workout-logger",
+        "Test slider color changes with ArrowLeft/ArrowRight",
+        "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts saveScreenshotBaseline metric-sliders-colors",
+        "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts auditAccessibility",
+        "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts close"
+      ],
+      "acceptanceCriteria": [
+        "All slider icons show dynamic colors based on value",
+        "Recovery radio icons have correct static gradient colors",
+        "Visual regression baselines captured",
+        "Accessibility audit passes (no color contrast violations)"
+      ],
+      "risk": "low"
+    }
+  ],
+  "colorScales": {
+    "SLEEP_COLORS": [
+      "text-blue-700",
+      "text-blue-600",
+      "text-blue-500",
+      "text-sky-400",
+      "text-sky-300"
+    ],
+    "ENERGY_COLORS": [
+      "text-yellow-700",
+      "text-yellow-500",
+      "text-amber-400",
+      "text-orange-400",
+      "text-orange-300"
+    ],
+    "SORENESS_COLORS": [
+      "text-green-500",
+      "text-lime-500",
+      "text-yellow-500",
+      "text-orange-500",
+      "text-red-600"
+    ],
+    "FATIGUE_COLORS": [
+      "text-emerald-500",
+      "text-green-400",
+      "text-slate-400",
+      "text-slate-600",
+      "text-slate-700"
+    ],
+    "RECOVERY_COLORS": [
+      "text-red-600",
+      "text-orange-500",
+      "text-yellow-500",
+      "text-green-500",
+      "text-emerald-400"
+    ],
+    "RPE_COLORS": [
+      "text-green-500",
+      "text-lime-500",
+      "text-yellow-500",
+      "text-orange-500",
+      "text-red-600"
+    ]
+  },
+  "riskAssessment": [
+    {
+      "risk": "Color contrast accessibility issues",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "All colors selected for >4.5:1 contrast ratio"
+    },
+    {
+      "risk": "TypeScript compile errors",
+      "probability": "low",
+      "impact": "high",
+      "mitigation": "Incremental changes with typecheck after each phase"
+    },
+    {
+      "risk": "Visual regression on existing tests",
+      "probability": "low",
+      "impact": "medium",
+      "mitigation": "Save new baselines, compare before/after"
+    },
+    {
+      "risk": "Breaking changes to component API",
+      "probability": "none",
+      "impact": "n/a",
+      "mitigation": "Optional colorScale prop, fully backward compatible"
+    }
+  ],
+  "dependencyGraph": {
+    "phase1": [],
+    "phase2": [
+      "phase1"
+    ],
+    "phase3": [
+      "phase1"
+    ],
+    "phase4": [],
+    "phase5": [
+      "phase1",
+      "phase2",
+      "phase3",
+      "phase4"
+    ]
+  },
+  "scoutFindings": {
+    "ui": {
+      "totalIconInstances": 67,
+      "components": 6,
+      "currentState": "Icons exist but have no dynamic colors"
+    },
+    "api": {
+      "cnUtility": "available",
+      "tailwindVersion": "4.0.14",
+      "lucideVersion": "0.544.0"
+    },
+    "git": {
+      "modifiedFiles": 6,
+      "untrackedFiles": 1,
+      "existingChanges": "Icon refactoring complete, colors not applied"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "cc1d2897-b989-4015-a56c-50362915f3e9",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2026-01-01T16:00:59.021Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Training Anchors Edit Weekly Bug Fix - Fix exercise parameter fields (sets, reps, weight) rendering as empty gray areas due to silent fallback chain in ExerciseEditor.tsx"
+  }
+}

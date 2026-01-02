@@ -1,0 +1,42 @@
+{
+  "memoryName": "ANALYSIS_TRAINING_BLOCK_METRICS_20251207",
+  "linkedAt": "2025-12-07T23:33:00.052Z",
+  "serenaPath": ".serena/memories/ANALYSIS_TRAINING_BLOCK_METRICS_20251207.md",
+  "summary": "Memory ANALYSIS_TRAINING_BLOCK_METRICS_20251207 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": {
+      "UI": [
+        "GenerateNextBlockDialog:28",
+        "handleGenerate:67",
+        "handleAnalyze:54"
+      ],
+      "API": [
+        "analyzeBlockProgression:14",
+        "createTemplateMarker:14"
+      ],
+      "DB": [
+        "trainingBlockMarkers:1638",
+        "calendarExercises:1530"
+      ]
+    },
+    "entry_points": [
+      "UI: GenerateNextBlockDialog → handleAnalyze()",
+      "API: analyzeBlockProgression.handler",
+      "API: createTemplateMarker.handler"
+    ],
+    "data_flow_map": {
+      "trigger": "User clicks 'Analyze Progression Pattern'",
+      "ui_to_api": "analyzeProgression({ markerIds })",
+      "api_db_read": "ctx.runQuery(getMarkerById) → full workoutsSnapshot",
+      "api_transform": "workoutsSnapshot.exercises → workoutExercises (DROP)",
+      "api_to_ai": "blockData + prompt → OpenAI (DROP)",
+      "ai_response": "suggestedWorkouts (missing fields)",
+      "api_to_ui": "return { suggestedWorkouts } (missing fields)",
+      "ui_render": "Line 211: {sets} × {reps} only"
+    }
+  }
+}

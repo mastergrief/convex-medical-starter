@@ -1,0 +1,14 @@
+{
+  "phaseId": "phase-1-backend",
+  "passed": true,
+  "checkedAt": "2026-01-01T22:07:23.681Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    }
+  ],
+  "blockers": [],
+  "duration": 929
+}

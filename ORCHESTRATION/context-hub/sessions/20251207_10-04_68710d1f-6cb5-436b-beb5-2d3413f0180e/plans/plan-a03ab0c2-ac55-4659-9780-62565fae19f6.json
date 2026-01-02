@@ -1,0 +1,335 @@
+{
+  "id": "a03ab0c2-ac55-4659-9780-62565fae19f6",
+  "type": "plan",
+  "metadata": {
+    "promptId": "5dcdfc2f-f6e7-4e10-a11c-182b29b1c242",
+    "sessionId": "20251225_21-22_a03ab0c2-ac55-4659-9780-62565fae19f6",
+    "timestamp": "2025-12-25T21:22:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement comprehensive test coverage for ORCHESTRATION module targeting 80% coverage on critical modules (gateParser, context-hub, parallel-engine). Creates test infrastructure, mock factories, and ~160 unit tests across 6 test files.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Configuration Phase",
+      "description": "Update vitest configuration to include ORCHESTRATION test patterns",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Update vitest.config.ts to add ORCHESTRATION include pattern and setup file reference. Add 'ORCHESTRATION/**/*.{test,spec}.ts' to include array and './ORCHESTRATION/tests/setup.ts' to setupFiles.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/vitest.config.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "vitest.config.ts includes ORCHESTRATION pattern in include array",
+            "setupFiles array references ORCHESTRATION/tests/setup.ts",
+            "typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-2",
+      "name": "Test Setup Phase",
+      "description": "Create test setup file with mock factories for filesystem, command runner, and gate context",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create ORCHESTRATION/tests/setup.ts with mock factories (~150 LOC). Include: createMockFileSystem (fs.readFileSync, fs.existsSync, fs.writeFileSync, fs.readdirSync), createMockCommandRunner (exec mock returning success/failure), createMockGateContext (basePath, execAsync, fsReadFileSync, fsExistsSync), and schema fixtures for test data.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 35000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/types.ts",
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/evaluator.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ORCHESTRATION/tests/setup.ts exists with all mock factories",
+            "createMockFileSystem returns vi.fn() mocks for fs operations",
+            "createMockGateContext returns valid GateContext interface",
+            "typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3",
+      "name": "gateParser Module Tests",
+      "description": "Write unit tests for all gateParser modules: lexer, parser, validators, evaluator",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create ORCHESTRATION/tests/gateParserModules/lexer.test.ts with 25 tests (~200 LOC). Test tokenize() function: basic tokens (AND, OR, NOT, LPAREN, RPAREN), identifiers (typecheck, tests, memory:NAME), string literals, numeric literals, threshold syntax (tests>80, evidence>=3), error cases (unterminated strings, invalid chars), whitespace handling, edge cases (empty input, long inputs).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 40000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/lexer.ts",
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "lexer.test.ts has 25+ test cases",
+            "Tests cover all TokenType variants",
+            "Tests cover error scenarios",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create ORCHESTRATION/tests/gateParserModules/parser.test.ts with 30 tests (~300 LOC). Test parse() function and Parser class: simple conditions (typecheck, tests), AND expressions (typecheck AND tests), OR expressions (typecheck OR tests), NOT expressions (NOT typecheck), nested expressions ((typecheck AND tests) OR NOT memory:X), operator precedence (NOT > AND > OR), memory:NAME parsing, threshold conditions (tests>80), error recovery (missing operand, unclosed parens), complex real-world conditions.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 45000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/parser.ts",
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "parser.test.ts has 30+ test cases",
+            "Tests cover all AST node types",
+            "Tests verify operator precedence",
+            "Tests cover error scenarios",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Create ORCHESTRATION/tests/gateParserModules/validators.test.ts with 35 tests (~350 LOC). Test 7 validator functions with fs/exec mocks: checkTypecheck (npx tsc --noEmit success/failure), checkTests (npx vitest run success/failure with coverage extraction), checkMemory (fs.existsSync for .serena/memories/*.md), checkTraceability (file parsing for links), checkEvidence (evidence chain parsing), checkEvidenceThreshold (count verification), checkTestsThreshold (coverage % extraction).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 50000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/validators.ts",
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validators.test.ts has 35+ test cases",
+            "Each of 7 validators has test coverage",
+            "Mock fs operations work correctly",
+            "Mock exec operations work correctly",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Create ORCHESTRATION/tests/gateParserModules/evaluator.test.ts with 20 tests (~200 LOC). Test evaluateGate() and evaluateNode() functions: simple conditions pass/fail, AND logic (both true, one false, both false), OR logic (one true, both false), NOT logic (invert result), nested expressions, createDefaultContext() path handling, result aggregation (passed, failed, details), threshold evaluations.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 40000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/evaluator.ts",
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "evaluator.test.ts has 20+ test cases",
+            "Tests cover all boolean logic combinations",
+            "Tests verify result structure",
+            "createDefaultContext tests included",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "typecheck AND tests"
+    },
+    {
+      "id": "phase-4",
+      "name": "Core Module Tests",
+      "description": "Write unit tests for parallel-engine and context-hub modules",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create ORCHESTRATION/tests/lib/parallel-engine.test.ts with 30 tests (~350 LOC). Test ParallelEngine class: createParallelEngine() factory, getReadyTasks() with no dependencies, getReadyTasks() with dependencies, getReadyTasks() respecting maxConcurrency, markComplete() updates state, dependency resolution chains, formatDispatchInstruction() output, mergeContexts() aggregation, createEmptyContext() structure, createExecutionResult() factory, config validation.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 45000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/parallel-engine.ts"
+            ],
+            "memories": [
+              "19_ORCHESTRATION_SYSTEM_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "parallel-engine.test.ts has 30+ test cases",
+            "ParallelEngine class fully tested",
+            "Dependency resolution tested",
+            "Helper functions tested",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create ORCHESTRATION/tests/lib/context-hub.test.ts with 20 tests (~250 LOC). Test ContextHub class with mocked fs: createContextHub() factory, session management (new/list/info), writePrompt()/readPrompt(), writePlan()/readPlan(), writeHandoff()/readHandoff()/listHandoffs(), writeOrchestratorState()/readOrchestratorState(), history logging (JSONL format), file path generation, error handling (missing session, invalid JSON).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 40000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": [
+              "19_ORCHESTRATION_SYSTEM_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "context-hub.test.ts has 20+ test cases",
+            "ContextHub class fully tested",
+            "Session management tested",
+            "All CRUD operations tested",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "typecheck AND tests"
+    },
+    {
+      "id": "phase-5",
+      "name": "Verification Phase",
+      "description": "Run full test suite and verify 80%+ coverage on critical modules",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Run full ORCHESTRATION test suite with coverage. Execute: npx vitest run --coverage --reporter=verbose ORCHESTRATION/. Verify all tests pass, check coverage report for gateParserModules (target 80%+), parallel-engine (target 80%+), context-hub (target 80%+). Fix any failing tests. Document coverage numbers.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-3.1",
+            "task-3.2",
+            "task-3.3",
+            "task-3.4",
+            "task-4.1",
+            "task-4.2"
+          ],
+          "estimatedTokens": 30000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All ORCHESTRATION tests pass",
+            "gateParserModules coverage >= 80%",
+            "parallel-engine coverage >= 80%",
+            "context-hub coverage >= 80%",
+            "Coverage report generated"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "tests"
+    },
+    {
+      "id": "phase-6",
+      "name": "Documentation Phase",
+      "description": "Document testing infrastructure completion in Serena memory",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Write Serena memory documenting Phase 3 Testing Infrastructure completion. Include: test file structure, mock factory usage, coverage statistics, test counts per module, how to run tests, maintenance notes.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 15000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCHESTRATION_IMPROVEMENTS_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory PHASE3_ORCHESTRATION_TESTING_20251225 created",
+            "Documents all test files created",
+            "Includes coverage statistics",
+            "Provides maintenance guidance"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "memory:PHASE3_*"
+    }
+  ],
+  "totalEstimatedTokens": 355000,
+  "risks": [
+    {
+      "description": "Mock complexity for exec/fs operations in validators",
+      "mitigation": "Use vi.mock() with factory functions in setup.ts, ensure mocks are properly reset between tests",
+      "severity": "medium"
+    },
+    {
+      "description": "Test isolation issues with ContextHub file operations",
+      "mitigation": "Use in-memory mock filesystem, clean up between tests with beforeEach/afterEach",
+      "severity": "medium"
+    },
+    {
+      "description": "Coverage target may be difficult for complex nested logic",
+      "mitigation": "Prioritize branch coverage in evaluator/validators, add edge case tests as needed",
+      "severity": "low"
+    },
+    {
+      "description": "Parallel test execution may cause flaky tests",
+      "mitigation": "Ensure all tests use isolated mocks, no shared state between test files",
+      "severity": "low"
+    }
+  ]
+}

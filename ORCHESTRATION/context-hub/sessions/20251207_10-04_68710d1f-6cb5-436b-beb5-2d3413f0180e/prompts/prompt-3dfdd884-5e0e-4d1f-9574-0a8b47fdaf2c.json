@@ -1,0 +1,12 @@
+{
+  "id": "3dfdd884-5e0e-4d1f-9574-0a8b47fdaf2c",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-29T12:48:30.478Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "AI Training Advisor 10-Day Weighted Analysis: Add dual-window readiness analysis (60% recent 10-day + 40% historical 30-day) for more responsive AI recommendations"
+  }
+}

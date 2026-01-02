@@ -1,0 +1,272 @@
+{
+  "id": "e8f4c2a1-7b3d-4e9a-8c5f-1d2a3b4c5e6f",
+  "type": "plan",
+  "metadata": {
+    "promptId": "2f45acb4-3f10-4887-aba3-fd13831c8062",
+    "sessionId": "20251207_17-50_dfdb96af-44cc-4e43-b41e-de8f707271c1",
+    "timestamp": "2025-12-07T17:55:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Comprehensive analysis and E2E testing of WorkoutLogger component to verify dynamic metrics detection fixes including contacts-based plyometrics, reps+distance combinations, duration labels, heart rate fields, and date navigation behavior",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Backend Analysis",
+      "description": "Verify backend transform functions correctly populate targetReps using getEffectiveTargetReps() helper and pass through heart rate fields",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze helpers.ts transform functions: verify getEffectiveTargetReps() implementation and usage in all 4 transform functions (transformCalendarExerciseMinimal, transformCalendarExerciseFull, transformMarkerExerciseMinimal, transformMarkerExerciseFull)",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/helpers.ts"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_DYNAMIC_METRICS_20251206"
+            ]
+          },
+          "acceptanceCriteria": [
+            "getEffectiveTargetReps(reps, contacts) logic documented",
+            "All 4 transform functions verified to use getEffectiveTargetReps()",
+            "Heart rate fields (heartRateRange, percentHeartRateMax) passthrough confirmed",
+            "Data flow from raw exercise to transformed output mapped"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Analyze workoutTypes.ts type definitions: verify CategorySpecificFields, RawCalendarExercise, RawMarkerExercise include contacts, distance, duration, heartRateRange, percentHeartRateMax fields",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "convex/types/workoutTypes.ts"
+            ],
+            "memories": [
+              "WORKOUTLOGGER_PROGRAMMED_METRICS_LOGIC"
+            ]
+          },
+          "acceptanceCriteria": [
+            "CategorySpecificFields interface documented with all metric fields",
+            "RawCalendarExercise and RawMarkerExercise field alignment verified",
+            "DEFAULT_TARGET_REPS constant value confirmed (should be 10)",
+            "Type hierarchy for exercise transforms documented"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Backend transform logic and type definitions fully documented with data flow diagram"
+    },
+    {
+      "id": "phase-2",
+      "name": "Frontend Config Analysis",
+      "description": "Verify frontend logging config selection uses data-based detection via getLoggingCategoryConfig() with programmedData parameter",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Analyze logging/index.ts: verify getLoggingCategoryConfig() accepts programmedData parameter and uses data-based detection for plyometric exercises (hasContacts vs hasDistance)",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/index.ts"
+            ],
+            "memories": [
+              "WORKOUTLOGGER_PROGRAMMED_METRICS_LOGIC"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ProgrammedDataForConfig interface documented",
+            "Plyometric config selection logic verified (contacts -> plyometric, distance -> plyometric-distance)",
+            "Sprint config selection path documented",
+            "Default fallback behavior documented"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Analyze logging/configs.ts: verify plyometric, plyometric-distance, and sprint configs have correct fields, targets, and showWhen conditions",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_DYNAMIC_METRICS_20251206"
+            ]
+          },
+          "acceptanceCriteria": [
+            "plyometric config: contacts field + targetReps with 'contacts' unit",
+            "plyometric-distance config: reps + distance fields + targets with prefix",
+            "sprint config: reps + distance (showWhen) + timeTarget (showWhen)",
+            "Prefix formatting verified for distance targets (should be 'x')"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Frontend config selection and field definitions fully documented"
+    },
+    {
+      "id": "phase-3",
+      "name": "Component Integration Analysis",
+      "description": "Verify ExerciseCard and CategoryLoggingFields correctly wire programmedData and display targets",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Analyze ExerciseCard.tsx: verify Target alert displays distance, duration with getDurationLabel(), heart rate fields, and passes programmedData to CategoryLoggingFields",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1",
+            "task-2.2"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_FIXES_20251205_PART2"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Target alert includes distance formatting (x Nm)",
+            "Target alert includes duration with getDurationLabel() call",
+            "Target alert includes heart rate fields",
+            "programmedData prop passed with targetContacts, targetDistance, targetDuration"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Analyze getDurationLabel() in utils.ts: verify interval vs hold detection based on exercise name and category",
+          "agentType": "explore",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/utils.ts"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_FIXES_20251205_PART2"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Interval keywords detected (interval, zone, conditioning)",
+            "Isometric keywords detected (iso, hold, plank)",
+            "Category-based fallback documented (speed, cardio -> intervals)",
+            "Default fallback is 'hold'"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Component integration fully traced from backend to UI display"
+    },
+    {
+      "id": "phase-4",
+      "name": "E2E Browser Testing",
+      "description": "Verify fixes via real user interactions in WorkoutLogger using test data from coach-programmed exercises",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "E2E test contacts-based plyometric (Pogo's): verify Target shows 'N contacts' not '10 contacts', PROGRAMMED TARGET shows correct value, form has 'Actual Contacts' field",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 15000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Target alert displays programmed contacts (not default 10)",
+            "PROGRAMMED TARGET badge shows 'N contacts'",
+            "Form contains 'Actual Contacts' input field",
+            "Auto-fill uses programmed contact value"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "E2E test reps+distance plyometric (Straight Leg Bounds): verify Target shows 'N reps x Nm', PROGRAMMED TARGET shows correct value, form has 'Actual Reps' and 'Actual Distance' fields",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 15000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Target alert displays reps and distance with 'x' separator",
+            "PROGRAMMED TARGET badge shows 'N reps x Nm'",
+            "Form contains both 'Actual Reps' and 'Actual Distance (m)' fields",
+            "plyometric-distance config selected (verified by field presence)"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "E2E test sprint with distance (Fly Sprints): verify distance appears in target, form shows distance field only when programmed",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 12000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Target alert includes distance with 'x' prefix",
+            "Sprint config correctly shows distance field",
+            "showWhen: targetDistance conditional works"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "E2E test duration label (hold vs intervals): verify isometric shows 'hold', conditioning shows 'intervals'",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 10000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Isometric exercise shows 'Xs hold' in target",
+            "Interval exercise shows 'Xs intervals' in target",
+            "getDurationLabel() logic working correctly"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E tests pass with screenshot evidence of correct metric display"
+    }
+  ],
+  "totalEstimatedTokens": 109000,
+  "risks": [
+    {
+      "description": "Test data may not include all exercise types (contacts-based, reps+distance, sprint with distance)",
+      "mitigation": "Use coach portal to program specific test exercises if needed, or find existing workouts with required configurations",
+      "severity": "medium"
+    },
+    {
+      "description": "WorkoutLogger state management may cause stale data display if date navigation issue persists",
+      "mitigation": "Test date navigation behavior explicitly, verify useEffect cleanup triggers on date change",
+      "severity": "low"
+    },
+    {
+      "description": "Heart rate fields may not be programmed in test workouts",
+      "mitigation": "Document as incomplete coverage if no heart rate test data available, recommend adding test case",
+      "severity": "low"
+    }
+  ]
+}

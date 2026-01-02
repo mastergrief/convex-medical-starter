@@ -1,0 +1,568 @@
+{
+  "id": "a3b4c5d6-e7f8-4012-8456-789012345678",
+  "type": "plan",
+  "metadata": {
+    "promptId": "5dcdfc2f-f6e7-4e10-a11c-182b29b1c242",
+    "sessionId": "20251226_10-22_d7efb71e-3951-4447-a39c-767b2d629ba1",
+    "timestamp": "2025-12-26T10:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "ORCHESTRATION System Remaining TODOs - Fix failing test, implement retry logic, and split 3 monolithic files (gates.ts 702 LOC, parallel-engine.ts 718 LOC, template-processor.ts 668 LOC) into modular structure following gateParserModules pattern",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Critical Fixes",
+      "description": "Fix blocking test failure and implement exponential backoff retry mechanism",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Fix failing test in parallel-engine.test.ts line 254-255. Change expectation from runInBackground: true to runInBackground: false (all agents run foreground only per user requirement)",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/tests/lib/parallel-engine.test.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_REMAINING_TODOS_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test expectation changed from true to false on lines 254-255",
+            "npm run typecheck passes",
+            "npm test -- ORCHESTRATION/tests/lib/parallel-engine.test.ts --run passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Create retry utility module at ORCHESTRATION/lib/utils/retry.ts based on BROWSER-CLI/SCRIPTS/utils/retry.ts pattern. Include withRetry function with exponential backoff (500ms->1s->2s), transient error classification for orchestration errors (timeout, connection, spawn failures), and RetryMetrics for debugging",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/utils/retry.ts",
+              "ORCHESTRATION/lib/parallel-engine.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_REMAINING_TODOS_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ORCHESTRATION/lib/utils/retry.ts created with withRetry, isTransientError, RetryMetrics",
+            "Delay pattern: 500ms -> 1000ms -> 2000ms (max 3 attempts)",
+            "Transient errors classified: timeout, ECONNREFUSED, spawn failed, agent crashed",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Integrate retry utility into parallel-engine.ts. Replace stub retryOnFailure implementation with actual exponential backoff using the new retry module",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/parallel-engine.ts",
+              "ORCHESTRATION/lib/utils/retry.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "ParallelEngine uses withRetry for task execution",
+            "retryOnFailure config option properly wired",
+            "npm run typecheck passes",
+            "All parallel-engine tests pass"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "ALL_TASKS_COMPLETE AND npm test -- ORCHESTRATION/tests/lib/parallel-engine.test.ts --run passes with 100%"
+    },
+    {
+      "id": "phase-2",
+      "name": "Split gates.ts",
+      "description": "Refactor gates.ts (702 LOC) into 6 focused modules following gateParserModules pattern",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create ORCHESTRATION/lib/contextHubModules/gatesModules/ directory and types.ts module (~30 LOC) containing AdvancePhaseResult, EvidenceCheckResult interfaces",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts",
+              "ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": [
+              "GATEPARSER_MODULAR_REFACTOR_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Directory gatesModules/ created",
+            "types.ts contains AdvancePhaseResult and EvidenceCheckResult interfaces",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Create parsing.ts module (~80 LOC) with parseGateCondition function and DSL parsing logic",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "parsing.ts contains parseGateCondition",
+            "Imports types from ./types",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Create evidence.ts module (~150 LOC) with checkEvidenceCoverage and checkEvidenceExists functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "evidence.ts contains checkEvidenceCoverage and checkEvidenceExists",
+            "Returns EvidenceCheckResult type",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Create checking.ts module (~200 LOC) with checkGate, checkGateAsync, checkGateLegacy functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2",
+            "task-2.3"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "checking.ts contains all three check functions",
+            "Imports from parsing.ts and evidence.ts",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.5",
+          "description": "Create io.ts module (~80 LOC) with readGateResult, writeGateResult, listGateResults functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "io.ts handles file I/O for gate results",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.6",
+          "description": "Create advancement.ts module (~80 LOC) with advancePhase function",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4",
+            "task-2.5"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "advancement.ts contains advancePhase function",
+            "Returns AdvancePhaseResult type",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.7",
+          "description": "Create index.ts barrel export (~50 LOC) and refactor gates.ts to facade (~60 LOC re-exports only). Verify API compatibility preserved",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4",
+            "task-2.5",
+            "task-2.6"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts",
+              "ORCHESTRATION/lib/gateParserModules/index.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "index.ts exports all public symbols from modules",
+            "gates.ts reduced to ~60 LOC facade with re-exports",
+            "All existing imports from gates.ts continue to work",
+            "npm run typecheck passes",
+            "All ORCHESTRATION tests pass"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "ALL_TASKS_COMPLETE AND gates.ts < 100 LOC AND npm test -- ORCHESTRATION --run passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Split parallel-engine.ts",
+      "description": "Refactor parallel-engine.ts (718 LOC) into 4 focused modules",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create ORCHESTRATION/lib/parallelEngineModules/ directory and types.ts module (~100 LOC) containing AgentSpawnRequest, ExecutionResult, AggregatedContext, DispatchInstruction, ParallelExecutionConfig interfaces and DEFAULT_CONFIG",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/parallel-engine.ts",
+              "ORCHESTRATION/lib/gateParserModules/types.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Directory parallelEngineModules/ created",
+            "types.ts contains all interfaces and DEFAULT_CONFIG",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create utils.ts module (~200 LOC) with mergeContexts, formatDispatchInstruction, createEmptyContext, createExecutionResult helper functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/parallel-engine.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "utils.ts contains all helper functions",
+            "Imports types from ./types",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Create engine.ts module (~280 LOC) with ParallelEngine class and createParallelEngine factory. Imports from types and utils modules",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1",
+            "task-3.2"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/parallel-engine.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "engine.ts contains ParallelEngine class with all methods",
+            "Uses retry utility for task execution",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Create index.ts barrel export and refactor parallel-engine.ts to facade (~80 LOC re-exports only). Verify API compatibility",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/parallel-engine.ts",
+              "ORCHESTRATION/lib/gateParserModules/index.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "index.ts exports all public symbols",
+            "parallel-engine.ts reduced to ~80 LOC facade",
+            "All existing imports continue to work",
+            "npm run typecheck passes",
+            "All parallel-engine tests pass"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "ALL_TASKS_COMPLETE AND parallel-engine.ts < 100 LOC AND npm test -- ORCHESTRATION/tests/lib/parallel-engine.test.ts --run passes"
+    },
+    {
+      "id": "phase-4",
+      "name": "Split template-processor.ts",
+      "description": "Refactor template-processor.ts (668 LOC) into 4 focused modules",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create ORCHESTRATION/lib/templateProcessorModules/ directory and schemas.ts module (~150 LOC) containing all Zod schemas: TemplateVariableSchema, TemplateSubtaskSchema, TemplatePhaseSchema, SessionTemplateSchema, TemplateRegistryEntrySchema, TemplateRegistrySchema and their inferred types",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Directory templateProcessorModules/ created",
+            "schemas.ts contains all Zod schemas and type exports",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create validation.ts module (~120 LOC) with ValidationResult interface and schema validation logic (validate method, detectCircularDependencies)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "validation.ts contains ValidationResult and validation functions",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Create instantiation.ts module (~150 LOC) with InstantiationResult interface, instantiateTemplate function, substituteVariables, extractVariables methods",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "instantiation.ts handles template variable substitution",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Create registry.ts module (~100 LOC) with registry loading, listing, and management (loadRegistry, updateRegistry, listTemplates)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "registry.ts handles template registry operations",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.5",
+          "description": "Create processor.ts module (~150 LOC) with TemplateProcessor class using imports from other modules, and TemplateInfo interface",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2",
+            "task-4.3",
+            "task-4.4"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "processor.ts contains TemplateProcessor class",
+            "Class methods delegate to module functions",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.6",
+          "description": "Create index.ts barrel export and refactor template-processor.ts to facade (~100 LOC re-exports only). Verify API compatibility",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.5"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "index.ts exports all public symbols",
+            "template-processor.ts reduced to ~100 LOC facade",
+            "All existing imports continue to work",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "ALL_TASKS_COMPLETE AND template-processor.ts < 120 LOC AND npm run typecheck passes"
+    },
+    {
+      "id": "phase-5",
+      "name": "Validation",
+      "description": "Final verification that all changes work together and meet success criteria",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Run full ORCHESTRATION test suite to verify all tests pass",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm test -- ORCHESTRATION --run shows 100% pass rate",
+            "No regressions introduced"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Verify all file splits meet LOC thresholds: gates.ts < 100, parallel-engine.ts < 100, template-processor.ts < 120, no new files > 400 LOC",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "wc -l confirms all facade files under threshold",
+            "wc -l confirms all module files < 400 LOC"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Update Serena memory PLAN_ORCHESTRATION_REMAINING_TODOS_20251226 to reflect completed items and remaining work",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1",
+            "task-5.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCHESTRATION_REMAINING_TODOS_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory updated with completion status",
+            "Remaining TODOs documented (JSDoc, integration tests, etc.)"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "ALL_TASKS_COMPLETE AND 100% test pass rate AND all LOC thresholds met"
+    }
+  ],
+  "totalEstimatedTokens": 130000,
+  "risks": [
+    {
+      "description": "Circular dependency issues during module splits",
+      "mitigation": "Follow gateParserModules pattern strictly; types.ts has no dependencies on other modules",
+      "severity": "medium"
+    },
+    {
+      "description": "API breaking changes during refactor",
+      "mitigation": "Facade pattern preserves all external imports; verify each module with typecheck before proceeding",
+      "severity": "high"
+    },
+    {
+      "description": "Test failures after retry integration",
+      "mitigation": "Run parallel-engine tests after each phase 1 task; rollback if needed",
+      "severity": "medium"
+    },
+    {
+      "description": "File size creep in new modules",
+      "mitigation": "Monitor LOC during implementation; split further if approaching 400 LOC",
+      "severity": "low"
+    }
+  ]
+}

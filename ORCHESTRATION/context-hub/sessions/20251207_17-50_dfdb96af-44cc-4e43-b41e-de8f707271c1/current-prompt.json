@@ -1,0 +1,12 @@
+{
+  "id": "29abbb73-9f45-4da0-9e2c-4d3df3d5fede",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_17-50_dfdb96af-44cc-4e43-b41e-de8f707271c1",
+    "timestamp": "2025-12-07T17:50:28.187Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Comprehensive Analysis and Testing of WorkoutLogger Component\n\n## Objective\nPerform full-stack analysis and E2E testing of the WorkoutLogger feature to verify recent fixes and ensure production readiness.\n\n## Context from Screenshot\n- WorkoutLogger in Athlete Mode showing 'Quick Workout - Dec 06'\n- 86% completion (6 of 7 sets completed)\n- Exercise 1: Pogo's - Complete with '15 contacts'\n- Exercise 2: Straight Leg Bounds - 'Target: 3 reps × 20m @ RPE 7-8 @ 80% intensity'\n- PROGRAMMED TARGET correctly showing '3 reps× 20 m'\n- Form fields: 'Actual Reps' (3), 'Actual Distance (m)' (empty)\n\n## Recent Fixes to Verify\n1. Data-based metric detection (contacts vs reps+distance)\n2. Backend getEffectiveTargetReps() helper function\n3. Frontend getLoggingCategoryConfig() with programmedData parameter\n4. Dynamic duration labels (hold vs intervals)\n5. Heart rate fields pipeline (heartRateRange, percentHeartRateMax)\n6. Date navigation with active workout sessions\n\n## Analysis Scope\n- Backend: convex/workoutLogsModules/ (helpers.ts, mutations.ts, queries.ts)\n- Frontend: src/components/WorkoutLoggerModules/\n- Config: src/config/exerciseFields/logging/\n- Types: convex/types/workoutTypes.ts, frontend types.ts\n\n## Testing Scope\n- Plyometric exercises (contacts-based: Pogo's)\n- Plyometric exercises (reps+distance: Straight Leg Bounds)\n- Sprint exercises (reps+distance: Fly Sprints)\n- Isometric exercises (duration: Calf Iso Hold)\n- Date navigation behavior\n- Set completion and workout progress"
+  }
+}

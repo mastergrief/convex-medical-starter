@@ -1,0 +1,75 @@
+{
+  "id": "documentation-update",
+  "name": "Documentation Update",
+  "description": "Review, update, and verify documentation accuracy",
+  "tags": ["documentation", "docs", "readme", "api-docs"],
+  "variables": [
+    {
+      "name": "doc_path",
+      "description": "Path to documentation file",
+      "required": true
+    },
+    {
+      "name": "update_type",
+      "description": "Type: api_docs, readme, inline_comments, architecture",
+      "required": true
+    },
+    {
+      "name": "related_code",
+      "description": "Code paths to reference for accuracy",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Analysis",
+      "parallelizable": false,
+      "gate": { "dsl": "memory:ANALYSIS_DOCS_*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Review {{doc_path}} for outdated sections. Cross-reference with {{related_code}} for accuracy. Identify gaps and incorrect information in {{update_type}} content.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Update",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Update {{doc_path}} with current {{update_type}} information. Ensure code examples match {{related_code}}. Follow existing documentation style.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Verify code examples in {{doc_path}} are executable. Test any documented commands or scripts. Confirm UI references match current state.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 15000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 50000
+}

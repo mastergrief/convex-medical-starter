@@ -1,0 +1,82 @@
+{
+  "id": "performance-optimization",
+  "name": "Performance Optimization",
+  "description": "Profile, optimize, and benchmark performance improvements",
+  "tags": ["performance", "optimization", "profiling", "metrics"],
+  "variables": [
+    {
+      "name": "target_area",
+      "description": "Component or feature to optimize",
+      "required": true
+    },
+    {
+      "name": "metric",
+      "description": "LCP, TTFB, render time, etc.",
+      "required": true
+    },
+    {
+      "name": "baseline_threshold",
+      "description": "Target improvement threshold (ms or %)",
+      "required": true
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Profiling",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_PERF_{{target_area}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Capture baseline {{metric}} for {{target_area}} using capturePerformanceMetrics. Record initial values.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Analyze {{target_area}} for performance bottlenecks. Identify render cycles, unnecessary re-renders, heavy computations.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Optimization",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Implement optimizations for {{target_area}} based on analysis. Target {{metric}} improvement of {{baseline_threshold}}. Use memoization, lazy loading, code splitting as needed.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 25000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Benchmarking",
+      "parallelizable": false,
+      "gate": { "dsl": "evidence:baseline exists" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Measure {{metric}} after optimization. Compare against baseline. Capture comparison screenshots showing improvement vs {{baseline_threshold}}.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 15000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 75000
+}

@@ -1,0 +1,227 @@
+{
+  "id": "handoff-phase2-complete",
+  "type": "handoff",
+  "metadata": {
+    "sessionId": "3d520aa6-4aef-4637-b133-35453e37d77e",
+    "planId": "b8c1d2e3-f4a5-4b6c-8d9e-0f1a2b3c4d5e",
+    "fromAgent": {
+      "type": "orchestrator",
+      "id": "orchestrator-phase2"
+    },
+    "toAgent": {
+      "type": "orchestrator",
+      "id": "orchestrator-phase3"
+    },
+    "timestamp": "2025-12-07T10:00:00.000Z",
+    "version": "1.0.0"
+  },
+  "reason": "phase_complete",
+  "tokenUsage": {
+    "consumed": 56000,
+    "limit": 200000,
+    "remaining": 144000,
+    "percentage": 28
+  },
+  "state": {
+    "currentPhase": "phase-2",
+    "completedTasks": [
+      "task-1.1",
+      "task-1.2",
+      "task-1.3",
+      "task-1.4",
+      "task-2.1",
+      "task-2.2",
+      "task-2.3"
+    ],
+    "pendingTasks": [
+      "task-3.1",
+      "task-3.2"
+    ]
+  },
+  "results": [
+    {
+      "taskId": "task-2.1",
+      "status": "completed",
+      "summary": "Documented role-based navigation item arrays and subscription tier logic. Three arrays defined: athleteNavItems (5 items), athleteWithBuilderNavItems (6 items with Session Builder), coachNavItems (12 items). Subscription tier determines which array: bronze athletes get 5 items, silver/gold/platinum get 6 items with builder access.",
+      "output": {
+        "navigationArrays": {
+          "athleteNavItems": {
+            "count": 5,
+            "items": ["dashboard", "coach", "workouts", "analytics", "forum"],
+            "location": "src/App.tsx lines 442-448"
+          },
+          "athleteWithBuilderNavItems": {
+            "count": 6,
+            "items": ["dashboard", "coach", "workouts", "builder", "analytics", "forum"],
+            "location": "src/App.tsx lines 450-457"
+          },
+          "coachNavItems": {
+            "count": 12,
+            "items": ["dashboard", "training-calendar", "athletes", "pricing", "ai-insights", "exercises", "training-blocks", "knowledge", "nutrition", "analytics", "export", "forum"],
+            "location": "src/App.tsx lines 459-472"
+          }
+        },
+        "subscriptionLogic": {
+          "tierDetection": "user.metadata.subscriptionTier || 'bronze'",
+          "selectionLogic": "silver/gold/platinum → athleteWithBuilderNavItems, else → athleteNavItems",
+          "location": "src/App.tsx lines 864-867",
+          "conditionalRendering": "navItems.some(item => item.value === 'builder') guards TabsContent",
+          "dynamicTabsList": "style={{gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`}}"
+        }
+      },
+      "evidence": [
+        "src/App.tsx lines 442-448 (athleteNavItems array)",
+        "src/App.tsx lines 450-457 (athleteWithBuilderNavItems array)",
+        "src/App.tsx lines 459-472 (coachNavItems array)",
+        "src/App.tsx lines 864-867 (subscription tier logic)",
+        "src/App.tsx lines 878-885 (dynamic TabsList rendering)",
+        "src/App.tsx lines 914-922 (conditional builder TabsContent)"
+      ]
+    },
+    {
+      "taskId": "task-2.2",
+      "status": "completed",
+      "summary": "Analyzed Tabs integration pattern showing coordination between Radix UI Tabs and BottomNav. Both components share activeTab state from App.tsx, controlled by single setActiveTab callback. Tabs component wraps all views, TabsList provides desktop horizontal tabs (hidden on mobile), TabsContent renders views, BottomNav provides mobile-only bottom bar. State synchronization via value/onValueChange props.",
+      "output": {
+        "integration": {
+          "stateSource": "App.tsx useState<string>(activeTab, setActiveTab)",
+          "tabsProps": "value={activeTab} onValueChange={setActiveTab}",
+          "bottomNavProps": "activeTab={activeTab} onTabChange={setActiveTab}",
+          "synchronization": "Both components read activeTab, both write via setActiveTab"
+        },
+        "radixTabsComponents": {
+          "Tabs": "Root container, manages value state via controlled pattern",
+          "TabsList": "Desktop horizontal tabs, hidden md:grid pattern",
+          "TabsTrigger": "Individual tab buttons, generated from navItems array",
+          "TabsContent": "View panels, flex-1 overflow-hidden for full-height scrolling"
+        },
+        "coordinationPattern": {
+          "mobileFlow": "BottomNav click → setActiveTab → Tabs value updates → TabsContent switches",
+          "desktopFlow": "TabsTrigger click → onValueChange → setActiveTab → TabsContent switches",
+          "validation": "useEffect validates activeTab on role/mode changes (lines 391-405)"
+        }
+      },
+      "evidence": [
+        "src/App.tsx lines 375-380 (activeTab state declaration)",
+        "src/App.tsx line 588 (Tabs value/onValueChange binding)",
+        "src/App.tsx lines 646-650 (BottomNav props binding)",
+        "src/App.tsx lines 589-596 (TabsList with TabsTrigger)",
+        "src/App.tsx lines 597-644 (TabsContent for each view)",
+        "src/components/ui/tabs.tsx (Radix UI Tabs primitives)"
+      ]
+    },
+    {
+      "taskId": "task-2.3",
+      "status": "completed",
+      "summary": "Documented responsive layout strategy using three complementary techniques: component-level conditional rendering (BottomNav returns null if !isMobile), CSS-level visibility control (TabsList hidden md:grid), layout spacing (pb-16 md:pb-0 for bottom nav clearance). Mobile (<768px) shows BottomNav + hidden TabsList. Desktop (>=768px) shows TabsList + no BottomNav. Coaches get DesktopSidebar on desktop breakpoint (>=1024px).",
+      "output": {
+        "responsiveStrategies": {
+          "componentLevel": {
+            "technique": "Conditional rendering in component logic",
+            "implementation": "BottomNav: if (!isMobile) return null",
+            "location": "src/components/BottomNav.tsx lines 17-20",
+            "benefit": "Component unmounts completely, no DOM footprint"
+          },
+          "cssLevel": {
+            "technique": "Tailwind responsive classes",
+            "implementation": "TabsList: className='hidden md:grid'",
+            "location": "src/App.tsx lines 589, 770, 878",
+            "benefit": "CSS-only toggle, component stays mounted"
+          },
+          "layoutLevel": {
+            "technique": "Responsive spacing adjustments",
+            "implementation": "className='pb-16 md:pb-0' (bottom padding for nav clearance)",
+            "location": "src/App.tsx lines 581, 870",
+            "benefit": "Prevents content from hiding behind fixed bottom nav on mobile"
+          }
+        },
+        "breakpointBehavior": {
+          "mobile": {
+            "breakpoint": "<768px",
+            "navigation": "BottomNav (fixed bottom, z-50, safe-area-bottom)",
+            "tabs": "TabsList hidden (not rendered in DOM)",
+            "spacing": "pb-16 for bottom nav clearance"
+          },
+          "tablet": {
+            "breakpoint": "768px-1024px",
+            "navigation": "TabsList (horizontal, hidden md:grid)",
+            "tabs": "BottomNav returns null (unmounted)",
+            "spacing": "pb-0 (no bottom nav)"
+          },
+          "desktop": {
+            "breakpoint": ">=1024px",
+            "navigation": "Coaches: DesktopSidebar, Athletes: TabsList",
+            "tabs": "BottomNav returns null (unmounted)",
+            "spacing": "pb-0 (no bottom nav)"
+          }
+        }
+      },
+      "evidence": [
+        "src/components/BottomNav.tsx lines 17-20 (isMobile guard)",
+        "src/App.tsx lines 589, 770, 878 (hidden md:grid pattern)",
+        "src/App.tsx lines 581, 870 (pb-16 md:pb-0 spacing)",
+        "src/hooks/useMediaQuery.ts lines 36-48 (breakpoint hooks)",
+        "src/App.tsx lines 656-758 (DesktopSidebar for coaches)"
+      ]
+    }
+  ],
+  "discoveries": [
+    {
+      "type": "pattern",
+      "description": "Subscription-based feature gating via conditional array selection and TabsContent rendering - athleteWithBuilderNavItems adds Session Builder for silver/gold/platinum tiers",
+      "location": "src/App.tsx lines 864-867, 914-922",
+      "importance": "high"
+    },
+    {
+      "type": "pattern",
+      "description": "Dynamic TabsList grid columns using inline styles based on navItems.length - style={{gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`}}",
+      "location": "src/App.tsx line 879",
+      "importance": "medium"
+    },
+    {
+      "type": "architecture",
+      "description": "Dual-control pattern for Tabs: Radix TabsTrigger (desktop) and BottomNav buttons (mobile) both write to same setActiveTab, ensuring perfect synchronization",
+      "location": "src/App.tsx lines 588, 646-650",
+      "importance": "high"
+    },
+    {
+      "type": "pattern",
+      "description": "Three-level responsive strategy: component-level (return null), CSS-level (hidden md:grid), layout-level (pb-16 md:pb-0) - each serves different optimization goals",
+      "location": "src/components/BottomNav.tsx, src/App.tsx",
+      "importance": "high"
+    },
+    {
+      "type": "ux",
+      "description": "BottomNav enforces 5-item limit with 'More' button for remaining items (lines 22-24, 66-93) - thumb-reach optimization for mobile UX",
+      "location": "src/components/BottomNav.tsx lines 22-93",
+      "importance": "medium"
+    },
+    {
+      "type": "accessibility",
+      "description": "BottomNav includes aria-label and aria-current for screen readers, safe-area-bottom for notched devices",
+      "location": "src/components/BottomNav.tsx lines 27, 44-45",
+      "importance": "medium"
+    }
+  ],
+  "context": {
+    "criticalContext": "Phase 2 (Integration Pattern Analysis) complete. All 3 subtasks analyzed: (1) Role-based navigation arrays with subscription tier logic documented, (2) Tabs integration pattern showing Radix UI coordination with BottomNav via shared state, (3) Responsive layout strategy using three complementary techniques. Key findings: (1) Subscription-based feature gating via conditional arrays, (2) Dual-control pattern for perfect state sync, (3) Multi-level responsive strategy for optimal performance.",
+    "resumeInstructions": "Proceed to Phase 3 (Documentation). Focus on: (1) Create architecture diagram showing component hierarchy, data flow (activeTab state), subscription logic, and responsive breakpoints (task-3.1), (2) Write comprehensive Serena memory documenting bottom navigation architecture, integration patterns, and responsive strategies (task-3.2). Reference Phase 1 (architecture analysis) and Phase 2 (integration patterns) findings for complete context.",
+    "warnings": [
+      "BottomNav 'More' button cycles to first hidden item only - could be enhanced with Sheet component for full overflow menu",
+      "Coach athlete-mode view at line 646 uses athleteNavItems (5 items) but TabsList shows 6 hardcoded TabsTriggers - inconsistency may cause issues",
+      "Dynamic gridTemplateColumns only used in athlete view (line 879), not in coach athlete-mode or coach views - inconsistent pattern"
+    ]
+  },
+  "nextActions": [
+    {
+      "action": "Create architecture diagram with Mermaid or ASCII showing: (1) Component hierarchy (App → Tabs/BottomNav), (2) State flow (activeTab → setActiveTab), (3) Subscription logic branches, (4) Responsive breakpoints",
+      "agentType": "developer",
+      "priority": "high"
+    },
+    {
+      "action": "Write Serena memory 'BOTTOM_NAV_ARCHITECTURE_{timestamp}' with sections: Overview, Component Structure, Integration Patterns, Responsive Strategy, Subscription Logic, Edge Cases",
+      "agentType": "serena",
+      "priority": "high"
+    }
+  ]
+}

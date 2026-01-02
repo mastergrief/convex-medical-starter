@@ -1,0 +1,36 @@
+{
+  "memoryName": "PLAN_ORCH_PERF_PHASE1_CRITICAL_FIXES_20251226",
+  "linkedAt": "2025-12-26T19:35:02.618Z",
+  "serenaPath": ".serena/memories/PLAN_ORCH_PERF_PHASE1_CRITICAL_FIXES_20251226.md",
+  "summary": "Memory PLAN_ORCH_PERF_PHASE1_CRITICAL_FIXES_20251226 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "1.1",
+      "1.2",
+      "1.3",
+      "1.4",
+      "test.ts",
+      "describe.concurrent",
+      "it.concurrent",
+      "2.1",
+      "Date.now",
+      "2.2",
+      "results.push",
+      "2.3",
+      "3.1",
+      "process.cwd",
+      "proc.kill",
+      "data.toString",
+      "proc.on",
+      "3.2",
+      "data.includes",
+      "data.trim"
+    ],
+    "data_flow_map": {}
+  }
+}

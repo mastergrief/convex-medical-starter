@@ -1,0 +1,510 @@
+{
+  "id": "acba4b85-ce77-40fc-9b99-ba35e3c03f3f",
+  "type": "plan",
+  "metadata": {
+    "promptId": "cd7a2a30-3d9d-4c8d-b9b3-7cb9efe04e2d",
+    "sessionId": "20251230_20-50_b059bc45-6e46-44e7-83c7-bd61a8cb6e7a",
+    "timestamp": "2025-12-30T21:00:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Enable coaches to create custom metrics beyond 19 hardcoded system metrics. Wires existing trainingTypes.customMetrics schema (lines 492-508) to UI and storage with security validation. Implementation spans schema updates, backend mutations, frontend UI, and testing.",
+  "phases": [
+    {
+      "id": "phase-1-schema-security",
+      "name": "Schema & Security",
+      "description": "Add customMetricValues field to 6 exercise tables and implement key/value validation in trainingTypes mutations",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add customMetricValues field to schema: blockExercises (line 633), calendarExercises (line 1740), workoutLogs.exercises (line 951), trainingBlockMarkers.workoutsSnapshot.exercises (line 1848), blockTemplates.templateData.weeks.workouts.exercises (line 1525), workoutTemplates.exercises (line 878). Field: v.optional(v.record(v.string(), v.union(v.string(), v.number())))",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/schema.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_02_SCHEMA_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetricValues field added to all 6 tables",
+            "Schema deploys without errors: npx convex dev",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add VALID_KEY_PATTERN (/^[a-z][a-z0-9_]{0,49}$/) and validation logic to trainingTypes.ts createTrainingType and updateTrainingType mutations. Validate: key format, key uniqueness, label length (max 100), unit length (max 20), options array (max 50 items, 100 chars each), min <= max, select type requires options",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "convex/trainingTypes.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_02_SCHEMA_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "VALID_KEY_PATTERN constant added",
+            "Key format validation rejects invalid patterns",
+            "Duplicate keys rejected within customMetrics array",
+            "String length limits enforced",
+            "min > max rejected with clear error",
+            "select type without options rejected",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Schema deploys successfully AND typecheck passes"
+    },
+    {
+      "id": "phase-2-backend",
+      "name": "Backend Mutations",
+      "description": "Create validation helper and update exercise mutations to accept customMetricValues",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create convex/lib/customMetricValidation.ts with validateCustomMetricValues function. Validates: type matches definition (number/scale/duration require number, text/range require string), min/max range enforcement, select options validation, required field enforcement. Approximately 80 lines.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at convex/lib/customMetricValidation.ts",
+            "validateCustomMetricValues function implemented",
+            "Type validation for number/string/select",
+            "Range validation for min/max",
+            "Required field enforcement",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Update convex/calendarWorkoutsModules/mutations.ts: Add customMetricValues to exercise args in updateCalendarWorkout and createCalendarWorkout. Field: v.optional(v.record(v.string(), v.union(v.string(), v.number()))). Import and call validateCustomMetricValues before insert/patch.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetricValues arg added to exercise validators",
+            "Validation helper called before mutations",
+            "Existing mutations continue to work (backward compatible)",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Update convex/workoutLogsModules/mutations.ts: Add customMetricValues to exercise args. Import and call validateCustomMetricValues.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetricValues arg added",
+            "Validation helper called",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Update convex/trainingBlockMarkersModules/mutations.ts: Add customMetricValues passthrough for workoutsSnapshot.exercises.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/trainingBlockMarkersModules/mutations.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetricValues flows through to snapshot",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.5",
+          "description": "Update convex/blockExercises.ts: Add customMetricValues to createBlockExercise and updateBlockExercise mutations.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/blockExercises.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetricValues arg added to both mutations",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All backend mutations accept customMetricValues AND typecheck passes"
+    },
+    {
+      "id": "phase-3-frontend",
+      "name": "Frontend UI",
+      "description": "Create CustomMetricDialog component and wire to MetricsConfigForm, update hooks and transformers",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create src/components/CustomMetricDialog.tsx (~150 lines). Dialog with form fields: label (required, disabled on edit), type (select: number/range/duration/select/text/scale), unit (for number/range/duration), min/max (for number/scale), options (comma-separated for select), required toggle. Key auto-generated from label (lowercase, underscores). Client-side validation: empty label, label > 100 chars, min > max, select without options, duplicate keys.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "src/components/ui/dialog.tsx",
+              "src/components/ui/input.tsx",
+              "src/components/ui/select.tsx"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at src/components/CustomMetricDialog.tsx",
+            "All field types supported",
+            "Key generation from label works",
+            "Client-side validation shows errors",
+            "Edit mode disables label field",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Update src/components/MetricsConfigForm.tsx: Add 'Custom Metrics' section after existing metric groups. Include: header with 'Add Metric' button, list of existing custom metrics with edit/delete buttons, empty state message. Wire to CustomMetricDialog for add/edit. Handle delete with confirmation. Approximately +60 lines.",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/MetricsConfigForm.tsx"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom Metrics section renders",
+            "Add Metric button opens CustomMetricDialog",
+            "Existing metrics display with edit/delete",
+            "CRUD operations work correctly",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Update src/hooks/useTrainingTypeMetrics.ts: In trainingTypeToConfig function, add loop to process customMetrics array. Convert each to FieldConfig with name prefixed 'custom_'. Add mapCustomTypeToFieldType helper (number->number, range->range, duration->number, select->select, text->text, scale->range). Approximately +30 lines around line 319-332.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/hooks/useTrainingTypeMetrics.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom metrics converted to FieldConfig[]",
+            "Name prefix 'custom_' applied",
+            "Type mapping correct",
+            "Options array converted for select type",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Update src/utils/exerciseTransformers.ts: Add custom metrics extraction in extractExerciseFormDataWithMetrics. Loop over data.customMetricValues, check if 'custom_${key}' in enabledMetrics, normalize value, store in result.customMetrics without prefix. Add normalizeMetricValue helper. Approximately +20 lines.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/utils/exerciseTransformers.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom metrics extracted from form data",
+            "Disabled metrics skipped",
+            "Values normalized correctly",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.5",
+          "description": "Wire TrainingTypeDialog to pass customMetrics to mutation. Ensure state management for customMetrics array, pass to createTrainingType/updateTrainingType mutations.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/components/TrainingTypeDialog.tsx"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "customMetrics state managed correctly",
+            "Mutation receives customMetrics array",
+            "Save flow works end-to-end",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All frontend components render correctly AND typecheck passes"
+    },
+    {
+      "id": "phase-4-unit-testing",
+      "name": "Unit Testing",
+      "description": "Create unit tests for validation, hooks, and transformers",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create src/lib/__tests__/customMetricValidation.test.ts (~120 lines). Test suites: key validation (valid patterns, invalid patterns), value validation (number type with range, select with options), definition validation (select requires options, min <= max). Use vitest with it.each for pattern testing.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_05_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Key pattern tests pass",
+            "Value validation tests pass",
+            "Definition validation tests pass",
+            "Tests run in < 30 seconds"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create src/hooks/__tests__/useTrainingTypeMetrics.test.ts (~100 lines). Test trainingTypeToConfig transformation: custom metrics to FieldConfig conversion, type mapping, name prefixing, options array conversion.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/hooks/useTrainingTypeMetrics.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_05_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Transformation tests pass",
+            "Type mapping tests pass",
+            "Prefix collision tests pass"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add tests to src/utils/__tests__/exerciseTransformers.test.ts (~80 lines). Test extractExerciseFormDataWithMetrics with custom metrics: extraction, disabled metric filtering, empty/undefined handling, value normalization.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.4"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/utils/exerciseTransformers.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_05_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Extraction tests pass",
+            "Filter tests pass",
+            "Normalization tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm test passes with all custom metrics tests"
+    },
+    {
+      "id": "phase-5-e2e-testing",
+      "name": "E2E Testing",
+      "description": "Browser CLI end-to-end tests for complete custom metrics workflow",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Create e2e/custom-metrics-create.spec.ts: Test flow - navigate to Exercise Library, open training type, go to Metrics Config, click Add Metric, fill form (label, type, unit, min/max), save, verify metric appears in list, save training type, verify network mutation.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-3.5"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_06_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Create custom metric flow works",
+            "Metric appears in list after save",
+            "Network mutation succeeds",
+            "No console errors",
+            "Screenshot captured"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Create e2e/custom-metrics-validation.spec.ts: Test validation - empty label rejected, min > max rejected, select without options rejected. Verify error messages display correctly.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_06_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Empty label shows error",
+            "Min > max shows error",
+            "Select without options shows error",
+            "No JavaScript errors"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Create e2e/custom-metrics-full-flow.spec.ts: Full E2E - create metric on training type, navigate to calendar, create workout with exercise using that training type, verify custom metric field appears, fill value, save, reopen to verify persistence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_SPRINT_06_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom metric appears in exercise form",
+            "Value persists after save",
+            "Full workflow completes without errors",
+            "Evidence screenshots captured"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E tests pass with evidence captured"
+    }
+  ],
+  "totalEstimatedTokens": 100000,
+  "risks": [
+    {
+      "description": "Schema migration may affect existing data",
+      "mitigation": "customMetricValues is additive (v.optional), no migration needed",
+      "severity": "low"
+    },
+    {
+      "description": "Key injection through customMetrics array",
+      "mitigation": "VALID_KEY_PATTERN regex validation in backend, reject invalid keys",
+      "severity": "medium"
+    },
+    {
+      "description": "Performance impact from additional field processing",
+      "mitigation": "Custom metrics cached with training type query, minimal overhead",
+      "severity": "low"
+    },
+    {
+      "description": "Type safety between frontend and backend",
+      "mitigation": "FieldConfig already supports all custom metric types, consistent mapping",
+      "severity": "low"
+    },
+    {
+      "description": "Backward compatibility with existing exercises",
+      "mitigation": "customMetricValues is optional, existing data unaffected",
+      "severity": "low"
+    }
+  ]
+}

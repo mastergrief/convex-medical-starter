@@ -1,0 +1,204 @@
+{
+  "planId": "css-escape-fix-20251230",
+  "title": "CSS Selector Escape Bug Fix for Browser-CLI",
+  "createdAt": "2025-12-30T16:30:00Z",
+  "status": "archived",
+  "summary": {
+    "bugType": "CSS selector generation missing escape handling",
+    "rootCause": "capture.ts:204-227 - attribute values/class names not escaped",
+    "securityImpact": "None (CVSS 0.0)",
+    "functionalImpact": "Medium - Tailwind classes with /, [, @ break assertions",
+    "fixComplexity": "Low (~50 lines)",
+    "riskLevel": "Low - native CSS.escape() API, isolated change"
+  },
+  "scope": {
+    "ui": {
+      "components": 27,
+      "patterns": "100+",
+      "criticalComponents": [
+        "sidebar.tsx",
+        "select.tsx",
+        "dialog.tsx"
+      ]
+    },
+    "files": {
+      "primary": "BROWSER-CLI/SCRIPTS/features/snapshotModules/capture.ts",
+      "secondary": "BROWSER-CLI/SCRIPTS/features/snapshotModules/forms.ts",
+      "types": "BROWSER-CLI/SCRIPTS/features/snapshotModules/types.ts",
+      "consumption": [
+        "interactions.ts",
+        "drag.ts",
+        "assertions.ts",
+        "dom-inspection.ts",
+        "content-capture.ts"
+      ]
+    },
+    "linesChanged": "~50"
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Core Fix Implementation",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Update results type definition",
+          "file": "capture.ts",
+          "lines": "164-180",
+          "change": "Add cssValidated: boolean to results array type"
+        },
+        {
+          "id": "1.2",
+          "description": "Replace CSS selector generation",
+          "file": "capture.ts",
+          "lines": "204-227",
+          "change": "Add CSS.escape() to all 5 selector types"
+        },
+        {
+          "id": "1.3",
+          "description": "Update result object",
+          "file": "capture.ts",
+          "lines": "258-265",
+          "change": "Include cssValidated in result object"
+        },
+        {
+          "id": "1.4",
+          "description": "Update RefData assignment",
+          "file": "capture.ts",
+          "lines": "319",
+          "change": "Copy cssValidated from match to refData"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Forms Module Fix",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Fix form field selectors",
+          "file": "forms.ts",
+          "lines": "95-97",
+          "change": "Add CSS.escape() to ID, name, aria-label selectors"
+        },
+        {
+          "id": "2.2",
+          "description": "Fix submit button selector",
+          "file": "forms.ts",
+          "lines": "116",
+          "change": "Add CSS.escape() to submitSelector"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Test Implementation",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Create CSS escape test file",
+          "file": "BROWSER-CLI/tests/features/css-selector-escape.test.ts",
+          "testCategories": [
+            "Tailwind pattern escaping",
+            "Attribute value escaping",
+            "ID escaping",
+            "Integration with commands"
+          ]
+        },
+        {
+          "id": "3.2",
+          "description": "Create test fixtures",
+          "file": "BROWSER-CLI/tests/fixtures/css-selector-test-data.ts",
+          "patterns": [
+            "peer/",
+            "group/",
+            "[var(...)]",
+            "@container/",
+            "quotes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Validation & Documentation",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Manual validation",
+          "scenarios": [
+            "Sidebar menu button with peer/menu-button",
+            "Collapsed sidebar with group-data-[...]",
+            "Calendar date cell with data-date",
+            "Form with special ID",
+            "Drag workout card"
+          ]
+        },
+        {
+          "id": "4.2",
+          "description": "Run regression tests",
+          "commands": [
+            "npx vitest run BROWSER-CLI/tests/features/snapshot.test.ts",
+            "npx vitest run BROWSER-CLI/tests/features/assertions.test.ts",
+            "npx vitest run BROWSER-CLI/tests/"
+          ]
+        },
+        {
+          "id": "4.3",
+          "description": "Update documentation",
+          "files": [
+            ".claude/rules/BROWSER-CLI/SKILL.md",
+            "BROWSER-CLI/CHANGELOG.md"
+          ]
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "criticalPath": [
+      "1.1",
+      "1.2",
+      "1.3",
+      "1.4"
+    ],
+    "parallelizable": [
+      "2.1",
+      "2.2"
+    ],
+    "testAfter": [
+      "3.1",
+      "3.2"
+    ],
+    "validateAfter": [
+      "4.1",
+      "4.2",
+      "4.3"
+    ]
+  },
+  "risks": [
+    {
+      "risk": "CSS.escape() unavailable",
+      "probability": "Very Low",
+      "impact": "High",
+      "mitigation": "Browser-native since 2015, IE11+"
+    },
+    {
+      "risk": "Existing tests break",
+      "probability": "Low",
+      "impact": "Medium",
+      "mitigation": "Run full test suite after fix"
+    },
+    {
+      "risk": "Performance regression",
+      "probability": "Very Low",
+      "impact": "Low",
+      "mitigation": "CSS.escape() is C++ native, sub-microsecond"
+    }
+  ],
+  "agentAssignments": {
+    "phase1": "developer",
+    "phase2": "developer",
+    "phase3": "developer",
+    "phase4": "browser"
+  }
+}

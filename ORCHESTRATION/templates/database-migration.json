@@ -1,0 +1,96 @@
+{
+  "id": "database-migration",
+  "name": "Database Migration",
+  "description": "Safe database schema changes with impact analysis and data migration",
+  "tags": ["database", "convex", "schema", "migration"],
+  "variables": [
+    {
+      "name": "table_name",
+      "description": "Target Convex table",
+      "required": true
+    },
+    {
+      "name": "migration_type",
+      "description": "add_field, remove_field, rename_field, change_type",
+      "required": true
+    },
+    {
+      "name": "field_name",
+      "description": "Field being modified",
+      "required": true
+    },
+    {
+      "name": "new_field_type",
+      "description": "For type changes",
+      "default": "",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Migration Planning",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_MIGRATION_{{table_name}}*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze {{table_name}} schema and usage. Map all queries/mutations using the table. Identify data dependencies and migration requirements for {{field_name}}.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 25000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Schema Update",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Update convex/schema.ts for {{table_name}}.{{field_name}}. Migration type: {{migration_type}}. New type: {{new_field_type}}. Ensure backward compatibility.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Data Migration",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck AND tests" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create migration script for {{table_name}}.{{field_name}} if data transformation needed. Update existing data according to {{migration_type}}.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 25000
+        }
+      ]
+    },
+    {
+      "id": "phase-4",
+      "name": "Verification",
+      "parallelizable": true,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "E2E test features using {{table_name}}. Verify data integrity after {{migration_type}} on {{field_name}}. Capture evidence screenshots.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 15000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 85000
+}

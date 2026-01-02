@@ -1,0 +1,12 @@
+{
+  "id": "55545d21-97ce-49fb-94f6-c39f6262a198",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251223_12-54_c1a59b4f-f812-49c2-b987-949465439177",
+    "timestamp": "2025-12-23T12:54:21.025Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Test task: verify orchestration flow"
+  }
+}

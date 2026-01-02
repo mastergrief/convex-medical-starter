@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-1-p0-fix",
+  "passed": true,
+  "checkedAt": "2025-12-31T18:37:59.458Z",
+  "results": [
+    {
+      "check": "default",
+      "passed": true,
+      "message": "No gate conditions defined"
+    }
+  ],
+  "blockers": []
+}

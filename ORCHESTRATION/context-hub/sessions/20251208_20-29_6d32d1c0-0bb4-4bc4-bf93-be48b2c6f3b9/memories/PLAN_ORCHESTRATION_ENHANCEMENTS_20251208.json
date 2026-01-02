@@ -1,0 +1,39 @@
+{
+  "memoryName": "PLAN_ORCHESTRATION_ENHANCEMENTS_20251208",
+  "linkedAt": "2025-12-08T20:30:12.983Z",
+  "serenaPath": ".serena/memories/PLAN_ORCHESTRATION_ENHANCEMENTS_20251208.md",
+  "summary": "Memory PLAN_ORCHESTRATION_ENHANCEMENTS_20251208 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "orch.ts",
+      "hub.ts",
+      "tracker.ts",
+      "index.ts",
+      "lib/parallel",
+      "2.1",
+      "45k/120k",
+      "1.1",
+      "blessed/ink",
+      "lib/dashboard",
+      "ThemeContext.tsx",
+      "z.object",
+      "z.string",
+      "z.array",
+      "z.boolean",
+      "z.number",
+      "z.record",
+      "lib/evidence",
+      "index.json",
+      "lib/template"
+    ],
+    "data_flow_map": {
+      "ui_to_api": "\"Toggle.onClick → context.toggleTheme\"                      │",
+      "api_to_db": "\"toggleTheme → localStorage.setItem\"                        │"
+    }
+  }
+}

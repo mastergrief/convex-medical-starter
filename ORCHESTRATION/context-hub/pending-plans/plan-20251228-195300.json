@@ -1,0 +1,171 @@
+{
+  "planId": "edit-workout-modal-improvements",
+  "createdAt": "2025-12-28T19:45:00Z",
+  "scope": {
+    "ui": { "files": 11, "lines": 1928 },
+    "api": { "files": 6, "lines": 2009 },
+    "db": { "tables": 4, "relationships": 5 }
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Performance Optimization",
+      "priority": 1,
+      "estimatedSubagents": 3,
+      "tasks": [
+        {
+          "id": "1.1",
+          "name": "ExerciseCardBase React.memo",
+          "file": "src/components/shared/ExerciseCard/ExerciseCardBase.tsx",
+          "action": "wrap_with_memo",
+          "lines": "24-122",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "-80% re-renders during typing"
+        },
+        {
+          "id": "1.2",
+          "name": "TrainingTypeProvider Context",
+          "files": [
+            "src/contexts/TrainingTypeContext.tsx (CREATE)",
+            "src/hooks/useTrainingTypeMetrics.ts (MODIFY)",
+            "src/components/QuickProgramSheet/index.tsx (MODIFY)"
+          ],
+          "action": "create_context_lift_queries",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "-90% query subscriptions (20 -> 2)"
+        },
+        {
+          "id": "1.3",
+          "name": "Race Condition Fix",
+          "file": "src/components/QuickProgramSheet/index.tsx",
+          "action": "add_cleanup_flag",
+          "lines": "108-157",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "Prevents stale data on rapid modal switches"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Security Hardening",
+      "priority": 2,
+      "estimatedSubagents": 3,
+      "tasks": [
+        {
+          "id": "2.1",
+          "name": "Relationship Check in Update",
+          "file": "convex/calendarWorkoutsModules/mutations.ts",
+          "action": "add_relationship_check",
+          "lines": "281-282 (insert after)",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "Prevents editing after coach-athlete relationship ends"
+        },
+        {
+          "id": "2.2",
+          "name": "Text Field Validation",
+          "files": [
+            "convex/calendarWorkoutsModules/validators.ts (ADD function)",
+            "convex/calendarWorkoutsModules/mutations.ts (CALL validator)"
+          ],
+          "action": "add_text_validation",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "workoutName: max 100, description: max 500, notes: max 1000"
+        },
+        {
+          "id": "2.3",
+          "name": "Error Retry Mechanism",
+          "file": "src/components/QuickProgramSheet/hooks/useQuickProgramMutations.ts",
+          "action": "add_retry_toast_action",
+          "lines": "129-145",
+          "dependencies": [],
+          "parallel": true,
+          "impact": "Users can retry failed saves without reopening modal"
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Feature Completeness",
+      "priority": 3,
+      "estimatedSubagents": 1,
+      "tasks": [
+        {
+          "id": "3.1",
+          "name": "Custom Metrics Rendering",
+          "files": [
+            "src/hooks/useTrainingTypeMetrics.ts (EXTEND trainingTypeToConfig)",
+            "src/components/shared/DynamicExerciseFields.tsx (type update)"
+          ],
+          "action": "integrate_custom_metrics",
+          "dependencies": ["1.2"],
+          "parallel": false,
+          "impact": "Coach-defined custom metrics finally rendered in Edit modal"
+        }
+      ]
+    }
+  ],
+  "criticalFiles": [
+    {
+      "path": "src/components/shared/ExerciseCard/ExerciseCardBase.tsx",
+      "lines": 150,
+      "changes": "Add React.memo wrapper with custom comparison"
+    },
+    {
+      "path": "src/contexts/TrainingTypeContext.tsx",
+      "lines": 0,
+      "changes": "CREATE new context provider"
+    },
+    {
+      "path": "src/hooks/useTrainingTypeMetrics.ts",
+      "lines": 469,
+      "changes": "Use context instead of direct queries; add customMetrics support"
+    },
+    {
+      "path": "src/components/QuickProgramSheet/index.tsx",
+      "lines": 273,
+      "changes": "Wrap with TrainingTypeProvider; add cleanup flag to useEffect"
+    },
+    {
+      "path": "convex/calendarWorkoutsModules/mutations.ts",
+      "lines": 730,
+      "changes": "Add relationship check; call text validator"
+    },
+    {
+      "path": "convex/calendarWorkoutsModules/validators.ts",
+      "lines": 126,
+      "changes": "Add validateTextFields function"
+    },
+    {
+      "path": "src/components/QuickProgramSheet/hooks/useQuickProgramMutations.ts",
+      "lines": 174,
+      "changes": "Add retry mechanism with ToastAction"
+    }
+  ],
+  "risks": [
+    {
+      "issue": "TrainingTypeProvider scope",
+      "severity": "medium",
+      "mitigation": "Scope provider to QuickProgramSheet only, not app-wide"
+    },
+    {
+      "issue": "Custom metrics type safety",
+      "severity": "medium",
+      "mitigation": "Use index signature with proper type guards"
+    },
+    {
+      "issue": "Memo comparison correctness",
+      "severity": "low",
+      "mitigation": "Test with React DevTools Profiler"
+    }
+  ],
+  "validation": {
+    "typecheck": "npm run typecheck",
+    "lint": "npm run lint",
+    "test": "npm run test"
+  }
+}

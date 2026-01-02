@@ -1,0 +1,222 @@
+{
+  "id": "a7f2c891-3e4a-4b5c-8d6e-9f0a1b2c3d4e",
+  "type": "plan",
+  "metadata": {
+    "promptId": "1f112746-0bb6-4033-adb9-cd20e4f1d32e",
+    "sessionId": "20251221_16-24_1d45082d-55b8-441d-a510-36f4d99fcf69",
+    "timestamp": "2025-12-21T16:25:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Add targetIntensity config entries to sprint/speed/power categories in LOGGING_FIELD_CONFIGS to fix % Max Intensity display in WorkoutLogger",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Implementation Phase",
+      "description": "Add targetIntensity to sprint, speed, power targets[] arrays",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add targetIntensity config to speed category (line 88)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "PLAN_MAXINTENSITY_FIX_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "speed.targets[] contains { sourceField: 'targetIntensity', unit: '%', prefix: '@' }",
+            "Insertion after line 87 (targetTime entry)"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add targetIntensity config to sprint category (line 123)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "PLAN_MAXINTENSITY_FIX_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "sprint.targets[] contains { sourceField: 'targetIntensity', unit: '%', prefix: '@' }",
+            "Insertion after line 122 (targetDistance entry)"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add targetIntensity config to power category (line 209)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "PLAN_MAXINTENSITY_FIX_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "power.targets[] contains { sourceField: 'targetIntensity', unit: '%', prefix: '@' }",
+            "Insertion after line 208 (targetVelocity entry)"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All three targetIntensity entries added to configs.ts"
+    },
+    {
+      "id": "phase-2",
+      "name": "Typecheck Validation Phase",
+      "description": "Verify TypeScript compilation passes after config changes",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Run npm run typecheck and verify no errors",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 1000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "typecheck exits with code 0",
+            "No TypeScript errors reported"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Typecheck passes with exit code 0"
+    },
+    {
+      "id": "phase-3",
+      "name": "E2E Testing Phase",
+      "description": "Verify @ XX% displays in WorkoutLogger for sprint/speed/power exercises",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Browser-CLI: Navigate to WorkoutLogger with sprint exercise that has percentMaxIntensity set",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Login as test coach/athlete",
+            "Navigate to workout with sprint exercise",
+            "Verify @ XX% appears in ProgrammedTargetsDisplay"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Browser-CLI: Verify speed and power categories also display intensity",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Speed exercise shows @ XX% when programmed",
+            "Power exercise shows @ XX% when programmed",
+            "Screenshot evidence captured"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Browser-CLI: Verify no regressions in other categories (strength, cardio)",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Strength exercises still show @ RPE (not intensity)",
+            "Cardio exercises still show @ % HR max",
+            "No visual regressions"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E tests pass with screenshot evidence"
+    },
+    {
+      "id": "phase-4",
+      "name": "Documentation Phase",
+      "description": "Update Serena memory to mark fix as complete",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Update PLAN_MAXINTENSITY_FIX_20251221 memory with completion status",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 1000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_MAXINTENSITY_FIX_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory updated with Status: COMPLETED",
+            "Completion date added",
+            "Test evidence referenced"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Memory updated with completion status"
+    }
+  ],
+  "totalEstimatedTokens": 20000,
+  "risks": [
+    {
+      "description": "Test data may not have sprint/speed/power exercises with percentMaxIntensity set",
+      "mitigation": "Create test exercise via Convex dashboard or use existing programmed workout",
+      "severity": "low"
+    },
+    {
+      "description": "Browser state may require fresh login",
+      "mitigation": "Use saveState/restoreState pattern for authenticated state",
+      "severity": "low"
+    }
+  ]
+}

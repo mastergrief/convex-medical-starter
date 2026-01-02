@@ -1,0 +1,174 @@
+{
+  "id": "fc246ac0-972e-4b63-9a33-8d4bf63fc326",
+  "timestamp": "2025-12-31T15:37:22.714Z",
+  "description": "Wire validateLoggingMetrics() to mutations, add console warnings for unknown metrics, and wire customMetrics prop",
+  "design": {
+    "id": "plan-logging-validation-remediation",
+    "title": "Athlete Logging Configuration Validation Remediation",
+    "description": "Wire validateLoggingMetrics() to mutations, add console warnings for unknown metrics, and wire customMetrics prop",
+    "createdAt": "2025-12-31T15:30:00Z",
+    "status": "pending",
+    "phases": [
+      {
+        "id": "phase-0-backend-validation",
+        "name": "P0: Backend Validation (BLOCKING)",
+        "priority": "CRITICAL",
+        "effort": "45 min",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "p0-1",
+            "description": "Import validateLoggingMetrics in calendarWorkoutsModules/mutations.ts",
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "status": "pending"
+          },
+          {
+            "id": "p0-2",
+            "description": "Wire validation in createCalendarWorkout (line 192)",
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "status": "pending"
+          },
+          {
+            "id": "p0-3",
+            "description": "Wire validation in updateCalendarWorkout PATCH path (line 456)",
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "status": "pending"
+          },
+          {
+            "id": "p0-4",
+            "description": "Wire validation in updateCalendarWorkout INSERT path (line 494)",
+            "file": "convex/calendarWorkoutsModules/mutations.ts",
+            "status": "pending"
+          },
+          {
+            "id": "p0-5",
+            "description": "Wire validation in startWorkout (line 144) with filter",
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "phase-1-frontend-warnings",
+        "name": "P1: Frontend Warning Layer",
+        "priority": "HIGH",
+        "effort": "30 min",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "p1-1",
+            "description": "Add console.warn for unknown metrics in buildConfigFromMetrics",
+            "file": "src/config/exerciseFields/logging/configBuilder.ts",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "phase-2-custom-metrics",
+        "name": "P2: Wire customMetrics Prop",
+        "priority": "HIGH",
+        "effort": "20 min",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "p2-1",
+            "description": "Extract customMetrics from trainingType in DynamicExerciseFields",
+            "file": "src/components/shared/DynamicExerciseFields.tsx",
+            "status": "pending"
+          },
+          {
+            "id": "p2-2",
+            "description": "Pass customMetrics prop to LoggingMetricsSelector",
+            "file": "src/components/shared/DynamicExerciseFields.tsx",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "phase-3-component-tests",
+        "name": "P3: Component Tests",
+        "priority": "MEDIUM",
+        "effort": "60 min",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "p3-1",
+            "description": "Create LoggingMetricsSelector.test.tsx with 5 test cases",
+            "file": "src/components/exercise/__tests__/LoggingMetricsSelector.test.tsx",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "phase-4-integration-tests",
+        "name": "P4: Integration Tests",
+        "priority": "LOW",
+        "effort": "90 min",
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": "p4-1",
+            "description": "Create mutation validation integration tests",
+            "file": "convex/__tests__/calendarWorkouts.validation.test.ts",
+            "status": "pending"
+          }
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "convex/calendarWorkoutsModules/mutations.ts",
+        "lines": 807,
+        "changes": "Wire validation at lines 192, 456, 494"
+      },
+      {
+        "path": "convex/lib/loggingMetricsValidation.ts",
+        "lines": 80,
+        "changes": "Import source for validateLoggingMetrics"
+      },
+      {
+        "path": "src/config/exerciseFields/logging/configBuilder.ts",
+        "lines": 203,
+        "changes": "Add warning at line 167"
+      },
+      {
+        "path": "src/components/shared/DynamicExerciseFields.tsx",
+        "lines": 280,
+        "changes": "Wire customMetrics prop at line 239"
+      },
+      {
+        "path": "convex/workoutLogsModules/mutations.ts",
+        "lines": 536,
+        "changes": "Add filter at line 144"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Validation breaks existing data",
+        "mitigation": "validateLoggingMetrics() returns empty array for undefined - graceful degradation"
+      },
+      {
+        "risk": "Frontend shows warnings for valid custom metrics",
+        "mitigation": "custom_* pattern check in warning filter prevents false positives"
+      }
+    ],
+    "totalEffort": "4.25 hours",
+    "dependencies": {
+      "P0": [],
+      "P1": [
+        "P0"
+      ],
+      "P2": [
+        "P0"
+      ],
+      "P3": [
+        "P1",
+        "P2"
+      ],
+      "P4": [
+        "P3"
+      ]
+    }
+  },
+  "status": "archived"
+}

@@ -1,0 +1,113 @@
+{
+  "id": "browser-cli-bugfixes-2025-12-30",
+  "title": "Browser-CLI Bug Fixes",
+  "description": "Fix 3 bugs identified in Browser-CLI test results: type-by-ref, video recording, countElements display",
+  "createdAt": "2025-12-30T11:15:00.000Z",
+  "status": "archived",
+  "scope": {
+    "totalFiles": 5,
+    "estimatedComplexity": "medium",
+    "categories": {
+      "snapshotModules": 1,
+      "features": 2,
+      "browserManager": 2
+    }
+  },
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Bug 3: countElements Display Fix",
+      "description": "Single-line fix to include selector in response data",
+      "risk": "none",
+      "files": [
+        {
+          "path": "BROWSER-CLI/SCRIPTS/features/dom-inspection.ts",
+          "lines": 233,
+          "change": "Line 224: Add selector to response data object"
+        }
+      ],
+      "validation": "Run countElements button - should show selector not 'unknown'"
+    },
+    {
+      "id": "phase-2",
+      "name": "Bug 1: Type by Ref Tiered Fallback",
+      "description": "Add try-catch around Tier 1 (name-based) resolution, fallback to CSS selector on strict mode violation",
+      "risk": "low",
+      "files": [
+        {
+          "path": "BROWSER-CLI/SCRIPTS/features/snapshotModules/interactions.ts",
+          "lines": 315,
+          "changes": [
+            "Add tryTieredResolution helper function (~50 lines)",
+            "Refactor clickByRef (lines 47-111) to use helper",
+            "Refactor dblclickByRef (lines 113-180) to use helper",
+            "Refactor typeByRef (lines 182-248) to use helper",
+            "Refactor hoverByRef (lines 250-315) to use helper"
+          ]
+        }
+      ],
+      "validation": "Test with elements having duplicate accessible names - should use CSS fallback"
+    },
+    {
+      "id": "phase-3",
+      "name": "Bug 2: Video Recording Context Wiring",
+      "description": "Wire BrowserContext to VideoRecordingFeature and handle context recreation for video options",
+      "risk": "medium",
+      "files": [
+        {
+          "path": "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts",
+          "lines": 339,
+          "change": "Add VideoRecording case to wireLazyFeatureDependencies (lines 177-229)"
+        },
+        {
+          "path": "BROWSER-CLI/SCRIPTS/browserManagerModules/BrowserManager.ts",
+          "lines": 201,
+          "changes": [
+            "Handle requiresContextRestart flag in handleCommand",
+            "Add recreateContextWithVideo method"
+          ]
+        },
+        {
+          "path": "BROWSER-CLI/SCRIPTS/browserManagerModules/lifecycle.ts",
+          "lines": 270,
+          "change": "Add recreateContext method with recordVideo options support"
+        }
+      ],
+      "validation": "startRecording -> stopRecording -> listRecordings should show saved file"
+    }
+  ],
+  "risks": [
+    {
+      "bug": "Bug 1",
+      "level": "low",
+      "description": "Fallback helper is additive; preserves original behavior for unique names",
+      "mitigation": "Helper wraps existing logic in try-catch"
+    },
+    {
+      "bug": "Bug 2",
+      "level": "medium",
+      "description": "Context recreation requires re-initializing features and preserving state",
+      "mitigation": "Implement in stages: first wire context, then handle restart flag"
+    },
+    {
+      "bug": "Bug 3",
+      "level": "none",
+      "description": "Single-line additive change",
+      "mitigation": "None needed"
+    }
+  ],
+  "dependencies": {
+    "betweenBugs": "none - all independent",
+    "recommendedOrder": [
+      "phase-1",
+      "phase-2",
+      "phase-3"
+    ],
+    "reason": "Easiest to hardest - build confidence before complex changes"
+  },
+  "testingRequirements": {
+    "bug1": "Create page with multiple elements sharing same accessible name, verify fallback works",
+    "bug2": "Full video recording workflow: start -> interact -> stop -> verify file exists",
+    "bug3": "Run countElements with any selector, verify selector shown in output"
+  }
+}

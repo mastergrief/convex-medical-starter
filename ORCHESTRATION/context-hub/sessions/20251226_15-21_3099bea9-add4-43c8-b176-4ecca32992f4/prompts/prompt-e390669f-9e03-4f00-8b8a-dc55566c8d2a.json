@@ -1,0 +1,12 @@
+{
+  "id": "e390669f-9e03-4f00-8b8a-dc55566c8d2a",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251226_15-21_3099bea9-add4-43c8-b176-4ecca32992f4",
+    "timestamp": "2025-12-26T15:21:52.169Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "ORCHESTRATION Remaining TODOs: Fix gatesModules.test.ts mock hoisting error, add JSDoc to 12 ContextHub methods, expand README CLI documentation for execute/trace/template/dashboard commands"
+  }
+}

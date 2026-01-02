@@ -1,0 +1,74 @@
+
+
+### Page state
+- Snapshot ID: 78eed09d
+- Page URL: unknown
+- Page Title: unknown
+- Page Snapshot:
+```yaml
+=== SNAPSHOT+ ===
+
+ELEMENT STATE
+All elements enabled, no values captured
+
+
+FORMS
+No forms detected on page
+
+ACCESSIBILITY TREE
+- banner:
+  - switch "Toggle dark mode" [checked]
+- heading "Elevate Your Performance" [level=1]
+- paragraph: The AI-powered platform that transforms coaches into superhumans and athletes into champions
+- button "Start Your Journey" [ref=e1]
+- link "Learn More": [ref=e2]
+  - /url: "#features"
+- heading "Powerful Features for Peak Performance" [level=2]
+- paragraph: Everything you need to transform your coaching business and elevate athlete performance
+- text: AI-Powered Programming
+- paragraph: Reduce programming time by 70% with intelligent block suggestions and automated periodization
+- text: Smart Exercise Library
+- paragraph: Comprehensive exercise database with video demonstrations and progression tracking
+- text: Real-Time Analytics
+- paragraph: Track performance metrics and get AI-driven insights for data-driven coaching decisions
+- heading "Trusted by Coaches and Athletes" [level=2]
+- paragraph: See what our users have to say about Zenith
+- text: Sarah Johnson Professional Powerlifting Coach
+- paragraph: "\"Zenith has completely transformed my coaching business. I've gone from managing 30 athletes to over 100 without sacrificing quality. The AI suggestions are incredibly accurate.\""
+- text: Verified Customer Mike Chen Elite CrossFit Athlete
+- paragraph: "\"The workout tracking and analytics have taken my training to the next level. I can see exactly where I'm improving and what needs work.\""
+- text: Verified Customer
+- heading "Choose Your Plan" [level=2]
+- paragraph: Flexible pricing to match your needs and scale with your growth
+- text: Bronze £20/month Perfect for getting started
+- list:
+  - listitem: Basic workout logging
+  - listitem: Exercise library access
+  - listitem: Community forum (view-only)
+- button "Get Started" [ref=e3]
+- text: Silver £50/month Most popular choice
+- list:
+  - listitem: Everything in Bronze
+  - listitem: AI workout suggestions
+  - listitem: Full community access
+  - listitem: Progress analytics
+- button "Get Started" [ref=e4]
+- text: Gold £100/month For serious athletes
+- list:
+  - listitem: Everything in Silver
+  - listitem: Advanced AI insights
+  - listitem: Custom training blocks
+  - listitem: Priority support
+- button "Get Started" [ref=e5]
+- text: Platinum £200/month For elite coaches
+- list:
+  - listitem: Everything in Gold
+  - listitem: Unlimited athletes
+  - listitem: White-label options
+  - listitem: Dedicated support
+- button "Contact Sales" [ref=e6]
+- heading "Ready to Transform Your Performance?" [level=2]
+- paragraph: Join thousands of coaches and athletes already using Zenith to reach new heights
+- button "Start Free Trial" [ref=e7]
+- button "Schedule Demo" [ref=e8]
+```

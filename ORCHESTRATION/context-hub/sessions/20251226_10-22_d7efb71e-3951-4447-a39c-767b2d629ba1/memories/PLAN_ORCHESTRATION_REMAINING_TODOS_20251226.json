@@ -1,0 +1,36 @@
+{
+  "memoryName": "PLAN_ORCHESTRATION_REMAINING_TODOS_20251226",
+  "linkedAt": "2025-12-26T10:23:01.197Z",
+  "serenaPath": ".serena/memories/PLAN_ORCHESTRATION_REMAINING_TODOS_20251226.md",
+  "summary": "Memory PLAN_ORCHESTRATION_REMAINING_TODOS_20251226 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "lib/parallel",
+      "test.ts",
+      "gates.ts",
+      "types.ts",
+      "parsing.ts",
+      "evidence.ts",
+      "checking.ts",
+      "io.ts",
+      "phase.ts",
+      "index.ts",
+      "engine.ts",
+      "config.ts",
+      "core.ts",
+      "utils.ts",
+      "processor.ts",
+      "schemas.ts",
+      "instantiation.ts",
+      "validation.ts",
+      "registry.ts",
+      "lib/context"
+    ],
+    "data_flow_map": {}
+  }
+}

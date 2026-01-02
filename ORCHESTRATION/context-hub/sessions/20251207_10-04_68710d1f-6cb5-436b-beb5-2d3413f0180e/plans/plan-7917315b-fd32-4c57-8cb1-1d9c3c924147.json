@@ -1,0 +1,320 @@
+{
+  "id": "7917315b-fd32-4c57-8cb1-1d9c3c924147",
+  "type": "plan",
+  "metadata": {
+    "promptId": "faafe58d-20c5-49c6-b4a4-e4569c88cfae",
+    "sessionId": "20251228_12-49_93c3c014-3bb4-471d-8139-c68ab5b6603a",
+    "timestamp": "2025-12-28T12:50:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Reposition AI Training Advisor from WorkoutStartScreen to a dedicated screen between PreWorkoutAssessment and Active Workout. This enables better UX flow where readiness check informs AI recommendations before workout execution.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "State Infrastructure",
+      "description": "Add showAIAdvisor state variable and wire through hooks",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add showAIAdvisor state to useWorkoutState hook: Add useState for showAIAdvisor, update WorkoutStateResult interface with showAIAdvisor boolean and setShowAIAdvisor setter, update return object",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutState.ts"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE1_STATE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "showAIAdvisor state variable added with useState(false)",
+            "WorkoutStateResult interface updated with showAIAdvisor: boolean",
+            "setShowAIAdvisor added to setters",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Modify useSessionHandlers: Update SessionHandlersProps to accept setShowAIAdvisor, refactor handlePreWorkoutComplete to transition to AI screen (setShowPreWorkout(false), setShowAIAdvisor(true)), add new handleAIAdvisorDecision handler with modifier application logic, update SessionHandlersResult interface",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE2_HANDLERS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "SessionHandlersProps includes setShowAIAdvisor setter",
+            "handlePreWorkoutComplete transitions to AI advisor (not workout start)",
+            "handleAIAdvisorDecision implements apply/skip logic with modifier application",
+            "SessionHandlersResult exports handleAIAdvisorDecision",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Update useWorkoutLogger facade: Wire showAIAdvisor from useWorkoutState through the facade, pass setShowAIAdvisor to useSessionHandlers, expose handleAIAdvisorDecision in returned handlers object",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "useWorkoutLogger passes setShowAIAdvisor to useSessionHandlers",
+            "state object includes showAIAdvisor",
+            "handlers object includes handleAIAdvisorDecision",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All state infrastructure subtasks complete, typecheck passes"
+    },
+    {
+      "id": "phase-2",
+      "name": "Component Creation",
+      "description": "Create the new AIAdvisorScreen component",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create AIAdvisorScreen component: New file at src/components/AIAdvisorScreen.tsx with Card layout, AutoRegulationCard integration, decision buttons (Apply/Skip), modifier display. Props: athleteId, workoutName, appliedModifiers, onApplyModifiers, onDecision",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/AutoRegulationCard.tsx"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE3_COMPONENT"
+            ]
+          },
+          "acceptanceCriteria": [
+            "AIAdvisorScreen.tsx created at src/components/",
+            "Component renders AutoRegulationCard",
+            "Start with Adjustments button (disabled without modifiers)",
+            "Skip & Start Original button (always enabled)",
+            "Modifier summary displayed when appliedModifiers present",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "AIAdvisorScreen component created and type-safe"
+    },
+    {
+      "id": "phase-3",
+      "name": "Integration",
+      "description": "Integrate AIAdvisorScreen into WorkoutLogger flow",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Update WorkoutLogger.tsx: Import AIAdvisorScreen, add conditional render after showPreWorkout block (if state.showAIAdvisor && todaysWorkout), pass athleteId, workoutName, appliedModifiers, handlers to component",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3",
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLogger.tsx"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE4_INTEGRATION"
+            ]
+          },
+          "acceptanceCriteria": [
+            "AIAdvisorScreen imported",
+            "Conditional render placed after showPreWorkout, before showPostWorkout",
+            "All required props passed correctly",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "AIAdvisorScreen integrated into workout flow"
+    },
+    {
+      "id": "phase-4",
+      "name": "Cleanup",
+      "description": "Remove AutoRegulation from WorkoutStartScreen",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Clean WorkoutStartScreen: Remove AutoRegulationCard import and render, remove appliedModifiers/onApplyAutoRegulation/onResetAutoRegulation props from interface, remove reset button, update WorkoutStartScreenProps interface",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/WorkoutStartScreen.tsx"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE5_CLEANUP"
+            ]
+          },
+          "acceptanceCriteria": [
+            "AutoRegulationCard import removed",
+            "AutoRegulationCard render removed",
+            "Props interface cleaned (no appliedModifiers, onApplyAutoRegulation, onResetAutoRegulation)",
+            "Reset button removed",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Update WorkoutLogger WorkoutStartScreen call: Remove appliedModifiers, onApplyAutoRegulation, onResetAutoRegulation props from WorkoutStartScreen component usage",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLogger.tsx"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "WorkoutStartScreen props cleaned in WorkoutLogger.tsx",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "AutoRegulation completely removed from WorkoutStartScreen"
+    },
+    {
+      "id": "phase-5",
+      "name": "Optimization",
+      "description": "Add pre-fetch optimization for AI recommendations",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Add pre-fetch to PreWorkoutAssessment: Add athleteId prop, useQuery for existing recommendation, useEffect to trigger generateRecommendations in background when component mounts if no cached recommendation exists",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/PreWorkoutAssessment.tsx"
+            ],
+            "memories": [
+              "PLAN_AI_ADVISOR_PHASE6_PREFETCH"
+            ]
+          },
+          "acceptanceCriteria": [
+            "athleteId prop added to PreWorkoutAssessmentProps",
+            "useQuery checks for existing recommendation",
+            "useEffect triggers background generation",
+            "Fire-and-forget pattern (non-blocking)",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Update WorkoutLogger PreWorkoutAssessment call: Pass athleteId prop to PreWorkoutAssessment component",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLogger.tsx"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "athleteId passed to PreWorkoutAssessment",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Pre-fetch optimization complete"
+    },
+    {
+      "id": "phase-6",
+      "name": "Validation",
+      "description": "E2E testing of the complete flow",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "E2E test new workout flow: Navigate to workout, complete readiness check, verify AI advisor screen appears, test Apply decision path, verify workout starts with modifiers",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-5.2"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Readiness check completes and transitions to AI advisor",
+            "AI advisor displays recommendations",
+            "Apply button starts workout with modifiers",
+            "Skip button starts workout without modifiers",
+            "No console errors during flow"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "E2E validation complete, all paths working"
+    }
+  ],
+  "totalEstimatedTokens": 63000,
+  "risks": [
+    {
+      "description": "Handler refactoring may break existing modifier application logic",
+      "mitigation": "Move existing code, don't rewrite - preserve logic from handlePreWorkoutComplete",
+      "severity": "medium"
+    },
+    {
+      "description": "State transition timing between screens could cause flicker",
+      "mitigation": "Use synchronous state updates in same callback",
+      "severity": "low"
+    },
+    {
+      "description": "Pre-fetch may race with manual trigger on AI advisor screen",
+      "mitigation": "AutoRegulationCard already handles this via useQuery cache",
+      "severity": "low"
+    },
+    {
+      "description": "Removing props from WorkoutStartScreen may break other usages",
+      "mitigation": "Search for all WorkoutStartScreen imports before cleanup",
+      "severity": "low"
+    }
+  ]
+}

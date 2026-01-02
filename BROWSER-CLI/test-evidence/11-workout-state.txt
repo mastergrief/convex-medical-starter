@@ -1,0 +1,96 @@
+
+
+### Page state
+- Snapshot ID: b12b86cd
+- Page URL: unknown
+- Page Title: unknown
+- Page Snapshot:
+```yaml
+=== SNAPSHOT+ ===
+
+ELEMENT STATE
+Disabled (5): [e50] Remove Set, [e51] Log All Sets, [e52] ← Previous Set, [e53] Next Set →, [e54] Log Set 1
+With Values (1):
+  [e47] Set Notes (Optional) = "5"
+
+
+FORMS
+No forms detected on page
+
+ACCESSIBILITY TREE
+- region "Notifications alt+T"
+- main:
+  - heading "Zenith Performance Platform (Athlete Mode)" [level=1]
+  - button "Switch to Coach Mode" [ref=e1]
+  - button "Sign out" [ref=e2]
+  - tablist:
+    - tab "Dashboard" [ref=e3]
+    - tab "My Coach" [ref=e4]
+    - tab "Workout Logger" [selected] [ref=e5]
+    - tab "My Analytics" [ref=e6]
+    - tab "Test Assessments" [ref=e7]
+    - tab "Community" [ref=e8]
+  - tabpanel "Workout Logger":
+    - button "Previous month" [ref=e9]
+    - button "Wed 31" [ref=e10]
+    - button "Thu 1" [ref=e11]
+    - button "Fri 2" [ref=e12]
+    - button "Sat 3" [ref=e13]
+    - button "Sun 4" [ref=e14]
+    - button "Mon 5" [ref=e15]
+    - button "Tue 6" [ref=e16]
+    - button "Wed 7" [ref=e17]
+    - button "Thu 8" [ref=e18]
+    - button "Fri 9" [ref=e19]
+    - button "Sat 10" [ref=e20]
+    - button "Sun 11" [ref=e21]
+    - button "Mon 12" [ref=e22]
+    - button "Tue 13" [ref=e23]
+    - button "Wed 14" [ref=e24]
+    - button "Thu 15" [ref=e25]
+    - button "Fri 16" [ref=e26]
+    - button "Sat 17" [ref=e27]
+    - button "Sun 18" [ref=e28]
+    - button "Mon 19" [ref=e29]
+    - button "Tue 20" [ref=e30]
+    - button "Wed 21" [ref=e31]
+    - button "Thu 22" [ref=e32]
+    - button "Fri 23" [ref=e33]
+    - button "Sat 24" [ref=e34]
+    - button "Sun 25" [ref=e35]
+    - button "Mon 26" [ref=e36]
+    - button "Tue 27" [ref=e37]
+    - button "Wed 28" [ref=e38]
+    - button "Thu 29" [ref=e39]
+    - button "Fri 30" [ref=e40]
+    - button "Sat 31" [ref=e41]
+    - button "Next month" [ref=e42]
+    - button "Today" [ref=e43]
+    - button "Cancel workout" [ref=e44]
+    - heading "Quick Workout - Dec 25" [level=1]
+    - text: 0%
+    - progressbar
+    - paragraph: 0 of 1 sets completed
+    - text: Session Time 0:00 1
+    - heading "Fly 10's" [level=2]
+    - paragraph: Set 1 of 1
+    - button "Swap Exercise" [ref=e45]
+    - button [ref=e46]
+    - alert: "Target: 5 reps × 30m @ RPE 9-10 @ 95% intensity"
+    - text: PROGRAMMED TARGET 5 reps30 min 4.4 s Actual Reps
+    - spinbutton: "5"
+    - text: Best Time
+    - spinbutton
+    - text: Wind Speed
+    - spinbutton
+    - text: Set Notes (Optional)
+    - textbox "Set Notes (Optional)" [ref=e47]
+    - button "Apply to All Remaining Sets" [ref=e48]
+    - button "+ Add Set" [ref=e49]
+    - button "Remove Set" [disabled] [ref=e50]
+    - button "Log All Sets" [disabled] [ref=e51]
+    - button "← Previous Set" [disabled] [ref=e52]
+    - button "Next Set →" [disabled] [ref=e53]
+    - button "Log Set 1" [disabled] [ref=e54]
+    - button "Add Exercise from Library" [ref=e55]
+```

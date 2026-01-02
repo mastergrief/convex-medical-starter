@@ -1,0 +1,12 @@
+{
+  "id": "1ee89e93-b031-45db-a11c-611ca3093c18",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251226_10-22_d7efb71e-3951-4447-a39c-767b2d629ba1",
+    "timestamp": "2025-12-26T10:22:47.428Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "ORCHESTRATION System Remaining TODOs: Fix failing test (runInBackground expectation), implement exponential backoff retry, split gates.ts (702 LOC → 6 modules), split parallel-engine.ts (718 LOC → 4 modules), split template-processor.ts (668 LOC → 4 modules). All agents run foreground only."
+  }
+}

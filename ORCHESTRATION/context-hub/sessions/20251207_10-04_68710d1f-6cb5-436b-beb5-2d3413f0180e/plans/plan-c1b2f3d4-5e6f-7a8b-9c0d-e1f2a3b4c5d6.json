@@ -1,0 +1,313 @@
+{
+  "id": "c1b2f3d4-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
+  "type": "plan",
+  "metadata": {
+    "promptId": "a1b2c3d4-5e6f-7a8b-9c0d-e1f2a3b4c5d7",
+    "sessionId": "20260102_12-15_b676a48d-b451-4d85-9e41-6d95dec64d04",
+    "timestamp": "2026-01-02T12:15:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix category filter dropdown bug in Workout Logger AddExerciseModal - categories not loading due to missing getCategories query, plus backend deleteCategory bug and type mismatches",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Core Frontend Fix (P0)",
+      "description": "Fix the root cause: categories=[] passed to AddExerciseModal because useWorkoutQueries lacks getCategories query",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add getCategories query to useWorkoutQueries hook - import api.exercises.getCategories and add to returned object",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutQueries.ts"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "useQuery(api.exercises.getCategories) added to hook",
+            "categories included in returned object",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Pass categories prop in WorkoutLogger.tsx line 214 - replace categories={[]} with categories={queries.categories || []}",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLogger.tsx"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "AddExerciseModal receives categories from queries",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck succeeds"
+    },
+    {
+      "id": "phase-2",
+      "name": "Backend Bug Fix (P0)",
+      "description": "Fix deleteCategory mutation using wrong index field (category.name instead of categoryId)",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Fix deleteCategory in exercises.ts lines 853-860 - change withIndex to use by_coach_category_id with categoryId instead of category.name",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/exercises.ts"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Uses by_coach_category_id index",
+            "Queries by categoryId instead of category.name",
+            "npx convex dev --once succeeds"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm run typecheck && npx convex dev --once succeeds"
+    },
+    {
+      "id": "phase-3",
+      "name": "Frontend Type Safety (P0)",
+      "description": "Fix type mismatch in AddExerciseModal - comparing ID with string in category filtering",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Fix AddExerciseModal.tsx lines 80-87 - update matchesCategory logic to compare categoryId with categoryId, update Select value to use cat._id",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/AddExerciseModal.tsx"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_04_FRONTEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "matchesCategory uses exercise.categoryId === selectedCategory",
+            "SelectItem value uses cat._id",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm run typecheck succeeds"
+    },
+    {
+      "id": "phase-4",
+      "name": "Security Hardening (P1)",
+      "description": "Add FK validation to prevent cross-coach resource access",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add FK validation to createCategory mutation - validate trainingTypeId exists and belongs to coach or is system default",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/exercises.ts"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_03_BACKEND",
+              "CATEGORY_FILTER_BUG_SPRINT_06_PERFORMANCE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Validates trainingType exists before insert",
+            "Checks ownership: trainingType.coachId === userId OR isSystemDefault",
+            "Throws appropriate error for unauthorized access"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Add FK validation to createExercise mutation - validate categoryId exists and belongs to coach",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "convex/exercises.ts"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Validates category exists if categoryId provided",
+            "Checks ownership: category.coachId === userId",
+            "Throws error for unauthorized category access"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck && npx convex dev --once succeeds"
+    },
+    {
+      "id": "phase-5",
+      "name": "Performance Optimization (P1)",
+      "description": "Fix N+1 query pattern in getCategories by batch fetching training types",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Optimize getCategories query - batch fetch training types instead of N+1 individual queries",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/exercises.ts"
+            ],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_06_PERFORMANCE",
+              "CATEGORY_FILTER_BUG_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Collects unique trainingTypeIds",
+            "Batch fetches all training types in one Promise.all",
+            "Maps results using Map for O(1) lookup",
+            "Query count reduced from 1+N to 2"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck && npx convex dev --once succeeds"
+    },
+    {
+      "id": "phase-6",
+      "name": "E2E Testing (P2)",
+      "description": "Browser-CLI E2E validation of category filter functionality",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "E2E test: Category dropdown populated - restore authenticated-coach state, navigate to workout-logger, open add exercise modal, verify category dropdown has >1 options",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2",
+            "task-2.1",
+            "task-3.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_05_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "restoreState authenticated-coach succeeds",
+            "Category dropdown visible in Add Exercise modal",
+            "assertCount '[role=\"option\"]' gt 1 passes",
+            "No console errors"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "E2E test: Category filtering works - select a category, verify exercise list is filtered, select All Categories, verify full list restored",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_05_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Selecting category reduces exercise count",
+            "All Categories restores full list",
+            "Screenshot evidence captured"
+          ]
+        },
+        {
+          "id": "task-6.3",
+          "description": "E2E test: Add exercise with category filter - filter by category, select exercise, add to workout, verify backend mutation fires",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CATEGORY_FILTER_BUG_SPRINT_05_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Exercise added after filtering by category",
+            "assertNetwork addExercise passes",
+            "assertConsole --level=error passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E assertions pass with no console errors"
+    }
+  ],
+  "totalEstimatedTokens": 45500,
+  "risks": [
+    {
+      "description": "Backend schema changes may require migration",
+      "mitigation": "Check if by_coach_category_id index exists before modifying deleteCategory",
+      "severity": "medium"
+    },
+    {
+      "description": "Type changes in AddExerciseModal may break other components using same types",
+      "mitigation": "Verify categoryId is optional in Exercise interface, maintain backward compatibility with category string field",
+      "severity": "low"
+    },
+    {
+      "description": "E2E tests depend on test data existing (categories, exercises)",
+      "mitigation": "Use authenticated-coach state which has pre-seeded data",
+      "severity": "low"
+    },
+    {
+      "description": "N+1 fix may change response shape",
+      "mitigation": "Keep same return type, only optimize internal fetching strategy",
+      "severity": "low"
+    }
+  ]
+}

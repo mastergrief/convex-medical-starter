@@ -1,0 +1,353 @@
+{
+  "id": "fd92947d-db1b-43a7-8257-9696f29f90cc",
+  "timestamp": "2026-01-01T21:27:18.039Z",
+  "description": "Enable athletes to add exercises from coach library during active workouts and swap exercises while preserving logged set data",
+  "design": {
+    "id": "plan-add-swap-exercise-20260101T212715",
+    "title": "Add Exercise from Library & Swap Exercise from Library",
+    "description": "Enable athletes to add exercises from coach library during active workouts and swap exercises while preserving logged set data",
+    "createdAt": "2026-01-01T21:27:15+00:00",
+    "status": "pending",
+    "phases": [
+      {
+        "id": "phase-0-security",
+        "name": "Security Prerequisites",
+        "description": "Fix 3 critical security vulnerabilities before feature implementation",
+        "priority": "P0",
+        "blocking": true,
+        "estimatedEffort": "0.5 days",
+        "sprint": "02",
+        "tasks": [
+          {
+            "id": "task-0-1",
+            "description": "Fix getExerciseByName() data exposure (CVSS 7.5)",
+            "file": "convex/exercises.ts",
+            "lines": "1420-1455",
+            "status": "pending"
+          },
+          {
+            "id": "task-0-2",
+            "description": "Fix checkExerciseVideos() missing auth (CVSS 7.5)",
+            "file": "convex/exercises.ts",
+            "lines": "1456-1470",
+            "status": "pending"
+          },
+          {
+            "id": "task-0-3",
+            "description": "Fix updateExercise() mass assignment (CVSS 6.5)",
+            "file": "convex/exercises.ts",
+            "lines": "336-406",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "getExerciseByName() returns null for unrelated coach exercises",
+          "checkExerciseVideos() rejects unauthenticated requests",
+          "updateExercise() only accepts whitelisted fields",
+          "TypeScript compiles without errors"
+        ]
+      },
+      {
+        "id": "phase-1-backend",
+        "name": "Backend Mutations",
+        "description": "Create addExerciseToLog and swapExerciseInLog Convex mutations",
+        "priority": "P0",
+        "blocking": true,
+        "estimatedEffort": "0.5 days",
+        "sprint": "03",
+        "dependsOn": [
+          "phase-0-security"
+        ],
+        "tasks": [
+          {
+            "id": "task-1-1",
+            "description": "Create addExerciseToLog mutation",
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "pattern": "addSetToWorkoutLog",
+            "status": "pending"
+          },
+          {
+            "id": "task-1-2",
+            "description": "Create swapExerciseInLog mutation (preserve sets)",
+            "file": "convex/workoutLogsModules/mutations.ts",
+            "critical": "sets array must remain unchanged",
+            "status": "pending"
+          },
+          {
+            "id": "task-1-3",
+            "description": "Export mutations from facade",
+            "file": "convex/workoutLogs.ts",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "Both mutations validate authentication",
+          "Both mutations validate coach-athlete relationship",
+          "Both mutations validate workout state",
+          "Swap preserves all set data",
+          "Category mismatch blocked (MVP)"
+        ]
+      },
+      {
+        "id": "phase-2-hooks",
+        "name": "Frontend Hooks & Handlers",
+        "description": "Add mutation hooks and handler functions",
+        "priority": "P1",
+        "blocking": true,
+        "estimatedEffort": "0.5 days",
+        "sprint": "04",
+        "dependsOn": [
+          "phase-1-backend"
+        ],
+        "tasks": [
+          {
+            "id": "task-2-1",
+            "description": "Add mutation hooks to useWorkoutMutations.ts",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutMutations.ts",
+            "lines": "31",
+            "status": "pending"
+          },
+          {
+            "id": "task-2-2",
+            "description": "Add handleAddExercise to useSessionHandlers.ts",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+            "lines": "306",
+            "status": "pending"
+          },
+          {
+            "id": "task-2-3",
+            "description": "Add handleSwapExercise to useSetHandlers.ts",
+            "file": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts",
+            "lines": "427",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "Both handlers show appropriate toast notifications",
+          "Form data initialized for new exercises",
+          "useWorkoutLogger facade exports new handlers"
+        ]
+      },
+      {
+        "id": "phase-3-ui",
+        "name": "UI Components",
+        "description": "Create modals and integrate buttons",
+        "priority": "P1",
+        "blocking": true,
+        "estimatedEffort": "1 day",
+        "sprint": "05",
+        "dependsOn": [
+          "phase-2-hooks"
+        ],
+        "tasks": [
+          {
+            "id": "task-3-1",
+            "description": "Create AddExerciseModal.tsx",
+            "file": "src/components/WorkoutLoggerModules/components/AddExerciseModal.tsx",
+            "estimatedLines": 180,
+            "status": "pending"
+          },
+          {
+            "id": "task-3-2",
+            "description": "Create SwapExerciseModal.tsx",
+            "file": "src/components/WorkoutLoggerModules/components/SwapExerciseModal.tsx",
+            "estimatedLines": 150,
+            "status": "pending"
+          },
+          {
+            "id": "task-3-3",
+            "description": "Add swap button to ExerciseCard.tsx",
+            "file": "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx",
+            "lines": "313",
+            "status": "pending"
+          },
+          {
+            "id": "task-3-4",
+            "description": "Integrate modals in WorkoutLogger.tsx",
+            "file": "src/components/WorkoutLogger.tsx",
+            "lines": "191",
+            "status": "pending"
+          },
+          {
+            "id": "task-3-5",
+            "description": "Update component index exports",
+            "file": "src/components/WorkoutLoggerModules/components/index.ts",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "Add Exercise button appears after exercise list",
+          "Swap button appears on each ExerciseCard",
+          "Modals open and close correctly",
+          "Search filtering works in modals",
+          "SwapExerciseModal filters to same category only"
+        ]
+      },
+      {
+        "id": "phase-4-performance",
+        "name": "Performance Optimizations",
+        "description": "Callback stabilization, debouncing, virtualization",
+        "priority": "P2",
+        "blocking": false,
+        "estimatedEffort": "0.5 days",
+        "sprint": "06",
+        "dependsOn": [
+          "phase-3-ui"
+        ],
+        "tasks": [
+          {
+            "id": "task-4-1",
+            "description": "Stabilize callbacks with useCallback",
+            "status": "pending"
+          },
+          {
+            "id": "task-4-2",
+            "description": "Debounce search input (300ms)",
+            "status": "pending"
+          },
+          {
+            "id": "task-4-3",
+            "description": "Consider virtualization for large lists",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "id": "phase-5-unit-tests",
+        "name": "Unit Tests",
+        "description": "Vitest tests for mutations, modals, handlers",
+        "priority": "P1",
+        "blocking": false,
+        "estimatedEffort": "0.5 days",
+        "sprint": "07",
+        "dependsOn": [
+          "phase-3-ui"
+        ],
+        "tasks": [
+          {
+            "id": "task-5-1",
+            "description": "Create addExercise.test.ts",
+            "file": "src/components/WorkoutLoggerModules/__tests__/addExercise.test.ts",
+            "status": "pending"
+          },
+          {
+            "id": "task-5-2",
+            "description": "Create swapExercise.test.ts",
+            "file": "src/components/WorkoutLoggerModules/__tests__/swapExercise.test.ts",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "15+ test cases per feature",
+          "All validation error cases tested",
+          "Set data preservation verified"
+        ]
+      },
+      {
+        "id": "phase-6-e2e",
+        "name": "Browser-CLI E2E Tests",
+        "description": "Full workflow tests with Browser-CLI",
+        "priority": "P1",
+        "blocking": false,
+        "estimatedEffort": "0.5 days",
+        "sprint": "08",
+        "dependsOn": [
+          "phase-3-ui",
+          "phase-5-unit-tests"
+        ],
+        "tasks": [
+          {
+            "id": "task-6-1",
+            "description": "Add exercise workflow tests",
+            "status": "pending"
+          },
+          {
+            "id": "task-6-2",
+            "description": "Swap exercise with data preservation tests",
+            "status": "pending"
+          },
+          {
+            "id": "task-6-3",
+            "description": "Error handling tests",
+            "status": "pending"
+          },
+          {
+            "id": "task-6-4",
+            "description": "Security validation tests",
+            "status": "pending"
+          }
+        ],
+        "acceptanceCriteria": [
+          "Logged data preserved after swap (CRITICAL)",
+          "Duplicate exercise blocked with error",
+          "Category mismatch blocked with error",
+          "Only coach exercises visible to athlete"
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "convex/exercises.ts",
+        "changes": "Security fixes (3 functions)"
+      },
+      {
+        "path": "convex/workoutLogsModules/mutations.ts",
+        "changes": "2 new mutations"
+      },
+      {
+        "path": "convex/workoutLogs.ts",
+        "changes": "Facade exports"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutMutations.ts",
+        "changes": "2 mutation hooks"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+        "changes": "handleAddExercise"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts",
+        "changes": "handleSwapExercise"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/components/AddExerciseModal.tsx",
+        "changes": "NEW ~180 lines"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/components/SwapExerciseModal.tsx",
+        "changes": "NEW ~150 lines"
+      },
+      {
+        "path": "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx",
+        "changes": "Swap button"
+      },
+      {
+        "path": "src/components/WorkoutLogger.tsx",
+        "changes": "Modal integration"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Security vulnerabilities not fixed",
+        "probability": "Low",
+        "impact": "Critical",
+        "mitigation": "Block feature until Phase 0 complete"
+      },
+      {
+        "risk": "Set data not preserved on swap",
+        "probability": "Medium",
+        "impact": "High",
+        "mitigation": "Unit test + E2E verification"
+      },
+      {
+        "risk": "Category mismatch causes UI issues",
+        "probability": "Medium",
+        "impact": "Medium",
+        "mitigation": "MVP: Block cross-category swaps"
+      }
+    ],
+    "estimatedTotalEffort": "4 days"
+  },
+  "status": "pending"
+}

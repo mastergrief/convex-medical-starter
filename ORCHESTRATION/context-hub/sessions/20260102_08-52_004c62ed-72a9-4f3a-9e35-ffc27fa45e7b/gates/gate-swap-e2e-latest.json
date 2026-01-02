@@ -1,0 +1,13 @@
+{
+  "phaseId": "swap-e2e",
+  "passed": true,
+  "checkedAt": "2026-01-02T09:15:16.348Z",
+  "results": [
+    {
+      "check": "default",
+      "passed": true,
+      "message": "No gate conditions defined"
+    }
+  ],
+  "blockers": []
+}

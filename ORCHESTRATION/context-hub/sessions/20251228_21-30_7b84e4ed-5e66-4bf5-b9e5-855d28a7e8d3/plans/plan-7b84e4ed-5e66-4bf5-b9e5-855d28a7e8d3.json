@@ -1,0 +1,386 @@
+{
+  "id": "7b84e4ed-5e66-4bf5-b9e5-855d28a7e8d3",
+  "type": "plan",
+  "metadata": {
+    "promptId": "f82bdb85-0344-4537-82db-1c51687dcae3",
+    "sessionId": "20251228_21-30_7b84e4ed-5e66-4bf5-b9e5-855d28a7e8d3",
+    "timestamp": "2025-12-28T21:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement RPE Slider component conversion and Add/Remove Sets functionality for Workout Logger. Phase 1 creates slider alternative to button grid, Phase 2 adds accessibility fixes, Phase 3 improves error handling, Phase 4 implements dynamic set management with full-stack mutations.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "RPE Slider Implementation",
+      "description": "Create new RpeSelectorSlider component using Radix UI Slider, maintaining same prop interface as RpeSelector for drop-in replacement",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create RpeSelectorSlider.tsx component in src/components/exercise/ using @radix-ui/react-slider from ui/slider.tsx. Must accept RpeSelectorProps interface: value, onChange, label, showScaleHints, disabled. Display current value in circular badge, slider 1-10 with step=1, scale hints below. Use memo for performance.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/exercise/RpeSelector.tsx",
+              "src/components/ui/slider.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_03_EXTENSION_POINTS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Component accepts RpeSelectorProps interface exactly",
+            "Uses Radix Slider with min=1, max=10, step=1",
+            "Displays current value in styled badge",
+            "Shows Easy/Maximal scale hints when showScaleHints=true",
+            "Component is memoized with React.memo",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Export RpeSelectorSlider from src/components/exercise/index.ts alongside existing RpeSelector export",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 500,
+          "context": {
+            "files": [
+              "src/components/exercise/index.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "RpeSelectorSlider exported from exercise/index.ts",
+            "Existing RpeSelector export preserved",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Update CategoryLoggingFields.tsx to use RpeSelectorSlider instead of RpeSelector for RPE input. Import alias pattern: import { RpeSelectorSlider as RpeSelector }",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/components/CategoryLoggingFields.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_02_DATA_FLOW"
+            ]
+          },
+          "acceptanceCriteria": [
+            "CategoryLoggingFields uses RpeSelectorSlider",
+            "RPE value flows correctly to form state",
+            "onChange callback properly updates formData.rpe",
+            "TypeScript compiles without errors"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All RPE slider tasks complete and typecheck passes"
+    },
+    {
+      "id": "phase-2",
+      "name": "Accessibility Fixes",
+      "description": "Add ARIA labels and keyboard navigation to RPE components for WCAG compliance",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add ARIA labels to RpeSelector.tsx button grid: aria-label on container, aria-pressed on selected button, aria-describedby for scale hints. Add role=group to container. Ensure Tab key navigates between buttons.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "src/components/exercise/RpeSelector.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_06_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Container has aria-label describing purpose",
+            "Selected button has aria-pressed=true",
+            "Scale hints linked via aria-describedby",
+            "Keyboard Tab navigation works",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add ARIA labels to new RpeSelectorSlider: aria-label on slider, aria-valuemin/max/now, aria-describedby for hints. Radix Slider provides most ARIA automatically, verify and enhance.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              "src/components/exercise/RpeSelectorSlider.tsx"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Slider has appropriate aria-label",
+            "aria-valuemin=1, aria-valuemax=10 present",
+            "aria-valuenow reflects current value",
+            "Keyboard navigation works (arrows)",
+            "TypeScript compiles without errors"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Accessibility attributes added and typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Error Handling Improvements",
+      "description": "Add loading states, frontend validation, and retry mechanisms to set handlers",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add frontend RPE bounds validation to utils.ts: clampRpe(value) function that enforces 1-10 range. Add validateSetFormData function that returns validation errors array.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/utils.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_04_ERROR_HANDLING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "clampRpe function clamps to 1-10 range",
+            "validateSetFormData returns array of error strings",
+            "Functions exported from utils.ts",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Add isSubmitting loading state to useSetHandlers.ts to prevent double-click mutations. Wrap mutation calls in try-finally to reset state. Add toast feedback for early return guards instead of silent no-ops.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_04_ERROR_HANDLING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "isSubmitting state prevents duplicate mutations",
+            "try-finally resets isSubmitting on success or failure",
+            "Early return guards show toast feedback",
+            "handleLogSet checks isSubmitting before mutation",
+            "TypeScript compiles without errors"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Error handling improvements complete and typecheck passes"
+    },
+    {
+      "id": "phase-4",
+      "name": "Add/Remove Sets Implementation",
+      "description": "Full-stack implementation of dynamic set management: backend mutations, frontend hooks, and UI buttons",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create addSetToWorkoutLog and removeSetFromWorkoutLog mutations in convex/workoutLogsModules/mutations.ts. Auth check, ownership validation, bounds checking. addSet duplicates last set targets, removeSet guards against removing all sets.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_03_EXTENSION_POINTS",
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_06_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "addSetToWorkoutLog mutation created with proper args",
+            "removeSetFromWorkoutLog mutation created with proper args",
+            "Auth check verifies logged-in user",
+            "Ownership check ensures user owns workout log",
+            "Cannot remove last set (minimum 1 set per exercise)",
+            "New set copies targets from last set",
+            "npx convex dev compiles without errors"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Add addSetMutation and removeSetMutation to useWorkoutMutations.ts hook. Use useMutation with api.workoutLogsModules.mutations.addSetToWorkoutLog and removeSetFromWorkoutLog.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutMutations.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "addSetMutation exported from useWorkoutMutations",
+            "removeSetMutation exported from useWorkoutMutations",
+            "Both use useMutation hook correctly",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add handleAddSet and handleRemoveSet handlers to useSetHandlers.ts. handleAddSet duplicates last set targets. handleRemoveSet confirms before delete, guards against removing all sets.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_SET_MANAGEMENT_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "handleAddSet function created and exported",
+            "handleRemoveSet function created and exported",
+            "handleRemoveSet shows confirmation dialog",
+            "Cannot remove when only 1 set remains",
+            "Form state updated after add/remove",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Add Add Set and Remove Set buttons to ExerciseCard.tsx. Add Set button below last set. Remove Set button next to current set (disabled when only 1 set). Wire to handler props.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_SET_MANAGEMENT_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Add Set button rendered below set list",
+            "Remove Set button rendered near current set",
+            "Remove button disabled when sets.length <= 1",
+            "Buttons call onAddSet and onRemoveSet props",
+            "Props added to ExerciseCardProps interface",
+            "TypeScript compiles without errors"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All set management tasks complete, typecheck passes, backend compiles"
+    },
+    {
+      "id": "phase-5",
+      "name": "E2E Validation",
+      "description": "Browser-CLI end-to-end testing of RPE slider and set management features",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "E2E test RPE slider: Navigate to workout logger, start workout, verify slider renders, drag slider to different values (5, 8, 10), verify value displays correctly, log set, verify RPE persisted in backend via network inspection.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_07_BROWSER_CLI_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Slider renders on workout logging screen",
+            "Slider value changes on drag interaction",
+            "Value badge displays current RPE",
+            "Logged set contains correct RPE value",
+            "Screenshot evidence captured"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "E2E test Add/Remove Sets: Navigate to workout logger, start workout, click Add Set button, verify new set appears with copied targets, navigate to new set, remove set, verify confirmation dialog, verify set removed. Test edge case: cannot remove last set.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-4.4"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_07_BROWSER_CLI_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Add Set button creates new set",
+            "New set has copied targets from previous set",
+            "Remove Set shows confirmation dialog",
+            "Set removed after confirmation",
+            "Remove button disabled on last set",
+            "Screenshot evidence captured"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "E2E tests pass with evidence screenshots"
+    }
+  ],
+  "totalEstimatedTokens": 44000,
+  "risks": [
+    {
+      "description": "Radix Slider may have different UX than button grid for precise selection",
+      "mitigation": "Keep both components available, allow toggle via config",
+      "severity": "low"
+    },
+    {
+      "description": "Add/Remove sets may cause form state sync issues",
+      "mitigation": "Reset formDataByExercise after add/remove, clear removed set data",
+      "severity": "medium"
+    },
+    {
+      "description": "Backend mutations may have race conditions with active logging",
+      "mitigation": "Add optimistic UI updates with rollback on error",
+      "severity": "medium"
+    },
+    {
+      "description": "Accessibility testing may reveal additional WCAG issues",
+      "mitigation": "Run axe-core audit via Browser-CLI auditAccessibility command",
+      "severity": "low"
+    }
+  ]
+}

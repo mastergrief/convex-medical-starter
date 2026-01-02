@@ -1,0 +1,32 @@
+# Generic CRUD Delete Template
+# Universal pattern for deleting entities with confirmation
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   ITEM_PATH - Path to item or list page (e.g., /users, /products/123)
+#   DELETE_TRIGGER - How to open delete (click, dblclick)
+#   DELETE_TARGET - Delete button/element (e.g., "role:button:Delete", "e42")
+#   CONFIRM_WAIT - Wait time for confirmation dialog (e.g., 1000ms)
+#   CONFIRM_BUTTON - Confirmation button (e.g., "role:button:Confirm", "role:button:Yes")
+#   SUCCESS_WAIT - Wait time after deletion (e.g., 2000-3000ms)
+#   ENTITY_TYPE - Entity type for screenshot (e.g., user, product, post)
+#
+# Reusable for:
+#   - User management (delete user)
+#   - Product catalogs (delete product)
+#   - Blog posts (delete post)
+#   - Tasks/todos (delete task)
+#   - Any CRUD entity deletion
+
+navigate {{BASE_URL}}{{ITEM_PATH}}
+wait 2000
+snapshot
+{{DELETE_TRIGGER}} {{DELETE_TARGET}}
+wait {{CONFIRM_WAIT}}
+snapshot
+screenshot {{ENTITY_TYPE}}-delete-confirmation.png
+click "{{CONFIRM_BUTTON}}"
+wait {{SUCCESS_WAIT}}
+snapshot
+console
+screenshot {{ENTITY_TYPE}}-deleted.png

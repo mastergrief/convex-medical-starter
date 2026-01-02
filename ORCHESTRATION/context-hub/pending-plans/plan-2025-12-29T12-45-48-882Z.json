@@ -1,0 +1,147 @@
+{
+  "id": "edd0330f-619e-483f-9410-c41ed98e67db",
+  "timestamp": "2025-12-29T12:45:48.882Z",
+  "description": "Orchestration plan",
+  "design": {
+    "feature": "AI Training Advisor 10-Day Weighted Analysis",
+    "summary": "Add dual-window readiness analysis (60% recent 10-day + 40% historical 30-day) for more responsive AI recommendations",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Schema Extension",
+        "description": "Extend readinessScore schema with shortTerm, longTerm, weighting optional fields for backward compatibility",
+        "files": [
+          "convex/schema.ts"
+        ],
+        "agent": "developer",
+        "priority": "high",
+        "dependencies": []
+      },
+      {
+        "phase": 2,
+        "name": "Backend Context Enhancement",
+        "description": "Add 10-day in-memory subset filtering and weighted composite calculation to getAutoRegulationContext",
+        "files": [
+          "convex/autoRegulation.ts"
+        ],
+        "agent": "developer",
+        "priority": "high",
+        "dependencies": [
+          1
+        ]
+      },
+      {
+        "phase": 3,
+        "name": "AI Prompt Enhancement",
+        "description": "Update buildAutoRegulationPrompt with dual-window analysis section and interpretation guidelines",
+        "files": [
+          "convex/autoRegulation.ts"
+        ],
+        "agent": "developer",
+        "priority": "high",
+        "dependencies": [
+          2
+        ]
+      },
+      {
+        "phase": 4,
+        "name": "Security Remediation",
+        "description": "Add coach authorization checks, input sanitization, replace v.any() with explicit schema",
+        "files": [
+          "convex/autoRegulation.ts"
+        ],
+        "agent": "developer",
+        "priority": "critical",
+        "dependencies": [
+          1
+        ]
+      },
+      {
+        "phase": 5,
+        "name": "Error Handling",
+        "description": "Expand retryable errors, add AI response validation, frontend try/catch handlers",
+        "files": [
+          "convex/autoRegulation.ts",
+          "src/components/AutoRegulationCard.tsx"
+        ],
+        "agent": "developer",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ]
+      },
+      {
+        "phase": 6,
+        "name": "Frontend UI Update",
+        "description": "Add dual-score display grid, update description text, error state handling",
+        "files": [
+          "src/components/AutoRegulationCard.tsx"
+        ],
+        "agent": "developer",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ]
+      },
+      {
+        "phase": 7,
+        "name": "Testing & Validation",
+        "description": "Run typecheck, unit tests for 10-day weighted calculations, E2E browser testing",
+        "files": [
+          "convex/__tests__/autoRegulation.test.ts"
+        ],
+        "agent": "developer",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Backward compatibility",
+        "mitigation": "Use v.optional() for all new fields, fallback to existing overall score"
+      },
+      {
+        "risk": "Coach unauthorized access",
+        "mitigation": "Add coachAthleteRelationships check with active status filter"
+      },
+      {
+        "risk": "Prompt injection via notes",
+        "mitigation": "sanitizeUserInput() removes newlines, angle brackets, limits 500 chars"
+      },
+      {
+        "risk": "Invalid AI response",
+        "mitigation": "Required field validation before saving recommendation"
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "convex/autoRegulation.ts",
+        "lines": 715,
+        "changes": "Core backend: context, prompt, security, error handling"
+      },
+      {
+        "path": "convex/schema.ts",
+        "lines": "1109-1190",
+        "changes": "readinessScore schema extension"
+      },
+      {
+        "path": "src/components/AutoRegulationCard.tsx",
+        "lines": 269,
+        "changes": "Dual-score UI, error handling"
+      }
+    ],
+    "estimatedComplexity": "medium",
+    "breakingChanges": false,
+    "typecheckRequired": true
+  },
+  "status": "pending"
+}

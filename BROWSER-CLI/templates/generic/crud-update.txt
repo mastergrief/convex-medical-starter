@@ -1,0 +1,34 @@
+# Generic CRUD Update Template
+# Universal pattern for updating existing entities
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   ITEM_PATH - Path to specific item (e.g., /users/123, /products/abc) OR list path
+#   EDIT_TRIGGER - How to open edit form (navigate, click, dblclick)
+#   EDIT_TARGET - Edit button/element (e.g., "role:button:Edit", "e42", path)
+#   FORM_WAIT - Wait time for form to open (e.g., 1000-1500ms)
+#   UPDATE_FIELD - Field to update (e.g., "label:Name", "#title")
+#   NEW_VALUE - New value to enter (e.g., "Updated Product", "Jane Doe")
+#   SUBMIT_BUTTON - Submit button selector (e.g., "role:button:Save", "role:button:Update")
+#   SUCCESS_WAIT - Wait time after update (e.g., 2000-3000ms)
+#   ENTITY_TYPE - Entity type for screenshot (e.g., user, product, post)
+#
+# Reusable for:
+#   - User management (edit user)
+#   - Product catalogs (edit product)
+#   - Blog posts (edit post)
+#   - Settings (update preferences)
+#   - Any CRUD entity update
+
+navigate {{BASE_URL}}{{ITEM_PATH}}
+wait 2000
+snapshot
+{{EDIT_TRIGGER}} {{EDIT_TARGET}}
+wait {{FORM_WAIT}}
+snapshot
+type "{{UPDATE_FIELD}}" "{{NEW_VALUE}}"
+click "{{SUBMIT_BUTTON}}"
+wait {{SUCCESS_WAIT}}
+snapshot
+console
+screenshot {{ENTITY_TYPE}}-updated.png

@@ -1,0 +1,21 @@
+# Form Validation Template
+# Tests form validation by submitting invalid data
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   FORM_PATH - Path to form page
+#   FIELD_1 - First field selector
+#   FIELD_2 - Second field selector
+#   INVALID_VALUE_1 - Invalid value for field 1
+#   INVALID_VALUE_2 - Invalid value for field 2
+
+navigate {{BASE_URL}}{{FORM_PATH}}
+wait 2000
+snapshot
+type "{{FIELD_1}}" "{{INVALID_VALUE_1}}"
+type "{{FIELD_2}}" "{{INVALID_VALUE_2}}"
+click "role:button:Submit"
+wait 1000
+snapshot
+console
+screenshot validation-errors.png

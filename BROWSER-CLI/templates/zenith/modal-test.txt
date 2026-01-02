@@ -1,0 +1,24 @@
+# Modal Testing Template
+# Tests modal interaction workflow with open/interact/close cycle
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   NAV_BUTTON - Navigation button to click (e.g., "Training Calendar")
+#   TRIGGER_ACTION - Action to open modal (click/dblclick)
+#   TRIGGER_SELECTOR - Element selector to trigger modal
+#   CLOSE_BUTTON - Close button text (e.g., "Cancel", "Close")
+
+navigate {{BASE_URL}}
+wait 2000
+click "role:button:{{NAV_BUTTON}}"
+wait 3000
+snapshot
+{{TRIGGER_ACTION}} {{TRIGGER_SELECTOR}}
+wait 1000
+snapshot
+screenshot modal-opened.png
+click "role:button:{{CLOSE_BUTTON}}"
+wait 2000
+console
+snapshot
+screenshot modal-closed.png

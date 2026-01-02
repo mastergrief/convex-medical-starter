@@ -1,0 +1,12 @@
+{
+  "id": "2f45acb4-3f10-4887-aba3-fd13831c8062",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-07T10:04:58.061Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Test the WorkoutLogger component for proper metric handling"
+  }
+}

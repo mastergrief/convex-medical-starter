@@ -1,0 +1,15 @@
+{
+  "phaseId": "phase-1",
+  "passed": false,
+  "checkedAt": "2025-12-26T11:46:07.034Z",
+  "results": [
+    {
+      "check": "dsl",
+      "passed": false,
+      "message": "DSL condition detected: typecheck AND memory:JSDOC_GATE_METHODS_*. Use checkGateAsync for full DSL support."
+    }
+  ],
+  "blockers": [
+    "DSL conditions require async evaluation"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "id": "af0ff960-5fe1-40f1-b308-94dc4f170c3c",
+  "timestamp": "2025-12-26T19:32:25.449Z",
+  "description": "Enable test parallelization, add gate timeout, async subprocess refactor, debug logging",
+  "design": {
+    "name": "ORCH Performance Phase 1 - Critical Fixes",
+    "description": "Enable test parallelization, add gate timeout, async subprocess refactor, debug logging",
+    "phases": [
+      {
+        "id": "phase-1-parallel",
+        "name": "Independent Changes",
+        "subtasks": [
+          {
+            "id": "task-1-vitest",
+            "description": "Enable test parallelization in vitest.config.ts",
+            "files": [
+              "vitest.config.ts"
+            ],
+            "risk": "medium",
+            "rollback": "Revert singleThread: true"
+          },
+          {
+            "id": "task-4-logger",
+            "description": "Create logger utility and update 15 silent catch blocks",
+            "files": [
+              "ORCHESTRATION/lib/utils/logger.ts",
+              "evidenceAutoPopulator.ts",
+              "dashboard-data.ts",
+              "handoffs.ts",
+              "memory.ts",
+              "evidence.ts",
+              "io.ts",
+              "checking.ts",
+              "processor.ts",
+              "validators.ts"
+            ],
+            "risk": "low",
+            "rollback": "Remove logWarn imports and calls"
+          }
+        ]
+      },
+      {
+        "id": "phase-2-async",
+        "name": "Async Subprocess Refactor",
+        "subtasks": [
+          {
+            "id": "task-2-timeout",
+            "description": "Add 5-minute total gate check timeout",
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts"
+            ],
+            "risk": "low"
+          },
+          {
+            "id": "task-3a-spawn",
+            "description": "Create asyncSpawn utility",
+            "files": [
+              "ORCHESTRATION/lib/utils/asyncSpawn.ts"
+            ],
+            "risk": "low"
+          },
+          {
+            "id": "task-3b-async-gate",
+            "description": "Add checkGateLegacyAsync with streaming progress",
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts"
+            ],
+            "risk": "medium"
+          },
+          {
+            "id": "task-3c-hub",
+            "description": "Add checkGateAsync method to ContextHub",
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "risk": "low"
+          },
+          {
+            "id": "task-3d-cli",
+            "description": "Update CLI to use async gate check",
+            "files": [
+              "ORCHESTRATION/cli/orchModules/gates.ts"
+            ],
+            "risk": "medium"
+          }
+        ]
+      },
+      {
+        "id": "phase-3-validation",
+        "name": "Validation & Testing",
+        "subtasks": [
+          {
+            "id": "validate-parallel",
+            "description": "Run tests 3x to verify parallelization stability"
+          },
+          {
+            "id": "validate-timeout",
+            "description": "Test gate timeout behavior with ORCH_DEBUG=true"
+          },
+          {
+            "id": "validate-async",
+            "description": "Verify streaming progress output in CLI"
+          }
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "vitest.config.ts",
+        "lines": 30,
+        "change": "Enable singleThread: false"
+      },
+      {
+        "path": "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts",
+        "lines": 416,
+        "change": "Add timeout + async legacy"
+      },
+      {
+        "path": "ORCHESTRATION/lib/utils/asyncSpawn.ts",
+        "lines": "~60",
+        "change": "New file"
+      },
+      {
+        "path": "ORCHESTRATION/lib/utils/logger.ts",
+        "lines": "~20",
+        "change": "New file"
+      },
+      {
+        "path": "ORCHESTRATION/cli/orchModules/gates.ts",
+        "lines": 241,
+        "change": "Use async checkGate"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Test parallelization may expose flaky tests",
+        "mitigation": "Run 3x validation, easy rollback"
+      },
+      {
+        "risk": "Async behavior change in CLI",
+        "mitigation": "Keep sync version as fallback"
+      },
+      {
+        "risk": "Timeout may interrupt legitimate long operations",
+        "mitigation": "5-minute timeout is generous"
+      }
+    ]
+  },
+  "status": "archived"
+}

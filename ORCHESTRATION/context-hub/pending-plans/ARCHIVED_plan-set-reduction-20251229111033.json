@@ -1,0 +1,147 @@
+{
+  "feature": "AI Advisor Set Reduction",
+  "created": "2025-12-29T11:05:00Z",
+  "status": "pending_approval",
+  "summary": "Fix bug where AI volume modifier doesn't reduce set count",
+  
+  "phases": [
+    {
+      "id": 1,
+      "name": "Core Fix",
+      "priority": "P0",
+      "description": "Add .slice() to reduce set count in useSessionHandlers.ts",
+      "files": [
+        {
+          "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+          "lines": "118-132",
+          "change": "Add .slice(0, finalSetCount) before .map(), add setNumber renumbering"
+        }
+      ],
+      "effort": "15 min",
+      "acceptance": [
+        "3 sets × 0.8 modifier = 2 sets displayed",
+        "setNumber renumbered sequentially (1, 2)",
+        "TypeScript compiles",
+        "Existing tests pass"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Error Hardening",
+      "priority": "P1",
+      "description": "Add try/catch wrapper for graceful fallback",
+      "files": [
+        {
+          "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+          "lines": "99-142",
+          "change": "Wrap modification loop in try/catch, log errors, fallback to original"
+        }
+      ],
+      "effort": "10 min",
+      "acceptance": [
+        "Try/catch wraps modification loop",
+        "Console.error logs failures",
+        "Original exercises used on error"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Interface Extension",
+      "priority": "P1",
+      "description": "Pass suggestedSets from AI recommendation to handler",
+      "files": [
+        {
+          "path": "src/lib/autoRegulationCalculations.ts",
+          "lines": "34-38",
+          "change": "Add suggestedSets, suggestedRpeRange, deloadType to AppliedModifiers"
+        },
+        {
+          "path": "src/components/AutoRegulationCard.tsx",
+          "lines": "73-78",
+          "change": "Pass suggestedSets in onApply callback"
+        },
+        {
+          "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+          "lines": "118",
+          "change": "Prefer suggestedSets over calculation"
+        }
+      ],
+      "effort": "12 min",
+      "acceptance": [
+        "AppliedModifiers extended with optional fields",
+        "suggestedSets passed from AutoRegulationCard",
+        "suggestedSets preferred over calculation"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Unit Testing",
+      "priority": "P1",
+      "description": "Add set reduction test cases",
+      "files": [
+        {
+          "path": "src/lib/__tests__/autoRegulationCalculations.test.ts",
+          "lines": "new describe block",
+          "change": "Add 4+ set reduction scenario tests"
+        },
+        {
+          "path": "src/components/WorkoutLoggerModules/__tests__/useSessionHandlers.test.ts",
+          "lines": "new file",
+          "change": "Integration tests for set reduction"
+        }
+      ],
+      "effort": "45 min",
+      "acceptance": [
+        "New unit tests passing",
+        "Integration test file created",
+        "Coverage >= 80%"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "E2E Testing",
+      "priority": "P2",
+      "description": "Browser-CLI verification of full flow",
+      "files": [
+        {
+          "path": "BROWSER-CLI/tests/set-reduction-e2e.ts",
+          "lines": "new file",
+          "change": "E2E test script"
+        }
+      ],
+      "effort": "15 min",
+      "acceptance": [
+        "Reduced set count visible in UI",
+        "No console errors",
+        "Screenshots captured"
+      ]
+    }
+  ],
+  
+  "risks": [
+    {
+      "risk": "Breaking existing workout flow",
+      "probability": "Low",
+      "impact": "High",
+      "mitigation": "Extensive test coverage, try/catch fallback"
+    },
+    {
+      "risk": "SetNumber renumbering bugs",
+      "probability": "Low",
+      "impact": "Medium",
+      "mitigation": "Unit test edge cases"
+    }
+  ],
+  
+  "dependencies": {
+    "phase_order": "1 → 2,3,4 (parallel) → 5",
+    "blocking": ["Phase 1 blocks all others"]
+  },
+  
+  "total_effort": "~1.5 hours",
+  "critical_files": [
+    "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+    "src/lib/autoRegulationCalculations.ts",
+    "src/components/AutoRegulationCard.tsx"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "memoryName": "ANALYSIS_VALIDATION_ROBUSTNESS_UNIFIED_20251208",
+  "linkedAt": "2025-12-08T15:56:36.724Z",
+  "serenaPath": ".serena/memories/ANALYSIS_VALIDATION_ROBUSTNESS_UNIFIED_20251208.md",
+  "summary": "Memory ANALYSIS_VALIDATION_ROBUSTNESS_UNIFIED_20251208 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "set.targetReps",
+      "if/else",
+      "startWorkout/logSet"
+    ],
+    "data_flow_map": {}
+  }
+}

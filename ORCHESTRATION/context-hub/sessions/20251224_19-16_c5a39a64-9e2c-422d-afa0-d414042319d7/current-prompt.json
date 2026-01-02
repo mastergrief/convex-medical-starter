@@ -1,0 +1,12 @@
+{
+  "id": "9e9a6b52-2f8b-47d3-8652-174bb0b9ccef",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251224_19-16_c5a39a64-9e2c-422d-afa0-d414042319d7",
+    "timestamp": "2025-12-24T19:16:24.590Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "E2E test Training Calendar with 3 parallel browser instances: navigation, modals (Edit Workout, Quick Program), and drag-drop workout repositioning"
+  }
+}

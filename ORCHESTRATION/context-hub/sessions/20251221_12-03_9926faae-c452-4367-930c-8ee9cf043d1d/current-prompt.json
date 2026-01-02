@@ -1,0 +1,12 @@
+{
+  "id": "a0808cd9-3129-4c64-94c9-bbb2f37a3cb3",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251221_12-03_9926faae-c452-4367-930c-8ee9cf043d1d",
+    "timestamp": "2025-12-21T12:03:49.866Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement 5 new orchestration templates (database-migration, performance-optimization, security-audit, documentation-update, dependency-upgrade), update index.json registry, validate all templates, and write completion memory"
+  }
+}

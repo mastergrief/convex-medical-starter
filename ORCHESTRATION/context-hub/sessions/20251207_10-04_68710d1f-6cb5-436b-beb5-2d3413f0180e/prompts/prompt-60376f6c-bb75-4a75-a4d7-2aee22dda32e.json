@@ -1,0 +1,12 @@
+{
+  "id": "60376f6c-bb75-4a75-a4d7-2aee22dda32e",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-30T16:38:12.385Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "CSS Selector Escape Bug Fix: Add CSS.escape() to capture.ts (5 locations) and forms.ts (4 locations) to properly escape Tailwind patterns like peer/, group/, [var(...)], @container/. Phase 1: Core fix, Phase 2: Forms fix, Phase 3: Tests, Phase 4: Validation"
+  }
+}

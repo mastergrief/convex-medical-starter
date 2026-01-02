@@ -1,0 +1,92 @@
+{
+  "id": "20022e5e-27c2-4020-a1d9-9f41f451cf43",
+  "timestamp": "2026-01-01T13:40:23.406Z",
+  "description": "Orchestration plan",
+  "design": {
+    "id": "plan-loggingmetrics-fix-2026-01-01",
+    "title": "Fix loggingMetrics Persistence Bug in QuickProgramSheet",
+    "created": "2026-01-01T13:35:00Z",
+    "status": "pending",
+    "summary": "1-line fix: Add loggingMetrics field to exercise mapping in QuickProgramSheet edit mode",
+    "rootCause": "QuickProgramSheet/index.tsx line 157 omits loggingMetrics when mapping exercises in EDIT mode",
+    "scope": {
+      "ui": {
+        "files": 1,
+        "lines": 284
+      },
+      "api": {
+        "files": 0,
+        "lines": 0
+      },
+      "db": {
+        "files": 0,
+        "lines": 0
+      },
+      "tests": {
+        "files": 0,
+        "lines": 0
+      }
+    },
+    "phases": [
+      {
+        "id": "phase-1-fix",
+        "name": "Core Fix",
+        "description": "Add loggingMetrics: ex.loggingMetrics to exercise mapping",
+        "files": [
+          "src/components/QuickProgramSheet/index.tsx"
+        ],
+        "changes": 1,
+        "agent": "developer",
+        "dependencies": []
+      },
+      {
+        "id": "phase-2-typecheck",
+        "name": "TypeScript Validation",
+        "description": "Run npm run typecheck to verify no type errors",
+        "files": [],
+        "changes": 0,
+        "agent": "developer",
+        "dependencies": [
+          "phase-1-fix"
+        ]
+      },
+      {
+        "id": "phase-3-e2e",
+        "name": "E2E Browser Verification",
+        "description": "Verify fix with browser-cli: open Edit modal, check toggles show saved config",
+        "files": [],
+        "changes": 0,
+        "agent": "browser",
+        "dependencies": [
+          "phase-2-typecheck"
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Type mismatch",
+        "severity": "low",
+        "mitigation": "ExerciseBase already has loggingMetrics?: string[]"
+      },
+      {
+        "risk": "Backend rejection",
+        "severity": "low",
+        "mitigation": "Schema already accepts loggingMetrics"
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "src/components/QuickProgramSheet/index.tsx",
+        "lines": 284,
+        "change": "Add loggingMetrics: ex.loggingMetrics at line 157"
+      }
+    ],
+    "verification": [
+      "npm run typecheck passes",
+      "Edit Workout modal shows saved logging config (not defaults)",
+      "Toggle change persists after save and reopen",
+      "Athlete Logger shows same fields as coach configured"
+    ]
+  },
+  "status": "archived"
+}

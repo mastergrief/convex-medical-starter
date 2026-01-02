@@ -1,0 +1,370 @@
+{
+  "id": "plan-validation-robustness-20251209",
+  "type": "plan",
+  "metadata": {
+    "promptId": "validation-robustness-fixes",
+    "sessionId": "20251209_10-04_2f9677a6-1655-4924-bbe2-50e8fe312b08",
+    "timestamp": "2025-12-09T10:04:00.000Z",
+    "version": "1.0.0",
+    "sourceMemory": "PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"
+  },
+  "summary": "Improve WorkoutLogger validation robustness from 3.2/5 to 4.5/5 through type safety, backend validators, schema consistency, and architectural improvements",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Immediate Fixes",
+      "description": "Low-risk fixes to prevent regressions - unit tests and documentation",
+      "parallelizable": true,
+      "estimatedEffort": "1 hour",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Fix isSetDataValid order - move contacts check before reps-alone check",
+          "agentType": "developer",
+          "priority": "P0",
+          "status": "completed",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/components/WorkoutLoggerModules/utils.ts"]
+          },
+          "acceptanceCriteria": [
+            "Contacts check precedes reps-alone check in isSetDataValid",
+            "Typecheck passes"
+          ],
+          "completedDate": "2025-12-08"
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add unit tests for validation paths - contacts, distance, time, reps-only, edge cases",
+          "agentType": "developer",
+          "priority": "P1",
+          "status": "pending",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/components/WorkoutLoggerModules/utils.ts"]
+          },
+          "acceptanceCriteria": [
+            "Test file created at src/components/WorkoutLoggerModules/__tests__/utils.test.ts",
+            "Tests cover 5 validation paths: contacts, distance, time, reps-only, fallback",
+            "Tests include edge case: contacts=0 fallback to reps",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add JSDoc documentation to isSetDataValid explaining check order priority",
+          "agentType": "developer",
+          "priority": "P1",
+          "status": "pending",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 1500,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/components/WorkoutLoggerModules/utils.ts"]
+          },
+          "acceptanceCriteria": [
+            "JSDoc added with priority order: contacts > distance > time > reps",
+            "Cross-reference to getEffectiveTargetReps included",
+            "Explanation of why order matters"
+          ]
+        }
+      ],
+      "gateCondition": "All unit tests pass and JSDoc documentation complete"
+    },
+    {
+      "id": "phase-2",
+      "name": "Type Safety Fixes",
+      "description": "Medium-risk type improvements for compile-time error prevention",
+      "parallelizable": true,
+      "estimatedEffort": "2-3 hours",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Replace `any` types in normalizeExerciseData with proper WorkoutExercise/WorkoutSet types",
+          "agentType": "codex",
+          "priority": "P2",
+          "status": "pending",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": [
+              "src/components/WorkoutLoggerModules/utils.ts",
+              "src/components/WorkoutLoggerModules/types.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "No `any` types in normalizeExerciseData function",
+            "NormalizedSet and NormalizedExercise interfaces defined",
+            "Typecheck passes with strict mode"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Expand ProgrammedDataForConfig interface to include all metric fields",
+          "agentType": "codex",
+          "priority": "P2",
+          "status": "pending",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/config/exerciseFields/logging/index.ts"]
+          },
+          "acceptanceCriteria": [
+            "Interface includes: targetReps, targetContacts, targetDistance, targetTime, targetDuration, targetVelocity, targetJumpHeight, targetPowerOutput",
+            "Aligns with full ProgrammedData type",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add ValidationStrategy discriminated union type for explicit validation paths",
+          "agentType": "codex",
+          "priority": "P2",
+          "status": "pending",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/components/WorkoutLoggerModules/utils.ts"]
+          },
+          "acceptanceCriteria": [
+            "ValidationStrategy union type defined with contacts/distance/time/reps variants",
+            "getValidationStrategy function implemented",
+            "Used in isSetDataValid for clearer logic",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "Typecheck passes with zero `any` types in validation utilities"
+    },
+    {
+      "id": "phase-3",
+      "name": "Backend Validators",
+      "description": "Medium-high risk backend validation for data integrity",
+      "parallelizable": false,
+      "estimatedEffort": "2-3 hours",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add `category` field to startWorkout exercises validator",
+          "agentType": "developer",
+          "priority": "P1",
+          "status": "pending",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["convex/workoutLogsModules/mutations.ts"]
+          },
+          "acceptanceCriteria": [
+            "category: v.optional(v.string()) added to exercises validator",
+            "Convex typecheck passes",
+            "Existing functionality unaffected"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Add bounds validation to startWorkout using existing validateExercise",
+          "agentType": "developer",
+          "priority": "P2",
+          "status": "pending",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 3500,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": [
+              "convex/workoutLogsModules/mutations.ts",
+              "convex/calendarWorkoutsModules/validators.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import validateExercise from calendarWorkoutsModules",
+            "Loop validates each exercise before storing",
+            "Invalid exercises throw descriptive error",
+            "Convex typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Add bounds validation to logSet for actualReps, actualWeight, rpe, actualContacts",
+          "agentType": "developer",
+          "priority": "P2",
+          "status": "pending",
+          "dependencies": ["task-3.2"],
+          "estimatedTokens": 3500,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["convex/workoutLogsModules/mutations.ts"]
+          },
+          "acceptanceCriteria": [
+            "actualReps validated: 0-100 range",
+            "actualWeight validated: non-negative",
+            "rpe validated: 1-10 range",
+            "actualContacts validated: 0-200 range",
+            "Descriptive error messages",
+            "Convex typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "All backend mutations validate bounds before persisting data"
+    },
+    {
+      "id": "phase-4",
+      "name": "Schema Consistency",
+      "description": "High-risk schema fixes for training block data integrity",
+      "parallelizable": false,
+      "estimatedEffort": "3-4 hours",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Fix createTrainingBlockMarker to copy ALL exercise fields including loadType, distance, duration, contacts, etc.",
+          "agentType": "developer",
+          "priority": "P1",
+          "status": "pending",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["convex/trainingBlockMarkersModules/mutations.ts"]
+          },
+          "acceptanceCriteria": [
+            "snapshotExercises includes: category, loadType, distance, duration, timeTarget, percentBestTime, percentMaxIntensity, jumpHeight, powerOutput, velocity, contacts, repsInReserve, heartRateRange, percentHeartRateMax",
+            "No exercise fields lost during marker creation",
+            "Convex typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Verify and update trainingBlockMarkers schema to include all exercise fields",
+          "agentType": "explore",
+          "priority": "P1",
+          "status": "pending",
+          "dependencies": ["task-4.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["convex/schema.ts"]
+          },
+          "acceptanceCriteria": [
+            "Schema lines 1658-1685 reviewed for completeness",
+            "Any missing fields added (duration, etc.)",
+            "Schema migration plan documented if needed",
+            "Convex typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "Training block markers preserve all exercise data through snapshot"
+    },
+    {
+      "id": "phase-5",
+      "name": "Architectural Improvements",
+      "description": "Long-term architectural changes to eliminate bug class",
+      "parallelizable": false,
+      "estimatedEffort": "1-2 days",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Add explicit targetContacts field to TransformedSet instead of overloading targetReps",
+          "agentType": "architect",
+          "priority": "P3",
+          "status": "pending",
+          "dependencies": ["task-4.1", "task-4.2"],
+          "estimatedTokens": 8000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": [
+              "convex/types/workoutTypes.ts",
+              "convex/workoutLogsModules/helpers.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "TransformedSet interface has explicit targetContacts?: number",
+            "createTransformedSets accepts targetContacts parameter",
+            "transformCalendarExerciseFull passes contacts separately",
+            "No semantic overloading of targetReps",
+            "Full typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Create shared Zod validation schema for exercise data across frontend and backend",
+          "agentType": "architect",
+          "priority": "P3",
+          "status": "pending",
+          "dependencies": ["task-5.1"],
+          "estimatedTokens": 10000,
+          "context": {
+            "memories": ["PLAN_VALIDATION_ROBUSTNESS_FIXES_20251208"],
+            "files": ["src/lib/validation/"]
+          },
+          "acceptanceCriteria": [
+            "src/lib/validation/exerciseSchema.ts created",
+            "setFormDataSchema with bounds and refinements",
+            "programmedTargetsSchema defined",
+            "isSetDataValidZod function implemented",
+            "Shared between frontend validation and backend",
+            "All tests pass"
+          ]
+        }
+      ],
+      "gateCondition": "Validation schema is shared and contacts/reps are never conflated"
+    }
+  ],
+  "totalEstimatedTokens": 53500,
+  "successMetrics": {
+    "robustnessScore": {
+      "current": 3.2,
+      "target": 4.5
+    },
+    "typeSafety": {
+      "current": "2 `any` locations",
+      "target": "0 `any` locations"
+    },
+    "validationCoverage": {
+      "current": "60%",
+      "target": "95%"
+    },
+    "edgeCasesTested": {
+      "current": 0,
+      "target": 12
+    },
+    "backendBoundsValidation": {
+      "current": "createCalendarWorkout only",
+      "target": "All mutations"
+    }
+  },
+  "risks": [
+    {
+      "description": "Phase 3 backend validators may reject previously valid edge-case data",
+      "mitigation": "Test with production data samples before deployment",
+      "severity": "medium"
+    },
+    {
+      "description": "Phase 4 schema changes require migration for existing training block markers",
+      "mitigation": "Test in dev deployment first, prepare rollback",
+      "severity": "high"
+    },
+    {
+      "description": "Phase 5 TransformedSet changes affect multiple consumers",
+      "mitigation": "Use feature flag or gradual rollout",
+      "severity": "high"
+    },
+    {
+      "description": "Zod schema may have performance impact on high-frequency validation",
+      "mitigation": "Benchmark validation time, consider caching compiled schemas",
+      "severity": "low"
+    }
+  ],
+  "rollbackPlan": {
+    "phase1-2": "Pure frontend, revert single files via git",
+    "phase3": "Backend validators can deploy old version",
+    "phase4": "Schema changes tested in dev deployment first",
+    "phase5": "Feature flag or gradual rollout enables quick disable"
+  }
+}

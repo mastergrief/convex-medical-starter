@@ -1,0 +1,36 @@
+{
+  "memoryName": "PLAN_TRAINING_BLOCK_METRICS_FIX_20251207",
+  "linkedAt": "2025-12-07T23:32:56.818Z",
+  "serenaPath": ".serena/memories/PLAN_TRAINING_BLOCK_METRICS_FIX_20251207.md",
+  "summary": "Memory PLAN_TRAINING_BLOCK_METRICS_FIX_20251207 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "analysis.ts",
+      "1.1",
+      "exercises.map",
+      "1.2",
+      "exerciseReplacements.original",
+      "availableInCategory.map",
+      "1.3",
+      "1.4",
+      "speed/distance",
+      "1.5",
+      "templates.ts",
+      "2.1",
+      "v.array",
+      "v.object",
+      "v.string",
+      "v.optional",
+      "v.number",
+      "2.2",
+      "GenerateNextBlockDialog.tsx",
+      "3.1"
+    ],
+    "data_flow_map": {}
+  }
+}

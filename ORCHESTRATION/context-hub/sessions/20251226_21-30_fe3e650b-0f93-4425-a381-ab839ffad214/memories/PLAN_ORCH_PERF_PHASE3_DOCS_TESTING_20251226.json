@@ -1,0 +1,36 @@
+{
+  "memoryName": "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226",
+  "linkedAt": "2025-12-26T21:30:21.198Z",
+  "serenaPath": ".serena/memories/PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226.md",
+  "summary": "Memory PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "hub.getSessionId",
+      "hub.getSessionPath",
+      "to/context",
+      "hub.getSessionInfo",
+      "console.log",
+      "hub.listSessions",
+      "hub.getLatestSession",
+      "hub.getSessionAge",
+      "ageHours.toFixed",
+      "hub.purgeSession",
+      "hub.purgeOldSessions",
+      "hub.writePrompt",
+      "hub.readPrompt",
+      "hub.listPrompts",
+      "hub.checkGate",
+      "blockers.join",
+      "hub.advancePhase",
+      "hub.linkMemory",
+      "lib/dashboard",
+      "collector.on"
+    ],
+    "data_flow_map": {}
+  }
+}

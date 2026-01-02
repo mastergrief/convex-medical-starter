@@ -1,0 +1,243 @@
+{
+  "id": "3cc636f1-adc0-42d1-ad2d-aed70caed26e",
+  "timestamp": "2025-12-27T12:40:20.742Z",
+  "description": "Orchestration plan",
+  "design": {
+    "name": "Browser-CLI Phase 3: Performance & Extensibility",
+    "created": "2025-12-27T12:31:00Z",
+    "priority": "LOW",
+    "estimatedEffort": "13-17 hours (2-3 days)",
+    "phases": [
+      {
+        "tier": 1,
+        "name": "Foundation",
+        "risk": "Low",
+        "duration": "2-3 hours",
+        "tasks": [
+          {
+            "action": "CREATE",
+            "file": "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+            "lines": "150-200",
+            "description": "O(1) insert/remove circular buffer utility"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/core/constants.ts",
+            "lines": "56+15",
+            "description": "Add buffer capacity constants"
+          },
+          {
+            "action": "CREATE",
+            "file": "BROWSER-CLI/tests/utils/circular-buffer.test.ts",
+            "lines": "~100",
+            "description": "CircularBuffer unit tests"
+          }
+        ],
+        "validation": [
+          "npm run typecheck passes",
+          "CircularBuffer unit tests pass"
+        ]
+      },
+      {
+        "tier": 2,
+        "name": "Buffer Migrations + Quick Wins",
+        "risk": "Low",
+        "duration": "3-4 hours",
+        "dependencies": [
+          "Tier 1"
+        ],
+        "tasks": [
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/console-capture.ts",
+            "lines": "166",
+            "description": "Migrate to CircularBuffer"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/network-capture.ts",
+            "lines": "210",
+            "description": "Migrate to CircularBuffer"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/event-listener.ts",
+            "lines": "263",
+            "description": "Migrate to CircularBuffer"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/network-mocking.ts",
+            "lines": "501",
+            "description": "Cap mockHistory at 1000"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/performance-metrics.ts",
+            "lines": "100",
+            "description": "Increase LCP timeout to 1000ms"
+          }
+        ],
+        "validation": [
+          "Buffer commands work correctly",
+          "Mock history capped",
+          "LCP timeout increased"
+        ]
+      },
+      {
+        "tier": 3,
+        "name": "Network Optimization + Plugin Infrastructure",
+        "risk": "Medium",
+        "duration": "4-5 hours",
+        "dependencies": [
+          "Tier 2"
+        ],
+        "tasks": [
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/network-capture.ts",
+            "lines": "210",
+            "description": "O(1) response matching with Map"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts",
+            "lines": "104",
+            "description": "Add PluginEventHooks interface"
+          },
+          {
+            "action": "CREATE",
+            "file": "BROWSER-CLI/SCRIPTS/plugins/plugin-config.ts",
+            "lines": "100-150",
+            "description": "Plugin configuration manager"
+          },
+          {
+            "action": "CREATE",
+            "file": "BROWSER-CLI/SCRIPTS/plugins/scaffold.ts",
+            "lines": "100-150",
+            "description": "Plugin scaffolding CLI"
+          }
+        ],
+        "validation": [
+          "Network matching O(1)",
+          "Event hooks interface defined",
+          "Config manager works",
+          "Scaffold generates valid TS"
+        ]
+      },
+      {
+        "tier": 4,
+        "name": "Plugin Hooks + Preloading",
+        "risk": "Medium",
+        "duration": "4-5 hours",
+        "dependencies": [
+          "Tier 3"
+        ],
+        "tasks": [
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/features/plugins-feature.ts",
+            "lines": "291",
+            "description": "Add hook trigger methods"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/browserManagerModules/command-dispatcher.ts",
+            "lines": "79",
+            "description": "Integrate beforeCommand/afterCommand hooks"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts",
+            "lines": "347",
+            "description": "Add hot reload with fs.watch"
+          },
+          {
+            "action": "MODIFY",
+            "file": "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts",
+            "lines": "269",
+            "description": "Add preload hints"
+          }
+        ],
+        "validation": [
+          "Plugin hooks trigger correctly",
+          "Hot reload works (env flag)",
+          "Preloading non-blocking"
+        ]
+      }
+    ],
+    "successMetrics": {
+      "bufferInsert": {
+        "baseline": "O(n)",
+        "target": "O(1)",
+        "verification": "100k inserts < 50ms"
+      },
+      "networkMatching": {
+        "baseline": "O(n)",
+        "target": "O(1)",
+        "verification": "1000 requests < 10ms"
+      },
+      "mockHistory": {
+        "baseline": "Unbounded",
+        "target": "Capped 1000",
+        "verification": "Memory profiling"
+      },
+      "coldStart": {
+        "baseline": "5-8s",
+        "target": "3-5s",
+        "verification": "time browser-cmd.ts status"
+      },
+      "pluginHookLatency": {
+        "baseline": "N/A",
+        "target": "< 5ms",
+        "verification": "Performance test"
+      }
+    },
+    "risks": [
+      {
+        "risk": "CircularBuffer edge cases",
+        "probability": "Low",
+        "impact": "Medium",
+        "mitigation": "Comprehensive unit tests"
+      },
+      {
+        "risk": "Buffer migration breaks behavior",
+        "probability": "Low",
+        "impact": "High",
+        "mitigation": "Identical interface, extensive testing"
+      },
+      {
+        "risk": "Network response race conditions",
+        "probability": "Medium",
+        "impact": "Medium",
+        "mitigation": "Timeout-based cleanup"
+      },
+      {
+        "risk": "Plugin hook infinite loops",
+        "probability": "Low",
+        "impact": "High",
+        "mitigation": "Timeout wrappers, error isolation"
+      }
+    ],
+    "filesToCreate": [
+      "BROWSER-CLI/SCRIPTS/utils/circular-buffer.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-config.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/scaffold.ts",
+      "BROWSER-CLI/tests/utils/circular-buffer.test.ts"
+    ],
+    "filesToModify": [
+      "BROWSER-CLI/SCRIPTS/core/constants.ts",
+      "BROWSER-CLI/SCRIPTS/features/console-capture.ts",
+      "BROWSER-CLI/SCRIPTS/features/network-capture.ts",
+      "BROWSER-CLI/SCRIPTS/features/event-listener.ts",
+      "BROWSER-CLI/SCRIPTS/features/network-mocking.ts",
+      "BROWSER-CLI/SCRIPTS/features/performance-metrics.ts",
+      "BROWSER-CLI/SCRIPTS/features/plugins-feature.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-interface.ts",
+      "BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts",
+      "BROWSER-CLI/SCRIPTS/browserManagerModules/command-dispatcher.ts",
+      "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts"
+    ]
+  },
+  "status": "archived"
+}

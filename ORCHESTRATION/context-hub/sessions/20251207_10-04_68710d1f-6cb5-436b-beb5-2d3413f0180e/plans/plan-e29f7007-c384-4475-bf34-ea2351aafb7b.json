@@ -1,0 +1,214 @@
+{
+  "id": "e29f7007-c384-4475-bf34-ea2351aafb7b",
+  "type": "plan",
+  "metadata": {
+    "promptId": "98d49cdf-9668-49d0-8ff1-3965672f93ff",
+    "sessionId": "20251221_12-03_9926faae-c452-4367-930c-8ee9cf043d1d",
+    "timestamp": "2025-12-21T12:10:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Create 5 new orchestration workflow templates (database-migration, performance-optimization, security-audit, documentation-update, dependency-upgrade) and update the template registry. Pure JSON creation with no code changes required.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Template Creation",
+      "description": "Create all 5 new template JSON files with proper structure, variables, phases, and gate conditions",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create database-migration.json template with variables (table_name, migration_type, field_name, new_field_type) and 4 phases (Planning, Schema Update, Data Migration, Verification)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/feature-implementation.json",
+              "ORCHESTRATION/templates/index.json"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_TEMPLATES_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at ORCHESTRATION/templates/database-migration.json",
+            "All 4 variables defined with correct required flags",
+            "4 phases with appropriate agent types (analyst, developer, developer, browser)",
+            "Gate conditions use variable substitution correctly"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Create performance-optimization.json template with variables (target_area, metric, baseline_threshold) and 3 phases (Profiling, Optimization, Benchmarking)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 7000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/feature-implementation.json"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_TEMPLATES_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at ORCHESTRATION/templates/performance-optimization.json",
+            "All 3 variables defined",
+            "3 phases with parallelizable first phase",
+            "Gate conditions reference metrics appropriately"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Create security-audit.json template with variables (audit_scope, severity_threshold) and 3 phases (Vulnerability Scanning, Remediation, Verification)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 7000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/feature-implementation.json"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_TEMPLATES_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at ORCHESTRATION/templates/security-audit.json",
+            "audit_scope required, severity_threshold optional with default",
+            "3 phases with parallelizable first phase",
+            "Gate condition includes npm audit check"
+          ]
+        },
+        {
+          "id": "task-1.4",
+          "description": "Create documentation-update.json template with variables (doc_path, update_type, related_code) and 3 phases (Analysis, Update, Validation)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/feature-implementation.json"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_TEMPLATES_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at ORCHESTRATION/templates/documentation-update.json",
+            "doc_path and update_type required, related_code optional",
+            "3 phases with appropriate agent types",
+            "Validation phase verifies code examples work"
+          ]
+        },
+        {
+          "id": "task-1.5",
+          "description": "Create dependency-upgrade.json template with variables (package_name, from_version, to_version, breaking_changes) and 3 phases (Impact Analysis, Upgrade, Validation)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 7000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/feature-implementation.json"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_TEMPLATES_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File created at ORCHESTRATION/templates/dependency-upgrade.json",
+            "package_name, from_version, to_version required",
+            "First phase parallelizable with analyst and context7 agents",
+            "Gate conditions include typecheck"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All 5 template files exist in ORCHESTRATION/templates/"
+    },
+    {
+      "id": "phase-2",
+      "name": "Registry Update",
+      "description": "Update index.json to register all 5 new templates",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Update ORCHESTRATION/templates/index.json to add entries for all 5 new templates (database-migration, performance-optimization, security-audit, documentation-update, dependency-upgrade)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-1.2",
+            "task-1.3",
+            "task-1.4",
+            "task-1.5"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/templates/index.json"
+            ]
+          },
+          "acceptanceCriteria": [
+            "index.json contains 9 templates total",
+            "Each new template has id, name, description, file fields",
+            "JSON is valid and properly formatted"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "index.json contains 9 template entries"
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "description": "Validate all templates using CLI and test instantiation",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Run template validation: 'npx tsx ORCHESTRATION/cli/orch.ts template list' should show 9 templates. Then validate each new template individually.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orch.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "orch template list shows 9 templates",
+            "Each new template passes validation",
+            "Variable substitution works correctly",
+            "No CLI errors or warnings"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All 9 templates listed and validated successfully"
+    }
+  ],
+  "totalEstimatedTokens": 43000,
+  "risks": [
+    {
+      "description": "Template JSON structure mismatch with existing templates",
+      "mitigation": "Use feature-implementation.json as reference for exact field structure",
+      "severity": "low"
+    },
+    {
+      "description": "Variable substitution syntax errors in gate conditions",
+      "mitigation": "Use {{variable_name}} pattern consistently as in existing templates",
+      "severity": "low"
+    },
+    {
+      "description": "CLI validation may have undocumented requirements",
+      "mitigation": "Test each template individually after creation",
+      "severity": "low"
+    }
+  ]
+}

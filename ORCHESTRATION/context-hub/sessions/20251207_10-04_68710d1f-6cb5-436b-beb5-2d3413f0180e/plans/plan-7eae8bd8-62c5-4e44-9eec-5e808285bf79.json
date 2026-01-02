@@ -1,0 +1,568 @@
+{
+  "id": "7eae8bd8-62c5-4e44-9eec-5e808285bf79",
+  "type": "plan",
+  "metadata": {
+    "promptId": "af0ff960-5fe1-40f1-b308-94dc4f170c3c",
+    "sessionId": "20251226_20-31_caa0bf5d-0868-436d-9165-a3ef0f9a3f3f",
+    "timestamp": "2025-12-26T20:38:23.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "ORCHESTRATION Phase 2 - Architecture & Code Quality: Split 5 monolithic files (2,984 LOC total) into modular structure using facade pattern, fix consistency issues, add async I/O layer and session cache. Targets improved maintainability and testability.",
+  "phases": [
+    {
+      "id": "phase-2A",
+      "name": "Foundation Utilities",
+      "description": "Create shared utility modules for errors, async filesystem operations, and caching that will be used by the modular splits",
+      "subtasks": [
+        {
+          "id": "task-2A.1",
+          "description": "Create lib/utils/errors.ts with ErrorCategory enum, CategorizedError interface, and categorizeError function for consistent error handling across all modules",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/utils/logger.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ErrorCategory enum with VALIDATION, TIMEOUT, NOT_FOUND, PERMISSION, SUBPROCESS, NETWORK, UNKNOWN",
+            "CategorizedError interface with category, message, details, recoverable fields",
+            "categorizeError function handles ZodError, ENOENT, timeout patterns",
+            "Exported from lib/utils/errors.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2A.2",
+          "description": "Create lib/utils/asyncFs.ts with async file operations: readFileAsync, writeFileAsync (atomic), readJsonAsync, writeJsonAsync, ensureDirAsync, listDirAsync",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Async versions of all common fs operations",
+            "writeFileAsync uses atomic write pattern (tmp file + rename)",
+            "readFileAsync supports retries option",
+            "listDirAsync returns empty array on ENOENT (not throw)",
+            "AsyncFsOptions interface with encoding, retries, retryDelay",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2A.3",
+          "description": "Create lib/utils/cache.ts with SessionCache class implementing TTL-based caching with get, set, invalidate (pattern-based) methods",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "SessionCache class with Map-based storage",
+            "CacheEntry interface with data, timestamp, ttl",
+            "get<T> returns null on miss or expired",
+            "set<T> with default 30s TTL",
+            "invalidate supports regex pattern matching",
+            "Exported singleton sessionCache",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm run typecheck passes, all 3 utility files created"
+    },
+    {
+      "id": "phase-2B",
+      "name": "Consistency Fixes",
+      "description": "Fix validation return type inconsistency and extract writeArtifact helper for DRY artifact writing",
+      "subtasks": [
+        {
+          "id": "task-2B.1",
+          "description": "Fix safeValidateDispatchInstruction in schemas/schemaModules/validators.ts to return Zod SafeParseResult directly instead of custom format",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/schemas/schemaModules/validators.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "safeValidateDispatchInstruction returns DispatchInstructionSchema.safeParse(data) directly",
+            "Return type matches other safeValidate* functions",
+            "No callers broken by change",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2B.2",
+          "description": "Extract writeArtifact helper function in cli/orchModules/artifacts.ts to eliminate repeated JSON write + console output pattern",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/artifacts.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "writeArtifact<T>(artifactType, data, filepath) helper created",
+            "Handles JSON serialization, file write, console output",
+            "All prompt/plan/handoff write operations use helper",
+            "Reduces code duplication by ~30 lines",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm run typecheck passes, validators consistent, artifacts DRY"
+    },
+    {
+      "id": "phase-2C",
+      "name": "Split checking.ts",
+      "description": "Split checking.ts (711 LOC) into facade + checkingModules/ with subprocess, memory, traceability, and aggregation submodules",
+      "subtasks": [
+        {
+          "id": "task-2C.1",
+          "description": "Create checkingModules/ directory structure and extract subprocess.ts (~150 LOC) containing checkTypecheck, checkTests, checkCustomCommand functions using asyncSpawn",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2A.1",
+            "task-2A.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts",
+              "ORCHESTRATION/lib/utils/asyncSpawn.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "checkingModules/ directory created",
+            "subprocess.ts extracts all subprocess-related check functions",
+            "Uses asyncSpawn for consistency",
+            "Timeout values use DEFAULT_TIMEOUTS constants",
+            "All subprocess checks isolated from main checking.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2C.2",
+          "description": "Extract memory.ts (~100 LOC) containing memory pattern check functions and traceability.ts (~100 LOC) for traceability field checks",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2C.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "memory.ts contains all memory-related check logic",
+            "traceability.ts contains all traceability field validation",
+            "Both modules exported from checkingModules/index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2C.3",
+          "description": "Extract aggregation.ts (~80 LOC) for result aggregation and create checking.ts facade (<100 LOC) with re-exports",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2C.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "aggregation.ts handles CheckResult aggregation logic",
+            "checking.ts reduced to <100 LOC facade",
+            "All exports preserved (API backward compatible)",
+            "checkingModules/index.ts re-exports all submodules",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, checking.ts <100 LOC, all check functions work"
+    },
+    {
+      "id": "phase-2D",
+      "name": "Split dashboard-data.ts",
+      "description": "Split dashboard-data.ts (275 LOC) into dashboardModules/ - note: already under 400 LOC threshold but benefits from modular structure for testability",
+      "subtasks": [
+        {
+          "id": "task-2D.1",
+          "description": "Create dashboardModules/ directory and extract state.ts (~100 LOC) for DashboardState interface and collectDashboardState function",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/dashboard-data.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "dashboardModules/ directory created",
+            "state.ts contains DashboardState interface",
+            "collectDashboardState function extracted",
+            "watchStateChanges function extracted if present",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2D.2",
+          "description": "Extract formatters.ts (~100 LOC) for JSON output formatting and create dashboard-data.ts facade with re-exports",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2D.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/dashboard-data.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "formatters.ts contains all JSON/output formatting logic",
+            "dashboard-data.ts reduced to facade with re-exports",
+            "dashboardModules/index.ts created",
+            "All exports preserved (API backward compatible)",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm run typecheck passes, dashboard-data.ts is facade only"
+    },
+    {
+      "id": "phase-2E",
+      "name": "Split artifacts.ts",
+      "description": "Split artifacts.ts (564 LOC) into artifactsModules/ with prompts, plans, handoffs, and search submodules",
+      "subtasks": [
+        {
+          "id": "task-2E.1",
+          "description": "Create artifactsModules/ directory and extract prompts.ts (~150 LOC) containing handlePromptWrite, handlePromptRead, handlePromptList",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2B.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/artifacts.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "artifactsModules/ directory created",
+            "prompts.ts contains all prompt CRUD operations",
+            "Uses writeArtifact helper from task-2B.2",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2E.2",
+          "description": "Extract plans.ts (~150 LOC) containing handlePlanWrite, handlePlanRead, handlePlanList functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2E.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/artifacts.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "plans.ts contains all plan CRUD operations",
+            "Uses writeArtifact helper",
+            "Consistent error handling with prompts.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2E.3",
+          "description": "Extract handoffs.ts (~120 LOC) and search.ts (~60 LOC), create artifacts.ts facade (<100 LOC) with routing",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2E.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/artifacts.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "handoffs.ts contains handleHandoffWrite, handleHandoffRead, handleHandoffList",
+            "search.ts contains cross-artifact search functionality",
+            "artifacts.ts reduced to <100 LOC facade with command routing",
+            "artifactsModules/index.ts re-exports all submodules",
+            "All CLI commands still work (API backward compatible)",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, artifacts.ts <100 LOC, all artifact CLI commands work"
+    },
+    {
+      "id": "phase-2F",
+      "name": "Split evidence-chain.ts",
+      "description": "Split evidence-chain.ts (501 LOC) into evidenceChainModules/ with builder, serialization, and validation submodules",
+      "subtasks": [
+        {
+          "id": "task-2F.1",
+          "description": "Create evidenceChainModules/ directory and extract builder.ts (~200 LOC) containing EvidenceChainBuilder class",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2A.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "evidenceChainModules/ directory created",
+            "builder.ts contains EvidenceChainBuilder class",
+            "Builder pattern methods: setRequirement, setAnalysis, setImplementation, setValidation, build",
+            "Uses CategorizedError for error handling",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2F.2",
+          "description": "Extract serialization.ts (~150 LOC) for loadEvidenceChain, saveEvidenceChain, listEvidenceChains using asyncFs utilities",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2F.1",
+            "task-2A.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "serialization.ts contains all I/O operations",
+            "Uses asyncFs utilities from task-2A.2",
+            "loadEvidenceChain, saveEvidenceChain, listEvidenceChains extracted",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2F.3",
+          "description": "Extract validation.ts (~150 LOC) and create evidence-chain.ts facade with re-exports",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2F.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "validation.ts contains validateChainLinks, calculateCoverage, validateCompleteness",
+            "evidence-chain.ts reduced to <100 LOC facade",
+            "evidenceChainModules/index.ts re-exports all",
+            "All exports preserved (API backward compatible)",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, evidence-chain.ts <100 LOC"
+    },
+    {
+      "id": "phase-2G",
+      "name": "Split evidenceAutoPopulator.ts",
+      "description": "Split evidenceAutoPopulator.ts (433 LOC) into evidenceAutoPopulatorModules/ organized by population strategy",
+      "subtasks": [
+        {
+          "id": "task-2G.1",
+          "description": "Create evidenceAutoPopulatorModules/ and extract strategies.ts (~200 LOC) containing individual evidence population strategies",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2F.3"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidenceAutoPopulator.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE2_ARCHITECTURE_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "evidenceAutoPopulatorModules/ directory created",
+            "strategies.ts contains individual population strategy functions",
+            "Each strategy is a pure function",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2G.2",
+          "description": "Extract orchestrator.ts (~150 LOC) for strategy orchestration and create evidenceAutoPopulator.ts facade",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2G.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidenceAutoPopulator.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "orchestrator.ts coordinates strategy execution",
+            "evidenceAutoPopulator.ts reduced to <100 LOC facade",
+            "evidenceAutoPopulatorModules/index.ts re-exports all",
+            "All exports preserved (API backward compatible)",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, evidenceAutoPopulator.ts <100 LOC"
+    },
+    {
+      "id": "phase-2H",
+      "name": "Final Validation",
+      "description": "Run comprehensive validation to ensure all splits maintain functionality and meet quality targets",
+      "subtasks": [
+        {
+          "id": "task-2H.1",
+          "description": "Run full test suite and verify all tests pass after modular refactoring",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-2G.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "vitest.config.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm run test passes all tests",
+            "No regressions introduced",
+            "Test coverage maintained or improved"
+          ]
+        },
+        {
+          "id": "task-2H.2",
+          "description": "Verify all facade files are under 100 LOC and original APIs preserved",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2H.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "checking.ts < 100 LOC",
+            "dashboard-data.ts < 100 LOC",
+            "artifacts.ts < 100 LOC",
+            "evidence-chain.ts < 100 LOC",
+            "evidenceAutoPopulator.ts < 100 LOC",
+            "All CLI commands work as before",
+            "No circular dependencies"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All tests pass, all facades <100 LOC, no broken imports"
+    }
+  ],
+  "totalEstimatedTokens": 96000,
+  "risks": [
+    {
+      "description": "Circular dependencies between extracted modules",
+      "mitigation": "Use dependency graph analysis before extraction, ensure unidirectional imports",
+      "severity": "medium"
+    },
+    {
+      "description": "Breaking API changes during facade creation",
+      "mitigation": "Preserve all existing exports in facade files, run tests after each phase",
+      "severity": "high"
+    },
+    {
+      "description": "checking.ts is largest file (711 LOC) and most complex split",
+      "mitigation": "Phase 2C has 3 sequential subtasks with typecheck gates between each",
+      "severity": "medium"
+    },
+    {
+      "description": "Import path changes may break external consumers",
+      "mitigation": "Facade pattern ensures original import paths still work",
+      "severity": "low"
+    }
+  ]
+}

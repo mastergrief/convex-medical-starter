@@ -1,0 +1,631 @@
+{
+  "id": "b4f72e9c-8d3a-4c71-a92e-c4e8d5f6a789",
+  "type": "plan",
+  "metadata": {
+    "promptId": "d91bd8f9-c58e-4226-af5c-28b4fa40caee",
+    "sessionId": "20251227_16-44_20e3c989-e5da-4b77-9f1d-ef89e29e5eb3",
+    "timestamp": "2025-12-27T16:45:30.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "BROWSER-CLI Short-Term Remediation: Fix 2 command name mismatches + add 4 missing commands to documentation, create 12 missing feature test files with mock factories, wire onNavigate/onSnapshot plugin hooks with dependency injection",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Documentation Fixes",
+      "description": "Fix command naming errors and add missing command documentation in browser-cli.md",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Fix disableMocking -> disableMock and enableMocking -> enableMock command name mismatches in browser-cli.md (lines ~153-154)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              ".claude/rules/cli-suite/browser-cli.md"
+            ],
+            "memories": [
+              "PLAN_BROWSER_CLI_SHORTTERM_REMEDIATION_20251227"
+            ]
+          },
+          "acceptanceCriteria": [
+            "disableMocking replaced with disableMock",
+            "enableMocking replaced with enableMock",
+            "grep confirms 0 matches for wrong names"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add missing commands to documentation: start (Navigation), close (Utility), handleDialog (Events), setHeadless (Performance)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              ".claude/rules/cli-suite/browser-cli.md"
+            ],
+            "memories": [
+              "PLAN_BROWSER_CLI_SHORTTERM_REMEDIATION_20251227"
+            ]
+          },
+          "acceptanceCriteria": [
+            "start command documented in Navigation section",
+            "close command documented after status command",
+            "handleDialog command documented in Event Handling section",
+            "setHeadless command documented in Performance section",
+            "Cross-reference with command-validator.ts confirms accuracy"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Verify documentation fixes with grep and cross-reference VALID_COMMANDS in command-validator.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              ".claude/rules/cli-suite/browser-cli.md",
+              "BROWSER-CLI/SCRIPTS/cli/command-validator.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "grep for wrong command names returns 0 results",
+            "All 4 new commands found in documentation",
+            "Commands match VALID_COMMANDS array"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All documentation fixes complete and verified"
+    },
+    {
+      "id": "phase-2",
+      "name": "Test Infrastructure Setup",
+      "description": "Add mock factories to setup.ts required for new feature tests",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add mock factories to tests/setup.ts: createMockScreenshotBuffer, createMockA11yResults, createMockBrowserContext, createMockVideoRecorder, createMockHARData",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/tests/setup.ts"
+            ],
+            "memories": [
+              "PLAN_BROWSER_CLI_SHORTTERM_REMEDIATION_20251227"
+            ]
+          },
+          "acceptanceCriteria": [
+            "createMockScreenshotBuffer returns valid Buffer",
+            "createMockA11yResults returns AxeResults structure",
+            "createMockBrowserContext returns context with pages/newPage methods",
+            "All factories exported and usable in tests"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Mock factories added and exported"
+    },
+    {
+      "id": "phase-3",
+      "name": "Priority 1 Feature Tests",
+      "description": "Create tests for critical features: VisualRegression, A11yAudit, Tabs",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create visual-regression.test.ts: saveScreenshotBaseline, compareScreenshots (pixel diff, composite, HTML report), listScreenshotBaselines",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/visual-regression.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for saveScreenshotBaseline (save, overwrite, validation)",
+            "Tests for compareScreenshots (identical, diff detection, report generation)",
+            "Tests for listScreenshotBaselines (list, empty)",
+            "All tests pass with npm run test"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create a11y-audit.test.ts: auditAccessibility (run, filter rules, categorize), getAccessibilityResults (JSON, summary, detailed formats)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/a11y-audit.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for auditAccessibility (run, include/exclude rules)",
+            "Tests for getAccessibilityResults (all formats)",
+            "Tests for empty results handling",
+            "All tests pass with npm run test"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Create tabs.test.ts: tabs list (URLs, current indicator), tabs new (blank, with URL), tabs switch (valid, invalid index), tabs close (current, by index, last tab error)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/tabs.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for tabs list (list, current indicator)",
+            "Tests for tabs new (blank, with URL)",
+            "Tests for tabs switch (valid, invalid index)",
+            "Tests for tabs close (current, by index, last tab)",
+            "All tests pass with npm run test"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All P1 feature tests pass"
+    },
+    {
+      "id": "phase-4",
+      "name": "Priority 2 Feature Tests",
+      "description": "Create tests for secondary features: VideoRecording, HARExport, EventListener, DOMInspection, DeviceEmulation",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create video-recording.test.ts: startRecording, stopRecording, getRecordingStatus, listRecordings",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/video-recording.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for start/stop recording lifecycle",
+            "Tests for getRecordingStatus (recording, not recording)",
+            "Tests for listRecordings",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Create har-export.test.ts: startHAR, exportHAR, getHARData with NetworkCapture integration",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/har-export.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for startHAR initialization",
+            "Tests for exportHAR (file write, path validation)",
+            "Tests for getHARData structure",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Create event-listener.test.ts: getEventLog, clearEventLog, waitForEvent (dialog, popup, error types)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/event-listener.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for getEventLog (with events, empty)",
+            "Tests for clearEventLog",
+            "Tests for waitForEvent (dialog, popup, error)",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Create dom-inspection.test.ts: countElements, getElementVisibility, getComputedStyle, getOverlayingElements",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/dom-inspection.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for countElements (found, not found)",
+            "Tests for getElementVisibility (visible, hidden, reasons)",
+            "Tests for getComputedStyle",
+            "Tests for getOverlayingElements",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-4.5",
+          "description": "Create device-emulation.test.ts: setMobilePreset, listMobilePresets, resetMobilePreset with viewport changes",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/device-emulation.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for setMobilePreset (valid preset, invalid)",
+            "Tests for listMobilePresets",
+            "Tests for resetMobilePreset",
+            "Viewport change verification",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All P2 feature tests pass"
+    },
+    {
+      "id": "phase-5",
+      "name": "Priority 3 Feature Tests",
+      "description": "Create tests for remaining features: FlakyDetection, Orchestration, ContentCapture, SnapshotComparison",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Create flaky-detection.test.ts: runTestMultipleTimes, analyzeFlakiness (pass rate calculation)",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/flaky-detection.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for runTestMultipleTimes (success, partial failure)",
+            "Tests for analyzeFlakiness (metrics)",
+            "Pass rate calculation accuracy",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Create orchestration.test.ts: orchestrate, getOrchestrationStatus, abortOrchestration",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/orchestration.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for orchestrate (start, prompt handling)",
+            "Tests for getOrchestrationStatus",
+            "Tests for abortOrchestration",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Create content-capture.test.ts: getPageHTML, getPageText, getElementHTML, getElementText",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/content-capture.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for getPageHTML/getPageText",
+            "Tests for getElementHTML/getElementText",
+            "Selector validation tests",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-5.4",
+          "description": "Create snapshot-comparison.test.ts: saveSnapshotBaseline, compareSnapshots (diff detection), listBaselines",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/snapshot-comparison.ts",
+              "BROWSER-CLI/tests/setup.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for saveSnapshotBaseline",
+            "Tests for compareSnapshots (identical, with changes)",
+            "Tests for listBaselines",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All P3 feature tests pass"
+    },
+    {
+      "id": "phase-6",
+      "name": "Plugin Hook Wiring",
+      "description": "Wire onNavigate and onSnapshot plugin hooks with dependency injection",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Add setPluginsFeature setter method to CoreActionsFeature with private pluginsFeature field",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/core-actions.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Private pluginsFeature?: PluginsFeature field added",
+            "setPluginsFeature(plugins) method implemented",
+            "getPluginsFeature() accessor implemented",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "Wire triggerOnNavigate in navigate handler after page.goto() succeeds",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/core-actions.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "triggerOnNavigate called after successful navigation",
+            "Hook errors caught with .catch(() => {}) to not block command",
+            "URL passed correctly to hook"
+          ]
+        },
+        {
+          "id": "task-6.3",
+          "description": "Add setPluginsFeature setter method to SnapshotFeature with private pluginsFeature field",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/snapshot.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Private pluginsFeature?: PluginsFeature field added",
+            "setPluginsFeature(plugins) method implemented",
+            "getPluginsFeature() accessor implemented",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-6.4",
+          "description": "Wire triggerOnSnapshot in snapshot handler after snapshot capture completes",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.3"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/snapshot.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "triggerOnSnapshot called after snapshot captured",
+            "Hook errors caught to not block command",
+            "Snapshot string passed correctly to hook"
+          ]
+        },
+        {
+          "id": "task-6.5",
+          "description": "Wire plugin dependencies in feature-registry.ts: inject PluginsFeature into CoreActions and Snapshot",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.2",
+            "task-6.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/SCRIPTS/browserManagerModules/feature-registry.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "PluginsFeature retrieved from feature map",
+            "coreActions.setPluginsFeature(plugins) called",
+            "snapshot.setPluginsFeature(plugins) called",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-6.6",
+          "description": "Add plugin hook wiring tests to plugins.test.ts: onNavigate after navigate, onSnapshot after snapshot, error resilience",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.5"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/tests/features/plugins.test.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test: onNavigate triggered after navigate command",
+            "Test: onSnapshot triggered after snapshot command",
+            "Test: Hook errors don't block commands",
+            "Test: Multiple plugins receive hook calls",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Plugin hooks wired and tests pass"
+    },
+    {
+      "id": "phase-7",
+      "name": "Verification",
+      "description": "Run full test suite and verify all changes",
+      "subtasks": [
+        {
+          "id": "task-7.1",
+          "description": "Run full BROWSER-CLI test suite, verify all 12 new test files pass",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1",
+            "task-3.2",
+            "task-3.3",
+            "task-4.1",
+            "task-4.2",
+            "task-4.3",
+            "task-4.4",
+            "task-4.5",
+            "task-5.1",
+            "task-5.2",
+            "task-5.3",
+            "task-5.4",
+            "task-6.6"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "BROWSER-CLI/tests/"
+            ]
+          },
+          "acceptanceCriteria": [
+            "npm run test -- BROWSER-CLI/tests/ passes",
+            "All 12 new feature tests run successfully",
+            "No regressions in existing tests",
+            "Coverage report generated"
+          ]
+        },
+        {
+          "id": "task-7.2",
+          "description": "Write Serena memory documenting all changes made in this remediation",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-7.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [
+              "PLAN_BROWSER_CLI_SHORTTERM_REMEDIATION_20251227"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory documents documentation fixes",
+            "Memory lists all 12 new test files",
+            "Memory documents plugin hook wiring",
+            "Memory saved successfully"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All tests pass and changes documented"
+    }
+  ],
+  "totalEstimatedTokens": 86500,
+  "risks": [
+    {
+      "description": "Mock factories may not accurately represent Playwright internals",
+      "mitigation": "Reference existing working mocks in setup.ts; use vi.mock for complex dependencies",
+      "severity": "medium"
+    },
+    {
+      "description": "Plugin hook wiring may introduce circular dependencies",
+      "mitigation": "Use setter injection pattern (already used for Drag/Snapshot); verify with TypeScript compilation",
+      "severity": "low"
+    },
+    {
+      "description": "Some feature tests may require actual browser context",
+      "mitigation": "Use vitest browser mode or mark as integration tests; mock at Playwright API boundary",
+      "severity": "medium"
+    },
+    {
+      "description": "12 new test files may significantly increase test run time",
+      "mitigation": "Use vitest parallel execution; consider test:unit vs test:integration separation",
+      "severity": "low"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "f932e26d-ddf1-471e-820e-532c9fcc25b2",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_23-32_4ee0d2d1-871d-4fe6-9787-f3a3cc1984d3",
+    "timestamp": "2025-12-07T23:32:47.277Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Training Block Metrics Propagation Fix - 9 code changes across 3 files (analysis.ts, templates.ts, GenerateNextBlockDialog.tsx). Plan exists in Serena memory PLAN_TRAINING_BLOCK_METRICS_FIX_20251207. Analysis in ANALYSIS_TRAINING_BLOCK_METRICS_20251207. Goal: Preserve category-specific metrics (contacts, distance, duration, percentMaxIntensity) through the Generate Next Training Block feature pipeline."
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "id": "2ef002b0-9e7a-4bfe-be42-996e2c0ecc22",
+  "timestamp": "2025-12-26T20:28:16.739Z",
+  "description": "Split 5 monolithic files (2,857 LOC total) into modular structure using facade pattern, fix consistency issues, add async I/O layer and session cache",
+  "design": {
+    "title": "ORCHESTRATION Phase 2 - Architecture & Code Quality",
+    "description": "Split 5 monolithic files (2,857 LOC total) into modular structure using facade pattern, fix consistency issues, add async I/O layer and session cache",
+    "phases": [
+      {
+        "id": "2A",
+        "name": "Foundation Utilities",
+        "description": "Create error categories, async file operations, and session cache utilities",
+        "tasks": [
+          {
+            "id": "2A.1",
+            "description": "Create lib/utils/errors.ts with ErrorCategory enum and categorizeError()"
+          },
+          {
+            "id": "2A.2",
+            "description": "Create lib/utils/asyncFs.ts with atomic writes and JSON helpers"
+          },
+          {
+            "id": "2A.3",
+            "description": "Create lib/utils/cache.ts with SessionCache class and TTL support"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/lib/utils/errors.ts (NEW ~80 LOC)",
+          "ORCHESTRATION/lib/utils/asyncFs.ts (NEW ~120 LOC)",
+          "ORCHESTRATION/lib/utils/cache.ts (NEW ~100 LOC)"
+        ],
+        "risk": "LOW",
+        "complexity": "Simple"
+      },
+      {
+        "id": "2B",
+        "name": "Consistency Fixes",
+        "description": "Fix validator return type inconsistency and extract shared write helper",
+        "tasks": [
+          {
+            "id": "2B.1",
+            "description": "Fix safeValidateDispatchInstruction to return standard Zod safeParse result"
+          },
+          {
+            "id": "2B.2",
+            "description": "Extract writeArtifact helper to lib/contextHubModules/shared.ts"
+          },
+          {
+            "id": "2B.3",
+            "description": "Update writePrompt and writePlan to use shared helper"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/schemas/schemaModules/validators.ts (MODIFY)",
+          "ORCHESTRATION/lib/contextHubModules/shared.ts (NEW ~50 LOC)",
+          "ORCHESTRATION/lib/contextHubModules/prompts.ts (MODIFY)",
+          "ORCHESTRATION/lib/contextHubModules/plans.ts (MODIFY)"
+        ],
+        "risk": "LOW",
+        "complexity": "Simple"
+      },
+      {
+        "id": "2C",
+        "name": "Split checking.ts",
+        "description": "Split 711 LOC checking.ts into facade + 3 focused modules",
+        "tasks": [
+          {
+            "id": "2C.1",
+            "description": "Create checkingModules/ directory structure"
+          },
+          {
+            "id": "2C.2",
+            "description": "Extract timeout utilities to checkingModules/timeout.ts (~60 LOC)"
+          },
+          {
+            "id": "2C.3",
+            "description": "Extract legacy sync/async functions to checkingModules/legacy.ts (~250 LOC)"
+          },
+          {
+            "id": "2C.4",
+            "description": "Extract modern gate check functions to checkingModules/async.ts (~200 LOC)"
+          },
+          {
+            "id": "2C.5",
+            "description": "Create facade checking.ts with re-exports (~100 LOC)"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts (REFACTOR to facade)",
+          "ORCHESTRATION/lib/contextHubModules/gatesModules/checkingModules/index.ts (NEW)",
+          "ORCHESTRATION/lib/contextHubModules/gatesModules/checkingModules/timeout.ts (NEW)",
+          "ORCHESTRATION/lib/contextHubModules/gatesModules/checkingModules/legacy.ts (NEW)",
+          "ORCHESTRATION/lib/contextHubModules/gatesModules/checkingModules/async.ts (NEW)"
+        ],
+        "risk": "MEDIUM",
+        "complexity": "Medium"
+      },
+      {
+        "id": "2D",
+        "name": "Split dashboard.ts",
+        "description": "Split 648 LOC dashboard.ts into facade + 4 focused modules",
+        "tasks": [
+          {
+            "id": "2D.1",
+            "description": "Create dashboardModules/ directory structure"
+          },
+          {
+            "id": "2D.2",
+            "description": "Extract COLORS, BOX, PROGRESS constants to dashboardModules/constants.ts (~50 LOC)"
+          },
+          {
+            "id": "2D.3",
+            "description": "Extract format functions to dashboardModules/formatters.ts (~150 LOC)"
+          },
+          {
+            "id": "2D.4",
+            "description": "Extract render methods as functions to dashboardModules/renderer.ts (~200 LOC)"
+          },
+          {
+            "id": "2D.5",
+            "description": "Refactor OrchestrationDashboard class to dashboardModules/dashboard-class.ts (~200 LOC)"
+          },
+          {
+            "id": "2D.6",
+            "description": "Create facade dashboard.ts with re-exports + main() (~80 LOC)"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/cli/dashboard.ts (REFACTOR to facade)",
+          "ORCHESTRATION/cli/dashboardModules/index.ts (NEW)",
+          "ORCHESTRATION/cli/dashboardModules/constants.ts (NEW)",
+          "ORCHESTRATION/cli/dashboardModules/formatters.ts (NEW)",
+          "ORCHESTRATION/cli/dashboardModules/renderer.ts (NEW)",
+          "ORCHESTRATION/cli/dashboardModules/dashboard-class.ts (NEW)"
+        ],
+        "risk": "MEDIUM",
+        "complexity": "Medium"
+      },
+      {
+        "id": "2E",
+        "name": "Split artifacts.ts",
+        "description": "Split 564 LOC artifacts.ts into facade + 4 focused modules by artifact type",
+        "tasks": [
+          {
+            "id": "2E.1",
+            "description": "Create artifactsModules/ directory structure"
+          },
+          {
+            "id": "2E.2",
+            "description": "Extract prompt operations to artifactsModules/prompts.ts (~100 LOC)"
+          },
+          {
+            "id": "2E.3",
+            "description": "Extract plan operations to artifactsModules/plans.ts (~100 LOC)"
+          },
+          {
+            "id": "2E.4",
+            "description": "Extract handoff operations to artifactsModules/handoffs.ts (~150 LOC)"
+          },
+          {
+            "id": "2E.5",
+            "description": "Extract pending plan operations to artifactsModules/pending-plans.ts (~200 LOC)"
+          },
+          {
+            "id": "2E.6",
+            "description": "Create facade artifacts.ts with re-exports (~60 LOC)"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/cli/orchModules/artifacts.ts (REFACTOR to facade)",
+          "ORCHESTRATION/cli/orchModules/artifactsModules/index.ts (NEW)",
+          "ORCHESTRATION/cli/orchModules/artifactsModules/prompts.ts (NEW)",
+          "ORCHESTRATION/cli/orchModules/artifactsModules/plans.ts (NEW)",
+          "ORCHESTRATION/cli/orchModules/artifactsModules/handoffs.ts (NEW)",
+          "ORCHESTRATION/cli/orchModules/artifactsModules/pending-plans.ts (NEW)"
+        ],
+        "risk": "LOW",
+        "complexity": "Simple"
+      },
+      {
+        "id": "2F",
+        "name": "Split evidence-chain.ts",
+        "description": "Split 501 LOC evidence-chain.ts into facade + 3 focused modules",
+        "tasks": [
+          {
+            "id": "2F.1",
+            "description": "Create evidenceChainModules/ directory structure"
+          },
+          {
+            "id": "2F.2",
+            "description": "Extract EvidenceChainBuilder class to evidenceChainModules/builder.ts (~200 LOC)"
+          },
+          {
+            "id": "2F.3",
+            "description": "Extract I/O functions to evidenceChainModules/io.ts (~150 LOC)"
+          },
+          {
+            "id": "2F.4",
+            "description": "Extract validation functions to evidenceChainModules/validation.ts (~100 LOC)"
+          },
+          {
+            "id": "2F.5",
+            "description": "Create facade evidence-chain.ts with re-exports (~80 LOC)"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/lib/evidence-chain.ts (REFACTOR to facade)",
+          "ORCHESTRATION/lib/evidenceChainModules/index.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceChainModules/builder.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceChainModules/io.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceChainModules/validation.ts (NEW)"
+        ],
+        "risk": "LOW",
+        "complexity": "Simple"
+      },
+      {
+        "id": "2G",
+        "name": "Split evidenceAutoPopulator.ts",
+        "description": "Split 433 LOC evidenceAutoPopulator.ts into facade + 3 focused modules",
+        "tasks": [
+          {
+            "id": "2G.1",
+            "description": "Create evidenceAutoPopulatorModules/ directory structure"
+          },
+          {
+            "id": "2G.2",
+            "description": "Extract extraction functions to evidenceAutoPopulatorModules/extraction.ts (~150 LOC)"
+          },
+          {
+            "id": "2G.3",
+            "description": "Extract population functions to evidenceAutoPopulatorModules/population.ts (~150 LOC)"
+          },
+          {
+            "id": "2G.4",
+            "description": "Extract chain ops to evidenceAutoPopulatorModules/chain-ops.ts (~100 LOC)"
+          },
+          {
+            "id": "2G.5",
+            "description": "Create facade evidenceAutoPopulator.ts with re-exports (~60 LOC)"
+          }
+        ],
+        "files": [
+          "ORCHESTRATION/lib/evidenceAutoPopulator.ts (REFACTOR to facade)",
+          "ORCHESTRATION/lib/evidenceAutoPopulatorModules/index.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceAutoPopulatorModules/extraction.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceAutoPopulatorModules/population.ts (NEW)",
+          "ORCHESTRATION/lib/evidenceAutoPopulatorModules/chain-ops.ts (NEW)"
+        ],
+        "risk": "LOW",
+        "complexity": "Simple"
+      }
+    ],
+    "validation": {
+      "perPhase": [
+        "npm run typecheck - MUST pass",
+        "npm test - All 366 tests MUST pass",
+        "Verify facade LOC < 100",
+        "Verify no module exceeds 400 LOC"
+      ],
+      "final": [
+        "npx madge --circular ORCHESTRATION/ - No circular dependencies",
+        "npx tsx ORCHESTRATION/cli/orch.ts --help - CLI commands work"
+      ]
+    },
+    "metrics": {
+      "filesCreated": 26,
+      "filesModified": 9,
+      "totalLOCRestructured": 2750,
+      "targetFacadeLOC": "<100 each",
+      "targetModuleLOC": "150-200 each"
+    },
+    "dependencies": {
+      "2A": [],
+      "2B": [],
+      "2C": [
+        "2A"
+      ],
+      "2D": [],
+      "2E": [
+        "2B"
+      ],
+      "2F": [
+        "2A"
+      ],
+      "2G": [
+        "2F"
+      ]
+    },
+    "parallelizable": [
+      "2C",
+      "2D",
+      "2E after 2B"
+    ]
+  },
+  "status": "archived"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "31b4e40b-7ef5-4c6f-8dee-ec8757a0d4a6",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20260102_12-15_b676a48d-b451-4d85-9e41-6d95dec64d04",
+    "timestamp": "2026-01-02T12:16:08.319Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Category Filter Bug Fix: Fix the Add Exercise modal category dropdown showing only All Categories. Root cause: categories=[] passed at WorkoutLogger.tsx:214 because useWorkoutQueries hook missing getCategories query. Also fix deleteCategory wrong index, type mismatch in filter, add FK validation, and optimize N+1 query."
+  }
+}

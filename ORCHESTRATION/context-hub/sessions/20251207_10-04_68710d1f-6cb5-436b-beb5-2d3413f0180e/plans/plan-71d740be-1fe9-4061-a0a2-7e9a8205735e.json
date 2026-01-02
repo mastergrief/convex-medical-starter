@@ -1,0 +1,357 @@
+{
+  "id": "71d740be-1fe9-4061-a0a2-7e9a8205735e",
+  "type": "plan",
+  "metadata": {
+    "promptId": "5dcdfc2f-f6e7-4e10-a11c-182b29b1c242",
+    "sessionId": "20251226_21-30_fe3e650b-0f93-4425-a381-ab839ffad214",
+    "timestamp": "2025-12-26T21:35:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Phase 3: Documentation & Testing for ORCHESTRATION - Add JSDoc documentation to all public methods (24 methods), update README with configuration docs and Gate DSL specification, split large test files (>500 LOC), add performance benchmarks, regression guards, and CI/CD pipeline",
+  "phases": [
+    {
+      "id": "phase-3A",
+      "name": "JSDoc Documentation",
+      "description": "Add comprehensive JSDoc documentation to all public ContextHub methods and CLI handlers",
+      "subtasks": [
+        {
+          "id": "task-3A.1",
+          "description": "Add JSDoc to session.ts (8 methods): getSessionId, getSessionPath, getSessionInfo, listSessions, getLatestSession, getSessionAge, purgeSession, purgeOldSessions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/session.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 8 session methods have JSDoc with @param, @returns, @example",
+            "TypeScript compiles without errors",
+            "Examples are accurate and runnable"
+          ]
+        },
+        {
+          "id": "task-3A.2",
+          "description": "Add JSDoc to artifact methods: prompts.ts (writePrompt, readPrompt, listPrompts), plans.ts (writePlan, readPlan, listPlans), handoffs.ts (writeHandoff, readHandoff, listHandoffs)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/prompts.ts",
+              "ORCHESTRATION/lib/contextHubModules/plans.ts",
+              "ORCHESTRATION/lib/contextHubModules/handoffs.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 9 artifact methods have JSDoc with @param, @returns, @example",
+            "WriteResult and ReadResult types documented",
+            "Async nature of writeHandoff documented"
+          ]
+        },
+        {
+          "id": "task-3A.3",
+          "description": "Add JSDoc to gate methods: gates.ts facade, checking.ts (checkGate, checkGateAsync), io.ts (writeGateResult, readGateResult, listGateResults), advancement.ts (advancePhase), evidence.ts (recordEvidence)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 9000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts",
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/checking.ts",
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/io.ts",
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/advancement.ts",
+              "ORCHESTRATION/lib/contextHubModules/gatesModules/evidence.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226",
+              "ANALYSIS_GATE_METHODS_JSDOC_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 7 gate methods have JSDoc with @param, @returns, @example",
+            "GateResult and GateValidation types documented",
+            "Gate DSL syntax referenced in examples"
+          ]
+        },
+        {
+          "id": "task-3A.4",
+          "description": "Add JSDoc to memory.ts (4 methods): linkMemory, listLinkedMemories, getLinkedMemory, unlinkMemory",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/memory.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 4 memory methods have JSDoc with @param, @returns, @example",
+            "LinkMemoryOptions documented",
+            "TraceabilityData extraction explained"
+          ]
+        },
+        {
+          "id": "task-3A.5",
+          "description": "Add JSDoc to CLI handlers: session.ts, artifacts.ts, gates.ts, template.ts, execute.ts, status.ts, state.ts, output.ts, trace.ts (14 total handler functions)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/session.ts",
+              "ORCHESTRATION/cli/orchModules/artifacts.ts",
+              "ORCHESTRATION/cli/orchModules/gates.ts",
+              "ORCHESTRATION/cli/orchModules/template.ts",
+              "ORCHESTRATION/cli/orchModules/execute.ts",
+              "ORCHESTRATION/cli/orchModules/status.ts",
+              "ORCHESTRATION/cli/orchModules/state.ts",
+              "ORCHESTRATION/cli/orchModules/output.ts",
+              "ORCHESTRATION/cli/orchModules/trace.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All exported handler functions have JSDoc",
+            "CLI usage examples in @example tags",
+            "Error scenarios documented"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3B",
+      "name": "README Documentation",
+      "description": "Update README with configuration docs, Gate DSL specification, and integration examples",
+      "subtasks": [
+        {
+          "id": "task-3B.1",
+          "description": "Add Configuration Documentation section: DashboardConfig (refreshInterval, maxEvents, compactMode), ParallelExecutionConfig (maxConcurrentAgents, defaultTimeout, retryConfig), GateCheckConfig (typecheckTimeout, testsTimeout, customCheckTimeout, totalTimeout)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3A.1",
+            "task-3A.2",
+            "task-3A.3",
+            "task-3A.4",
+            "task-3A.5"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All config types documented with tables",
+            "Default values and ranges specified",
+            "CLI and programmatic usage examples"
+          ]
+        },
+        {
+          "id": "task-3B.2",
+          "description": "Add Gate DSL Specification section: BNF grammar, operator precedence (NOT > AND > OR), check types reference table, complex expression examples, error message formats",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3B.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Complete BNF grammar documented",
+            "All operators explained with examples",
+            "Threshold check syntax documented",
+            "Error recovery guidance included"
+          ]
+        },
+        {
+          "id": "task-3B.3",
+          "description": "Add Integration Examples section: end-to-end workflow (session new -> prompt write -> memory link -> plan write -> execute -> gate check -> advance), template instantiation example, error handling patterns with recovery strategies",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3B.2"
+          ],
+          "estimatedTokens": 7000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Complete workflow example with bash commands",
+            "Template usage documented",
+            "Error scenarios table with recovery actions",
+            "README increased by ~830 lines total"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3C",
+      "name": "Test Infrastructure",
+      "description": "Split large test files, add performance benchmarks, regression guards, and CI/CD pipeline",
+      "subtasks": [
+        {
+          "id": "task-3C.1",
+          "description": "Split 8 test files >500 LOC: template-processor.test.ts (1124->3 files), evidenceAutoPopulator.test.ts (964->3 files), gatesModules.test.ts (834->2 files), evidence-chain.test.ts (785->2 files), context-hub.test.ts (756->2 files), validators.test.ts (698->2 files), parallel-engine.test.ts (653->2 files), evaluator.test.ts (516->2 files)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3B.3"
+          ],
+          "estimatedTokens": 25000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/tests/lib/template-processor.test.ts",
+              "ORCHESTRATION/tests/lib/evidenceAutoPopulator.test.ts",
+              "ORCHESTRATION/tests/lib/gatesModules.test.ts",
+              "ORCHESTRATION/tests/lib/evidence-chain.test.ts",
+              "ORCHESTRATION/tests/lib/context-hub.test.ts",
+              "ORCHESTRATION/tests/gateParserModules/validators.test.ts",
+              "ORCHESTRATION/tests/lib/parallel-engine.test.ts",
+              "ORCHESTRATION/tests/gateParserModules/evaluator.test.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226",
+              "TESTING_PERFORMANCE_DEEP_DISCOVERY_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All test files under 500 LOC",
+            "Split pattern: tests/{domain}/ subdirectories",
+            "All tests still pass after split",
+            "Shared test utilities extracted"
+          ]
+        },
+        {
+          "id": "task-3C.2",
+          "description": "Add performance benchmarks: gate-parsing.bench.ts (simple, compound, complex, threshold conditions), hub-operations.bench.ts (session create, artifact write/read, list operations)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3C.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/vitest.config.ts"
+            ],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Benchmark files created in tests/benchmarks/",
+            "vitest.config.ts updated with bench configuration",
+            "npm run bench script added to package.json",
+            "Baseline metrics documented"
+          ]
+        },
+        {
+          "id": "task-3C.3",
+          "description": "Add regression guards: tests/performance/timing.test.ts with assertions for: parse simple condition <1ms, ContextHub create <50ms, list sessions <100ms, gate check <200ms (excluding subprocess)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3C.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Regression guard tests created",
+            "Timing thresholds documented",
+            "Tests skip subprocess-dependent operations",
+            "All regression tests pass"
+          ]
+        },
+        {
+          "id": "task-3C.4",
+          "description": "Add CI/CD pipeline: .github/workflows/orchestration.yml with unit tests, integration tests, benchmarks jobs. Include artifact upload for benchmark results, caching for node_modules",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": [
+            "task-3C.3"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [],
+            "memories": [
+              "PLAN_ORCH_PERF_PHASE3_DOCS_TESTING_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "GitHub Actions workflow created",
+            "Jobs: unit-tests, integration-tests, benchmarks",
+            "Node 20 with npm caching",
+            "Artifact upload for benchmark results",
+            "Total pipeline time target <5 min"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND tests"
+    }
+  ],
+  "totalEstimatedTokens": 106000,
+  "risks": [
+    {
+      "description": "Test file splitting may break cross-test dependencies",
+      "mitigation": "Extract shared fixtures to tests/fixtures/, update imports incrementally",
+      "severity": "medium"
+    },
+    {
+      "description": "JSDoc examples may become stale if API changes",
+      "mitigation": "Add JSDoc validation to CI, use actual function calls in examples",
+      "severity": "low"
+    },
+    {
+      "description": "Performance regression thresholds may be too strict for CI environment",
+      "mitigation": "Use 2x multiplier for CI vs local, document environment-specific thresholds",
+      "severity": "low"
+    },
+    {
+      "description": "README size increase (~830 lines) may impact readability",
+      "mitigation": "Use collapsible sections, link to external docs for deep-dives",
+      "severity": "low"
+    }
+  ]
+}

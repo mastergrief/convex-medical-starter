@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-1",
+  "passed": true,
+  "checkedAt": "2025-12-07T17:19:54.051Z",
+  "results": [
+    {
+      "check": "memory:BOTTOM_NAV*",
+      "passed": true,
+      "message": "Found: BOTTOM_NAV_ARCHITECTURE.md"
+    }
+  ],
+  "blockers": []
+}

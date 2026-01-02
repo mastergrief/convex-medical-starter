@@ -1,0 +1,12 @@
+{
+  "id": "c3526a96-e7c6-46cd-b83c-61d37e98bec2",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251221_18-54_35b2d660-155a-4ef7-a14d-472e17e7995e",
+    "timestamp": "2025-12-21T18:54:28.896Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Browser Manager Refactoring: Decompose 797-line browser-manager.ts into modular structure using facade pattern. Create TabsFeature, browserManagerModules directory with feature-registry, lifecycle, command-dispatcher, response-enricher modules."
+  }
+}

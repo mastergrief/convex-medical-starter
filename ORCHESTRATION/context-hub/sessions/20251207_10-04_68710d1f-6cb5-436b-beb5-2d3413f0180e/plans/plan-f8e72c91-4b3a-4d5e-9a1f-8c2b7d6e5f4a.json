@@ -1,0 +1,199 @@
+{
+  "id": "f8e72c91-4b3a-4d5e-9a1f-8c2b7d6e5f4a",
+  "type": "plan",
+  "metadata": {
+    "promptId": "2f45acb4-3f10-4887-aba3-fd13831c8062",
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-07T10:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Add progress indicator to WorkoutLogger component showing completion percentage during workout sessions. NOTE: WorkoutHeader.tsx already contains a progress indicator (percentage badge, progress bar, and text showing completed/total sets). This plan addresses potential enhancements or confirms existing implementation meets requirements.",
+  "phases": [
+    {
+      "id": "phase-1-analysis",
+      "name": "Analysis Phase",
+      "description": "Explore WorkoutLogger architecture to understand current progress indicator implementation and identify enhancement opportunities",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze WorkoutLogger facade and modular architecture to understand component relationships and state flow for progress tracking",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLogger.tsx",
+              "src/components/WorkoutLoggerModules/index.ts",
+              "src/components/WorkoutLoggerModules/types.ts"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_DYNAMIC_METRICS_20251206",
+              "WORKOUTLOGGER_PROGRAMMED_METRICS_LOGIC"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Document component hierarchy (facade -> modules)",
+            "Identify state management pattern for progress tracking",
+            "Map data flow: sets completed -> progress calculation -> UI display"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Analyze existing WorkoutHeader progress indicator implementation including Progress component, percentage calculation, and styling",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/WorkoutHeader.tsx",
+              "src/components/ui/progress.tsx",
+              "src/components/ui/badge.tsx"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Document current progress display: badge, bar, text",
+            "Identify Progress component source (likely shadcn/ui)",
+            "Assess visual design and accessibility compliance"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Analyze useWorkoutLogger hook to understand progress state derivation and real-time update mechanism",
+          "agentType": "explore",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Document computed progress values",
+            "Identify real-time update triggers (set completion)",
+            "Note any derived state patterns used"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All analysis subtasks complete with clear understanding of existing progress implementation"
+    },
+    {
+      "id": "phase-2-implementation",
+      "name": "Implementation Phase",
+      "description": "Enhance or add progress indicator based on analysis findings. If existing implementation is sufficient, document and confirm.",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Based on analysis findings, implement progress indicator enhancements if needed. Current implementation shows: percentage badge, progress bar, 'X of Y sets completed' text. Potential enhancements: animated progress, color transitions at thresholds, per-exercise mini progress, circular progress variant.",
+          "agentType": "codex",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-1.2",
+            "task-1.3"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/WorkoutHeader.tsx",
+              "src/components/WorkoutLogger.tsx"
+            ],
+            "prompt": "Review existing progress implementation. If it meets the 'shows completion percentage during workout sessions' requirement, confirm implementation. If enhancements are identified, implement them following existing patterns (Tailwind CSS, shadcn/ui components, TypeScript strict mode)."
+          },
+          "acceptanceCriteria": [
+            "Progress percentage visible during active workout",
+            "Progress updates in real-time as sets complete",
+            "TypeScript typecheck passes",
+            "Follows existing component patterns"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Verify typecheck passes after any modifications and fix any type errors",
+          "agentType": "codex",
+          "priority": "critical",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "prompt": "Run 'npm run typecheck' and fix any TypeScript errors. This is BLOCKING - no further work until types are clean."
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck exits with code 0",
+            "No type errors in modified files"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Implementation complete and typecheck passing"
+    },
+    {
+      "id": "phase-3-validation",
+      "name": "Validation Phase",
+      "description": "Test progress indicator functionality through browser automation",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Test progress indicator during active workout session: verify percentage display updates correctly as sets are completed",
+          "agentType": "playwright",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "prompt": "1. Navigate to localhost:5173, authenticate as test athlete. 2. Navigate to workout logger for a day with scheduled workout. 3. Start workout session. 4. Capture initial progress state (should show 0%). 5. Complete one set. 6. Verify progress updates. 7. Screenshot evidence at each stage."
+          },
+          "acceptanceCriteria": [
+            "Progress indicator visible at workout start (0%)",
+            "Progress updates after set completion",
+            "Percentage calculation matches sets completed/total",
+            "Screenshot evidence captured for each stage"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Test edge cases: workout with single set, workout with many exercises, progress at 100%",
+          "agentType": "playwright",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "prompt": "Test boundary conditions for progress indicator. Document behavior at 0%, 50%, 100% progress. Verify no visual glitches or incorrect calculations."
+          },
+          "acceptanceCriteria": [
+            "Progress handles single-set workout correctly",
+            "Progress handles multi-exercise workout correctly",
+            "100% progress displays correctly before workout completion"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All validation tests pass with screenshot evidence"
+    }
+  ],
+  "totalEstimatedTokens": 52000,
+  "risks": [
+    {
+      "description": "Progress indicator already exists in WorkoutHeader.tsx - request may be redundant or require clarification",
+      "mitigation": "Analysis phase will confirm if existing implementation meets requirements before proceeding to implementation",
+      "severity": "medium"
+    },
+    {
+      "description": "Workout test data may not be available for the test athlete on the current date",
+      "mitigation": "Check workout calendar and use appropriate test date with scheduled workout",
+      "severity": "low"
+    },
+    {
+      "description": "Progress calculation complexity if exercises have variable set counts",
+      "mitigation": "Existing implementation already handles this via reduce operations",
+      "severity": "low"
+    }
+  ]
+}

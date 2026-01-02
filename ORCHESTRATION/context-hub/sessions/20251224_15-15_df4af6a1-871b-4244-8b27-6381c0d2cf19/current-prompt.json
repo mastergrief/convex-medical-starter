@@ -1,0 +1,12 @@
+{
+  "id": "5a075a74-9fd2-4b61-a909-ad2e7bb0d00d",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251224_15-15_df4af6a1-871b-4244-8b27-6381c0d2cf19",
+    "timestamp": "2025-12-24T15:15:18.490Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "BROWSER-CLI Section 3: Developer Experience Improvements - Implement 4 features: (1) Command Discovery --list, (2) Output Formatting Flags --json/--quiet/--raw, (3) Selector Format Guide, (4) Alias Documentation"
+  }
+}

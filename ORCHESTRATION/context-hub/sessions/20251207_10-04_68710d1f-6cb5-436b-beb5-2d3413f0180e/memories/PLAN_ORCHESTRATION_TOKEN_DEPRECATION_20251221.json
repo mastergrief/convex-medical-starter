@@ -1,0 +1,11 @@
+{
+  "memoryName": "PLAN_ORCHESTRATION_TOKEN_DEPRECATION_20251221",
+  "linkedAt": "2025-12-21T10:05:48.827Z",
+  "serenaPath": ".serena/memories/PLAN_ORCHESTRATION_TOKEN_DEPRECATION_20251221.md",
+  "summary": "Memory PLAN_ORCHESTRATION_TOKEN_DEPRECATION_20251221 linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": null
+}

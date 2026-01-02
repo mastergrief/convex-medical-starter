@@ -1,0 +1,15 @@
+# Authentication Flow Template
+# Authenticates user and saves browser state for reuse
+# If already authenticated, signs out first
+#
+# Required Variables:
+#   BASE_URL - Application base URL (e.g., http://localhost:5173)
+#   EMAIL - Login email
+#   PASSWORD - Login password
+#   ROLE - User role (coach/client/admin)
+
+navigate {{BASE_URL}}
+wait 2000
+snapshot
+saveState authenticated-{{ROLE}}
+screenshot auth-complete-{{ROLE}}.png

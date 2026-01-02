@@ -1,0 +1,164 @@
+{
+  "id": "plan-swap-e2e-tests-20260102",
+  "title": "Complete 3 Remaining Swap Exercise E2E Tests",
+  "created": "2026-01-02T08:45:00Z",
+  "status": "pending",
+  "priority": "high",
+  "estimatedDuration": "25 minutes",
+
+  "summary": {
+    "objective": "Execute 3 remaining E2E tests for Swap Exercise feature to achieve 100% coverage (17/17 tests)",
+    "currentState": "14/17 tests passing (82%)",
+    "targetState": "17/17 tests passing (100%)",
+    "criticalTest": "Data Preservation - verifies logged set data survives swap"
+  },
+
+  "scope": {
+    "ui": {
+      "components": ["SwapExerciseModal.tsx (183 lines)", "ExerciseCard.tsx (329 lines)", "WorkoutLogger.tsx (243 lines)"],
+      "selectors": ["[title=\"Swap Exercise\"]", "text:Swap Exercise", "text:Your logged set data will be preserved"],
+      "changes": "None - test execution only"
+    },
+    "api": {
+      "mutations": ["swapExerciseInLog (lines 656-785)"],
+      "keyLogic": "Line 747: sets: oldExercise.sets (data preservation)",
+      "changes": "None - test execution only"
+    },
+    "testInfra": {
+      "unitTests": "28 passing (swapExercise.test.ts)",
+      "savedStates": ["authenticated-coach", "authenticated-coach-final"],
+      "evidenceDir": "BROWSER-CLI/test-evidence/swap-final/"
+    }
+  },
+
+  "phases": [
+    {
+      "id": 1,
+      "name": "Prerequisites & Setup",
+      "duration": "3 min",
+      "tasks": [
+        "Verify dev server running (lsof -ti:5173)",
+        "Verify Browser-CLI status",
+        "Restore authenticated-coach state",
+        "Create evidence directory"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Test 1: Swap Modal Opens",
+      "duration": "5 min",
+      "priority": "HIGH",
+      "tasks": [
+        "Navigate to Workout Logger",
+        "Find and click swap button [title=\"Swap Exercise\"]",
+        "Verify modal opens with correct elements",
+        "Capture screenshot evidence"
+      ],
+      "selectors": {
+        "primary": "[title=\"Swap Exercise\"]",
+        "fallback1": "Snapshot ref (e.g., e47)",
+        "fallback2": "evaluate with btn.title check"
+      },
+      "successCriteria": [
+        "Modal visible with title 'Swap Exercise'",
+        "Current exercise displayed with category badge",
+        "Warning message visible",
+        "Exercise list populated (same category only)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Test 2: Category Filter Works",
+      "duration": "5 min",
+      "priority": "MEDIUM",
+      "tasks": [
+        "Verify exercises filtered to same category",
+        "Verify current exercise excluded from list",
+        "Test search filtering with 300ms debounce wait",
+        "Capture screenshot evidence"
+      ],
+      "successCriteria": [
+        "All exercises have matching category",
+        "Current exercise NOT in list",
+        "Search filters results correctly"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Test 3: Data Preservation (CRITICAL)",
+      "duration": "15 min",
+      "priority": "CRITICAL",
+      "tasks": [
+        "Log specific test data (reps: 8, weight: 185, notes: 'TEST_PRESERVATION_12345')",
+        "Take BEFORE screenshot",
+        "Execute swap to different exercise",
+        "Take AFTER screenshot",
+        "Verify ALL logged data preserved exactly"
+      ],
+      "testData": {
+        "actualReps": 8,
+        "actualWeight": 185,
+        "notes": "TEST_PRESERVATION_12345"
+      },
+      "successCriteria": [
+        "Exercise name changed",
+        "actualReps = 8 (preserved)",
+        "actualWeight = 185 (preserved)",
+        "notes = 'TEST_PRESERVATION_12345' (preserved)",
+        "completed status preserved",
+        "Toast shows 'Exercise Swapped'",
+        "Network request succeeded"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Post-Test Verification",
+      "duration": "2 min",
+      "tasks": [
+        "Check console for errors",
+        "Check network for failed requests",
+        "Save final browser state",
+        "List evidence files"
+      ]
+    }
+  ],
+
+  "risks": [
+    {
+      "risk": "Swap button not found",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Use snapshot refs or evaluate fallback"
+    },
+    {
+      "risk": "Data not visibly displayed after swap",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Use edit mode to access logged values"
+    },
+    {
+      "risk": "Search debounce timing",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Wait 400ms after typing"
+    }
+  ],
+
+  "evidence": {
+    "required": [
+      "01-modal-open.png",
+      "02-category-filter.png",
+      "03-data-BEFORE-swap.png",
+      "04-data-AFTER-swap.png",
+      "05-data-preserved-verified.png"
+    ],
+    "directory": "BROWSER-CLI/test-evidence/swap-final/"
+  },
+
+  "commands": {
+    "restore": "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts restoreState authenticated-coach",
+    "snapshot": "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts snapshot --full",
+    "screenshot": "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts screenshot {path}",
+    "network": "npx tsx BROWSER-CLI/SCRIPTS/browser-cmd.ts network --filter=swapExercise"
+  }
+}

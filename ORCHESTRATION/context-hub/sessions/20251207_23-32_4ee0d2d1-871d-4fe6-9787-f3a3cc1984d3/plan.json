@@ -1,0 +1,284 @@
+{
+  "id": "5a7e8c1b-9f3d-4e2a-b6c8-7d4f9e0a1b2c",
+  "type": "plan",
+  "metadata": {
+    "promptId": "f932e26d-ddf1-471e-820e-532c9fcc25b2",
+    "sessionId": "20251207_23-32_4ee0d2d1-871d-4fe6-9787-f3a3cc1984d3",
+    "timestamp": "2025-12-07T23:45:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix Training Block Generation metric propagation by preserving category-specific metrics (contacts, distance, duration, percentMaxIntensity) through the API and UI layers. 9 code changes across 3 files with typecheck gates between phases.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "API Layer - analysis.ts",
+      "description": "Fix 5 drop points in analysis.ts where category-specific metrics are filtered out during extraction and AI prompt generation",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Fix workoutExercises extraction (lines 58-65) - Add contacts, distance, duration, percentMaxIntensity, timeTarget to the map function",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/analysis.ts"]
+          },
+          "acceptanceCriteria": [
+            "workoutExercises.map includes contacts field",
+            "workoutExercises.map includes distance field",
+            "workoutExercises.map includes duration field",
+            "workoutExercises.map includes percentMaxIntensity field",
+            "workoutExercises.map includes timeTarget field"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Fix exerciseReplacements.original (lines 106-114) - Add category-specific metrics to the original object returned",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/analysis.ts"]
+          },
+          "acceptanceCriteria": [
+            "original object includes contacts, distance, duration, percentMaxIntensity, timeTarget fields"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Fix blockData for AI context (lines 141-147) - Include metrics in data sent to AI for analysis",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.2"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/analysis.ts"]
+          },
+          "acceptanceCriteria": [
+            "AI context includes contacts, distance, duration, percentMaxIntensity in exercise data"
+          ]
+        },
+        {
+          "id": "task-1.4",
+          "description": "Fix AI prompt JSON format (lines 186-192) - Update prompt to request metric fields in response and add preservation rule",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.3"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/analysis.ts"]
+          },
+          "acceptanceCriteria": [
+            "AI prompt JSON format includes contacts, distance, duration, percentMaxIntensity fields",
+            "CRITICAL RULES section includes rule 7 for preserving category-specific metrics"
+          ]
+        },
+        {
+          "id": "task-1.5",
+          "description": "Fix fallback response (lines 211-223) - Preserve metrics from original exercise when AI unavailable",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.4"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/analysis.ts"]
+          },
+          "acceptanceCriteria": [
+            "Both if and else branches include contacts, distance, duration, percentMaxIntensity from replacement.original"
+          ]
+        }
+      ],
+      "gateCondition": "npm run typecheck must pass with no errors"
+    },
+    {
+      "id": "phase-2",
+      "name": "API Layer - templates.ts",
+      "description": "Fix 2 drop points in templates.ts where metrics are not accepted in args schema and not output to snapshot",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Fix args schema (lines 23-30) - Add optional metric fields to exercises array validator",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.5"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/templates.ts"]
+          },
+          "acceptanceCriteria": [
+            "Args schema includes v.optional(v.number()) for contacts",
+            "Args schema includes v.optional(v.number()) for distance",
+            "Args schema includes v.optional(v.number()) for duration",
+            "Args schema includes v.optional(v.number()) for percentMaxIntensity"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Fix output mapping (lines 142-151) - Include metrics in workout snapshot output",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["convex/trainingBlockMarkersModules/templates.ts"]
+          },
+          "acceptanceCriteria": [
+            "Output mapping includes contacts: ex.contacts",
+            "Output mapping includes distance: ex.distance",
+            "Output mapping includes duration: ex.duration",
+            "Output mapping includes percentMaxIntensity: ex.percentMaxIntensity"
+          ]
+        }
+      ],
+      "gateCondition": "npm run typecheck must pass with no errors"
+    },
+    {
+      "id": "phase-3",
+      "name": "UI Layer - GenerateNextBlockDialog.tsx",
+      "description": "Fix 2 locations in the dialog component for metric passthrough and display",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Fix handleGenerate field passthrough (lines 97-103) - Pass category-specific metrics to backend mutation",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.2"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["src/components/coach/calendar/GenerateNextBlockDialog.tsx"]
+          },
+          "acceptanceCriteria": [
+            "handleGenerate maps contacts, distance, duration, percentMaxIntensity from exercise objects"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Fix metric display (lines 210-212) - Add conditional rendering for contacts-based, distance-based, and duration-based exercises",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": ["src/components/coach/calendar/GenerateNextBlockDialog.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Contacts-based exercises show 'X x Y contacts'",
+            "Distance-based exercises show 'X x Y x Zm'",
+            "Speed training shows 'X x Y x Zm @P%'",
+            "Duration-based exercises show 'X x Y x Zs'",
+            "Traditional exercises fallback to 'X x Y'"
+          ]
+        }
+      ],
+      "gateCondition": "npm run typecheck must pass with no errors"
+    },
+    {
+      "id": "phase-4",
+      "name": "Browser Testing Validation",
+      "description": "End-to-end validation using browser-cli to verify metrics display correctly in Generate Next Block feature",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Navigate to Training Calendar and authenticate as coach",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.2"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "Successfully logged in as coach",
+            "Training Calendar page loaded"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Open Training Anchors panel and select a block with plyometric/speed exercises",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-4.1"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "Training Anchors panel visible",
+            "Block with category-specific exercises selected"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Click Generate Next Block and verify Suggested Workout Structure displays correct metrics",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-4.2"],
+          "estimatedTokens": 8000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "Contacts-based shows 'X x Y contacts' not 'X x'",
+            "Distance-based shows 'X x Y x Zm'",
+            "Speed training shows intensity percentage",
+            "Duration-based shows seconds",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Create the new block and verify metrics persisted to database",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": ["task-4.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_TRAINING_BLOCK_METRICS_FIX_20251207"],
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "New training block marker created",
+            "Convex logs show metrics in snapshot data"
+          ]
+        }
+      ],
+      "gateCondition": "All acceptance criteria met with visual evidence"
+    }
+  ],
+  "totalEstimatedTokens": 52000,
+  "risks": [
+    {
+      "description": "AI prompt changes may affect response parsing",
+      "mitigation": "Test fallback path first to ensure it works without AI",
+      "severity": "medium"
+    },
+    {
+      "description": "Type coercion issues with optional numeric fields",
+      "mitigation": "Use v.optional(v.number()) and handle undefined in UI conditionals",
+      "severity": "low"
+    },
+    {
+      "description": "Existing training blocks may lack metric data",
+      "mitigation": "UI gracefully falls back to sets x reps when metrics are null/undefined",
+      "severity": "low"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "657212ba-a0e1-4844-b20f-3ec2be42742e",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251209_22-09_ae1d3cc5-a4f0-4456-9e56-b4a009ec5f2e",
+    "timestamp": "2025-12-09T22:09:29.925Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Auto-Regulation Apply Button - When athlete clicks Apply on AI Training Advisor recommendation, modify programmed workout targets (volume -10%, intensity -5%) before workout starts. See PLAN_AUTOREG_APPLY_IMPLEMENTATION_20251209 for detailed 5-phase implementation plan."
+  }
+}

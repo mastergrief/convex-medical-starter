@@ -1,0 +1,8 @@
+
+
+🌐 Network Requests (5)
+  ✅ [GET] http://localhost:5173/src/components/MarketingLanding.tsx => [200] OK (19ms)
+  ✅ [GET] http://localhost:5173/src/components/ThemeToggle.tsx => [200] OK (22ms)
+  ✅ [GET] http://localhost:5173/src/components/ui/switch.tsx => [200] OK (8ms)
+  ✅ [GET] http://localhost:5173/node_modules/.vite/deps/@radix-ui_react-switch.js?v=d981b176 => [200] OK (6ms)
+  ✅ [POST] https://notable-mouse-131.convex.cloud/api/action => [200]  (545ms)

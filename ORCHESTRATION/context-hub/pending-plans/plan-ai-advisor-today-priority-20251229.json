@@ -1,0 +1,158 @@
+{
+  "planId": "ai-advisor-today-priority-20251229",
+  "title": "AI Training Advisor TODAY Priority Fix",
+  "createdAt": "2025-12-29T18:37:00Z",
+  "status": "pending",
+
+  "problem": {
+    "description": "AI generates contradictory recommendations - says 'good/excellent sleep' when user enters poor values (sleep 3/10, energy 3/10, recovery 'poor')",
+    "rootCauses": [
+      "Race condition: AI triggers on mount BEFORE assessment saved",
+      "No TODAY weighting: Current 10-day 60%, 30-day 40%, TODAY 0%",
+      "No text validation: AI text can contradict numeric values"
+    ]
+  },
+
+  "scope": {
+    "ui": {
+      "files": 2,
+      "components": ["PreWorkoutAssessment.tsx (237 lines)", "AutoRegulationCard.tsx (293 lines)"],
+      "totalLines": 530
+    },
+    "api": {
+      "files": 2,
+      "modules": ["autoRegulation.ts (961 lines)", "assessments.ts (430 lines)"],
+      "totalLines": 1391
+    },
+    "db": {
+      "tables": 3,
+      "names": ["readinessMetrics", "autoRegulationRecommendations", "apiCallLogs"]
+    }
+  },
+
+  "phases": [
+    {
+      "id": 2,
+      "name": "Race Condition Fix",
+      "description": "Remove fire-and-forget useEffect, move AI generation to handleSubmit AFTER assessment save, add cache invalidation",
+      "priority": "CRITICAL",
+      "dependencies": [],
+      "files": [
+        "src/components/PreWorkoutAssessment.tsx",
+        "convex/assessments.ts"
+      ],
+      "changes": [
+        "Remove useEffect (lines 42-49)",
+        "Add AI generation to handleSubmit after savePreWorkoutAssessment",
+        "Add cache invalidation for stale pending recommendations"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Tiered Weighting",
+      "description": "Implement TODAY > 10-day > 30-day priority (40% / 35% / 25%)",
+      "priority": "HIGH",
+      "dependencies": [2],
+      "files": ["convex/autoRegulation.ts"],
+      "changes": [
+        "Add READINESS_WEIGHTS constant",
+        "Calculate TODAY's readiness score from todayPreWorkout",
+        "Update weighted composite calculation",
+        "Include TODAY in return object and prompt"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Floor System Safety Net",
+      "description": "Add guaranteed minimums based on TODAY's acute values that AI cannot override",
+      "priority": "HIGH",
+      "dependencies": [2],
+      "files": ["convex/autoRegulation.ts"],
+      "changes": [
+        "Add TODAY_FLOORS constant",
+        "Create calculateTodayFloors function",
+        "Apply floors after AI response, before saving",
+        "Include floor info in recommendation"
+      ],
+      "floorRules": [
+        {"condition": "Sleep <= 3", "cap": "Volume <= 0.7"},
+        {"condition": "Sleep <= 5", "cap": "Volume <= 0.85"},
+        {"condition": "Energy <= 3", "cap": "Intensity <= 0.85"},
+        {"condition": "Energy <= 5", "cap": "Intensity <= 0.95"},
+        {"condition": "Recovery = poor", "cap": "Volume <= 0.8"},
+        {"condition": "Combined severe", "cap": "Both <= 0.7"}
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Prompt Priority + AI Text Validation",
+      "description": "Add explicit TODAY priority instructions to prompt and validate AI text for contradictions",
+      "priority": "MEDIUM",
+      "dependencies": [3],
+      "files": ["convex/autoRegulation.ts"],
+      "changes": [
+        "Add PRIORITY HIERARCHY section to prompt",
+        "Add TEXT CONSISTENCY REQUIREMENTS to prompt",
+        "Create validateAITextConsistency function",
+        "Log violations (floor system provides safety net)"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "E2E Testing",
+      "description": "Browser-CLI tests for complete flow validation",
+      "priority": "MEDIUM",
+      "dependencies": [2, 3, 4, 5],
+      "files": ["Browser-CLI tests"],
+      "testScenarios": [
+        {"name": "Poor Values", "input": "Sleep=3, Energy=3, Recovery=poor", "expected": "Volume -30%, no 'good sleep' text"},
+        {"name": "Floor System", "input": "Sleep=2, Energy=2, Recovery=poor", "expected": "Both capped at 0.7, warning shown"},
+        {"name": "Race Condition", "input": "Initial good -> final poor", "expected": "AI uses final poor values"},
+        {"name": "Good Values", "input": "Sleep=8, Energy=8, Recovery=good", "expected": "Maintain or slight increase"}
+      ]
+    }
+  ],
+
+  "risks": [
+    {
+      "risk": "AI latency increase",
+      "probability": "Medium",
+      "impact": "Low",
+      "mitigation": "Non-blocking async call, user sees loading state"
+    },
+    {
+      "risk": "Floor too aggressive",
+      "probability": "Low",
+      "impact": "Medium",
+      "mitigation": "Configurable constants, can adjust thresholds"
+    },
+    {
+      "risk": "Validation false positives",
+      "probability": "Low",
+      "impact": "Low",
+      "mitigation": "Validation is advisory, floor provides safety"
+    },
+    {
+      "risk": "Existing tests break",
+      "probability": "Medium",
+      "impact": "Medium",
+      "mitigation": "Update test fixtures with new weighting"
+    }
+  ],
+
+  "acceptanceCriteria": [
+    "AI recommendation reflects TODAY's values as highest priority",
+    "Weighted score: TODAY 40% + 10-day 35% + 30-day 25%",
+    "Floor system enforces minimum reductions for poor TODAY",
+    "AI text never says 'good sleep' when sleep <= 5",
+    "Race condition eliminated - AI always uses current assessment",
+    "All 4 E2E test scenarios pass"
+  ],
+
+  "rollbackPlan": {
+    "phase2": "Restore original useEffect, remove async AI call from handleSubmit",
+    "phase3": "Revert to (overall10Day * 0.6) + (overall * 0.4) formula",
+    "phase4": "Remove floor calculation and application code",
+    "phase5": "Remove new prompt sections and validation function"
+  }
+}

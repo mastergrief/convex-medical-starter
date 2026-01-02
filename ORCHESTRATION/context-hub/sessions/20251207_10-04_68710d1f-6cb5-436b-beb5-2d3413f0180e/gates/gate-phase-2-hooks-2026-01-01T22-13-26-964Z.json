@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-2-hooks",
+  "passed": true,
+  "checkedAt": "2026-01-01T22:13:26.964Z",
+  "results": [
+    {
+      "check": "default",
+      "passed": true,
+      "message": "No gate conditions defined"
+    }
+  ],
+  "blockers": []
+}

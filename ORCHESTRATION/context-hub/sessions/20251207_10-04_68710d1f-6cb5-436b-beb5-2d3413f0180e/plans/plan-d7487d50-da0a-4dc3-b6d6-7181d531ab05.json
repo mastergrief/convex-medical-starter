@@ -1,0 +1,115 @@
+{
+  "id": "d7487d50-da0a-4dc3-b6d6-7181d531ab05",
+  "type": "plan",
+  "metadata": {
+    "promptId": "da375c21-939e-488f-bf4c-27a23347770d",
+    "sessionId": "20251209_10-24_f13b8418-8739-4101-b25b-891278b42afa",
+    "timestamp": "2025-12-09T10:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "E2E test plan for WorkoutLogger validation robustness. Tests 4 validation paths (contacts, distance, time, reps) across 2 parallel browser instances to verify Log All Sets button enables correctly based on programmed metrics.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Pre-Flight Setup",
+      "description": "Verify infrastructure and prepare test workouts",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Verify Vite servers running on :5173 and :5174",
+          "agentType": "orchestrator",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 500,
+          "acceptanceCriteria": [
+            "Port 5173 listening",
+            "Port 5174 listening"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Verify browser instances not already running",
+          "agentType": "orchestrator",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 500,
+          "acceptanceCriteria": [
+            "Ports 3456/3457 available or previous instances cleaned up"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Both Vite servers running"
+    },
+    {
+      "id": "phase-2",
+      "name": "Parallel E2E Validation Tests",
+      "description": "Execute 4 validation path tests across 2 browser instances",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "INSTANCE 1 - Contacts + Distance validation tests on localhost:5173",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000,
+          "context": {},
+          "acceptanceCriteria": [
+            "TEST-2.1.1: Contacts field present, button enables on contacts fill",
+            "TEST-2.1.2: Distance field present, button enables on distance fill"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "INSTANCE 2 - Time + Reps validation tests on localhost:5174",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000,
+          "context": {},
+          "acceptanceCriteria": [
+            "TEST-2.2.1: Time field present, button enables on time fill",
+            "TEST-2.2.2: Reps field present, button enables on reps fill"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All 4 validation paths verified with screenshot evidence"
+    },
+    {
+      "id": "phase-3",
+      "name": "Evidence Collection",
+      "description": "Aggregate test results and verify all paths tested",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Collect screenshots and test results from both instances",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "acceptanceCriteria": [
+            "4 test cases documented",
+            "Screenshots for each validation path",
+            "Pass/fail status for each test"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All evidence collected and test summary generated"
+    }
+  ],
+  "totalEstimatedTokens": 33000,
+  "risks": [
+    {
+      "description": "Test workouts may not exist with required exercise types",
+      "mitigation": "Create test workouts via Quick Program modal if needed",
+      "severity": "medium"
+    },
+    {
+      "description": "Browser-CLI instances may conflict if previous sessions not cleaned",
+      "mitigation": "Pre-flight check for port availability, kill stale processes",
+      "severity": "low"
+    }
+  ]
+}

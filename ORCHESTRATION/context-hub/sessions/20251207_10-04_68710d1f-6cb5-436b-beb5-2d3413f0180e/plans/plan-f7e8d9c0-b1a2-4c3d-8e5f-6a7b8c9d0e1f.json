@@ -1,0 +1,270 @@
+{
+  "id": "f7e8d9c0-b1a2-4c3d-8e5f-6a7b8c9d0e1f",
+  "type": "plan",
+  "metadata": {
+    "promptId": "5dcdfc2f-f6e7-4e10-a11c-182b29b1c242",
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-26T15:25:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix failing gatesModules test (mock hoisting), add JSDoc to ContextHub methods, and expand README CLI documentation for execute/trace/template/dashboard commands",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Fix Failing Test (CI Blocker)",
+      "description": "Fix mock hoisting error in gatesModules.test.ts where mockExecSync is referenced before initialization. Use vi.hoisted() to properly initialize mocks before vi.mock() factory runs.",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Fix mock hoisting in gatesModules.test.ts: Move mockExecSync and mockExec creation inside vi.hoisted() block, then reference hoisted values in vi.mock() factory. Pattern: const { mockExecSync, mockExec } = vi.hoisted(() => ({ mockExecSync: vi.fn(), mockExec: vi.fn() }))",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/tests/lib/gatesModules.test.ts"
+            ],
+            "memories": [
+              "ORCHESTRATION_TESTING_ARCHITECTURE_20251225"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test file uses vi.hoisted() for mock initialization",
+            "mockExecSync and mockExec created before vi.mock() executes",
+            "npm test -- ORCHESTRATION/tests/lib/gatesModules.test.ts passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Verify all ORCHESTRATION tests pass after fix",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm test -- ORCHESTRATION --run passes (204+ tests)",
+            "No regressions in other test files"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "task-1.2.complete AND tests.pass"
+    },
+    {
+      "id": "phase-2",
+      "name": "Add JSDoc to ContextHub Methods",
+      "description": "Add comprehensive JSDoc documentation to all 30+ public methods in ContextHub class, grouped by functionality: session, prompt, plan, handoff, gate, memory, history, and utility methods.",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add JSDoc to session methods: constructor, getSessionId, getSessionPath, getSessionInfo, getSessionAge, getLatestSession, listSessions, purgeSession, purgeOldSessions",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": [
+              "ANALYSIS_GATE_METHODS_JSDOC_20251226"
+            ]
+          },
+          "acceptanceCriteria": [
+            "All 9 session methods have JSDoc with @param, @returns, @throws, @example",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add JSDoc to prompt/plan methods: writePrompt, readPrompt, listPrompts, writePlan, readPlan, listPlans",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All 6 prompt/plan methods have JSDoc with @param, @returns, @throws, @example",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add JSDoc to handoff/state methods: writeHandoff, readHandoff, listHandoffs, writeOrchestratorState, readOrchestratorState",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All 5 handoff/state methods have JSDoc",
+            "TypeScript compiles without errors"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Add JSDoc to gate/memory/history methods: checkGate, readGateResult, writeGateResult, advancePhase, listGateResults, linkMemory, listLinkedMemories, getLinkedMemory, appendHistory, getHistory, trimHistory, validateFile",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/context-hub.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "All 12 gate/memory/history/utility methods have JSDoc",
+            "TypeScript compiles without errors",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "ALL(task-2.*.complete) AND typecheck.pass"
+    },
+    {
+      "id": "phase-3",
+      "name": "Expand README CLI Documentation",
+      "description": "Add comprehensive documentation for missing CLI commands in README.md: execute (workflow execution), trace (evidence chain tracking), template (template management), and dashboard (status visualization).",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Document execute command: workflow execution options, parallel execution, retry behavior, output formats. Include examples for batch execution and error handling.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md",
+              "ORCHESTRATION/cli/orchModules/execute.ts"
+            ],
+            "memories": [
+              "19_ORCHESTRATION_SYSTEM_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Execute command section added to README CLI Commands",
+            "Options documented: --parallel, --retry, --timeout, --dry-run",
+            "Usage examples with expected output"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Document trace command: evidence chain tracking, artifact linking, traceability queries. Include examples for tracing task dependencies and evidence coverage.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md",
+              "ORCHESTRATION/cli/orchModules/artifacts.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Trace command section added to README",
+            "Artifact linking and evidence chain documentation",
+            "Query examples for traceability"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Document template command: template instantiation, variable substitution, registry management. Include examples for creating plans from templates.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md",
+              "ORCHESTRATION/lib/template-processor.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Template command section added to README",
+            "Variable substitution syntax documented",
+            "Registry loading examples"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Document dashboard command: status visualization, phase progress, blocker display. Include examples for monitoring orchestration status.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/README.md",
+              "ORCHESTRATION/cli/orchModules/dashboard.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "Dashboard command section added to README",
+            "Output format documented",
+            "Filtering and display options"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "ALL(task-3.*.complete) AND documentation.complete"
+    }
+  ],
+  "totalEstimatedTokens": 30000,
+  "risks": [
+    {
+      "description": "Mock hoisting fix may require refactoring test structure",
+      "mitigation": "Follow vitest documentation pattern for vi.hoisted()",
+      "severity": "low"
+    },
+    {
+      "description": "JSDoc additions may reveal type inconsistencies",
+      "mitigation": "Fix any discovered type issues as part of documentation task",
+      "severity": "low"
+    },
+    {
+      "description": "CLI commands may have undocumented options",
+      "mitigation": "Cross-reference with actual implementation in orchModules/",
+      "severity": "medium"
+    }
+  ]
+}

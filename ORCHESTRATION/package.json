@@ -1,0 +1,37 @@
+{
+  "name": "@zenith/orchestration",
+  "version": "1.0.0",
+  "description": "Multi-agent orchestration system with JSON-based state management and token-aware handoffs",
+  "type": "module",
+  "main": "dist/lib/context-hub.js",
+  "types": "dist/lib/context-hub.d.ts",
+  "bin": {
+    "orch": "./cli/orch.ts"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "cli": "npx tsx cli/orch.ts",
+    "test": "npx tsx cli/orch.ts status"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "orchestration",
+    "multi-agent",
+    "claude",
+    "token-tracking",
+    "handoff"
+  ],
+  "author": "Zenith Fitness",
+  "license": "MIT"
+}

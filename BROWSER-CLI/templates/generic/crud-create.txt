@@ -1,0 +1,37 @@
+# Generic CRUD Create Template
+# Universal pattern for creating new entities
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   LIST_PATH - Path to entity list page (e.g., /users, /products, /posts)
+#   CREATE_BUTTON - Button to open create form (e.g., "role:button:New User", "role:button:Add Product")
+#   FORM_WAIT - Wait time for form to open (e.g., 1000-1500ms)
+#   NAME_FIELD - Name/title field selector (e.g., "label:Name", "#title")
+#   NAME_VALUE - Name value to enter (e.g., "Test Product", "John Doe")
+#   FIELD_2 - Second field selector (optional)
+#   VALUE_2 - Second field value (optional)
+#   FIELD_3 - Third field selector (optional)
+#   VALUE_3 - Third field value (optional)
+#   SUBMIT_BUTTON - Submit button selector (e.g., "role:button:Save", "role:button:Create")
+#   SUCCESS_WAIT - Wait time after creation (e.g., 2000-3000ms)
+#   ENTITY_TYPE - Entity type for screenshot (e.g., user, product, post)
+#
+# Reusable for:
+#   - User management (create user)
+#   - Product catalogs (create product)
+#   - Blog posts (create post)
+#   - Tasks/todos (create task)
+#   - Any CRUD entity creation
+
+navigate {{BASE_URL}}{{LIST_PATH}}
+wait 2000
+snapshot
+click "{{CREATE_BUTTON}}"
+wait {{FORM_WAIT}}
+snapshot
+type "{{NAME_FIELD}}" "{{NAME_VALUE}}"
+click "{{SUBMIT_BUTTON}}"
+wait {{SUCCESS_WAIT}}
+snapshot
+console
+screenshot {{ENTITY_TYPE}}-created.png

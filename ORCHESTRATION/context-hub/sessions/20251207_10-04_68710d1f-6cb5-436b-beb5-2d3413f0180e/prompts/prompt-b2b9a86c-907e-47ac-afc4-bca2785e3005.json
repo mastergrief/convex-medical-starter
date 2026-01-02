@@ -1,0 +1,12 @@
+{
+  "id": "b2b9a86c-907e-47ac-afc4-bca2785e3005",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-31T09:30:23.772Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Configurable Logging Metrics feature: Enable coaches to select which metrics athletes must log per exercise, bridging the gap between coach programming (10+ fields) and athlete logging (currently 3 hardcoded fields). Add loggingMetrics field to schema, wire backend mutations, create LoggingMetricsSelector UI component for coaches, update CategoryLoggingFields for dynamic athlete rendering."
+  }
+}

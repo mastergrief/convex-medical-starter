@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "phase3-docs-testing",
+    "name": "Phase 3: Documentation & Testing",
+    "description": "JSDoc documentation for 30+ ContextHub methods, README expansion, test file splits, benchmarks, and CI/CD pipeline",
+    "createdAt": "2025-12-26T21:15:00Z"
+  },
+  "phases": [
+    {
+      "id": "phase-3a",
+      "name": "JSDoc Documentation",
+      "description": "Add comprehensive JSDoc to all public API methods",
+      "status": "completed",
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3b",
+      "name": "README Documentation",
+      "description": "Expand README with configuration docs, Gate DSL spec, and integration examples",
+      "status": "pending",
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3c",
+      "name": "Test Infrastructure",
+      "description": "Split large test files, add benchmarks, regression guards, and CI/CD",
+      "status": "pending",
+      "gateCondition": "tests"
+    }
+  ]
+}

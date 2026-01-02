@@ -1,0 +1,12 @@
+{
+  "id": "d398283c-3d50-4f2c-8691-fbd5ee9765af",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_20-25_10508219-a913-4696-a151-9d7fe39f4d75",
+    "timestamp": "2025-12-07T20:25:28.932Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Dynamic Metrics for Analytics Personal Records. Make Performance Analytics → Personal Records display training-type-appropriate metrics instead of hardcoded weight/reps. PHASES: (1) Add PersonalRecord TypeScript interface with all metric fields, (2) Rewrite getPersonalRecords backend query to lookup exercise→category→trainingType and track all metrics (distance, velocity, contacts, duration, HR, power), (3) Update PerformanceAnalytics.tsx frontend with formatPRDisplay() switch by trainingTypeSlug, (4) Test with Playwright across strength/speed/plyometric/conditioning exercises. Reference: Serena memory PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"
+  }
+}

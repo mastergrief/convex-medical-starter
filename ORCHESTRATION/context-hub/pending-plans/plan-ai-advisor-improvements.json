@@ -1,0 +1,159 @@
+{
+  "planId": "ai-advisor-improvements-20251229",
+  "title": "AI Training Advisor Security & Reliability Improvements",
+  "created": "2025-12-29T08:30:00Z",
+  "status": "done",
+  "summary": {
+    "scope": {
+      "ui": "6 components, 5 hooks (~2,941 lines)",
+      "api": "1 file, 4 vulnerable functions (539 lines)",
+      "db": "1 new table (apiCallLogs), 3 existing tables"
+    },
+    "estimatedEffort": "12 hours",
+    "criticality": "P0 - Security vulnerabilities require immediate remediation"
+  },
+  "phases": [
+    {
+      "id": 1,
+      "name": "Security Hardening",
+      "priority": "P0",
+      "estimatedEffort": "4 hours",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Add Auth to saveRecommendation",
+          "file": "convex/autoRegulation.ts",
+          "lines": "264-274",
+          "description": "Add getAuthUserId check, validate athleteId ownership (athletes can only save for self)"
+        },
+        {
+          "id": "1.2",
+          "title": "Add Auth to updateRecommendationStatus",
+          "file": "convex/autoRegulation.ts",
+          "lines": "292-297",
+          "description": "Add ownership verification - only athlete or their coach can update"
+        },
+        {
+          "id": "1.3",
+          "title": "Add Auth to getActiveRecommendation",
+          "file": "convex/autoRegulation.ts",
+          "lines": "237-251",
+          "description": "Add ownership check - athletes only query own, coaches query assigned"
+        },
+        {
+          "id": "1.4",
+          "title": "Create apiCallLogs table",
+          "file": "convex/schema.ts",
+          "lines": "1190+",
+          "description": "Add new table with indexes by_user_action and by_timestamp"
+        },
+        {
+          "id": "1.5",
+          "title": "Implement Rate Limiting",
+          "file": "convex/autoRegulation.ts",
+          "lines": "310-402",
+          "description": "Add 5 calls/hour limit to generateRecommendations action, log to apiCallLogs"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Reliability Improvements",
+      "priority": "P0/P1",
+      "estimatedEffort": "4 hours",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Add Modifier Clamping",
+          "file": "convex/autoRegulation.ts",
+          "lines": "337+",
+          "description": "Clamp volume to 0.5-1.5, intensity to 0.5-1.2 after AI response parse"
+        },
+        {
+          "id": "2.2",
+          "title": "Add Division Zero Guards",
+          "file": "src/lib/autoRegulationCalculations.ts",
+          "lines": "138,153,170,207,224,242,258,275,292",
+          "description": "Add safePercentChange helper, replace 9 inline calculations"
+        },
+        {
+          "id": "2.3",
+          "title": "Add OpenAI Retry Mechanism",
+          "file": "convex/autoRegulation.ts",
+          "lines": "327-380",
+          "description": "Wrap OpenAI call in 3-attempt retry with exponential backoff (500ms-4s)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Testing Infrastructure",
+      "priority": "P1",
+      "estimatedEffort": "4 hours",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Create autoRegulationCalculations.test.ts",
+          "file": "src/lib/__tests__/autoRegulationCalculations.test.ts",
+          "lines": "NEW",
+          "description": "Unit tests for applyVolumeModifier, applyIntensityModifier, parseRpe, roundToPlate, zero guards"
+        }
+      ]
+    }
+  ],
+  "criticalFiles": [
+    {
+      "path": "convex/autoRegulation.ts",
+      "lines": 539,
+      "changes": "Auth checks, rate limiting, modifier clamping, retry mechanism"
+    },
+    {
+      "path": "convex/schema.ts",
+      "lines": 1200,
+      "changes": "Add apiCallLogs table definition"
+    },
+    {
+      "path": "src/lib/autoRegulationCalculations.ts",
+      "lines": 377,
+      "changes": "Add safePercentChange helper, fix 9 division locations"
+    },
+    {
+      "path": "src/lib/__tests__/autoRegulationCalculations.test.ts",
+      "lines": "NEW ~200",
+      "changes": "New test file with comprehensive unit tests"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Breaking existing API consumers",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Auth changes return errors gracefully; frontend already handles error states"
+    },
+    {
+      "risk": "Rate limiting blocks legitimate use",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "mitigation": "5/hour is generous; error message includes retry time"
+    },
+    {
+      "risk": "Modifier clamping changes AI recommendations",
+      "likelihood": "Low",
+      "impact": "Low",
+      "mitigation": "Clamping to documented ranges; no silent changes"
+    }
+  ],
+  "dependencies": {
+    "1.5": ["1.4"],
+    "3.1": ["2.2"]
+  },
+  "authPattern": "import { getAuthUserId } from '@convex-dev/auth/server';",
+  "testFramework": "Vitest + @testing-library/react",
+  "constants": {
+    "HOURLY_RATE_LIMIT": 5,
+    "VOLUME_RANGE": { "min": 0.5, "max": 1.5 },
+    "INTENSITY_RANGE": { "min": 0.5, "max": 1.2 },
+    "RETRY_MAX_ATTEMPTS": 3,
+    "RETRY_BASE_DELAY_MS": 500
+  }
+}

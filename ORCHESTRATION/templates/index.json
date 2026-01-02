@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "templates": [
+    {
+      "id": "feature-implementation",
+      "name": "Feature Implementation",
+      "description": "Full-stack feature development with analysis, implementation, and E2E testing",
+      "file": "feature-implementation.json"
+    },
+    {
+      "id": "bug-investigation",
+      "name": "Bug Investigation",
+      "description": "Systematic bug reproduction, root cause analysis, fix, and verification",
+      "file": "bug-investigation.json"
+    },
+    {
+      "id": "refactoring",
+      "name": "Refactoring",
+      "description": "Safe code refactoring with impact analysis and regression testing",
+      "file": "refactoring.json"
+    },
+    {
+      "id": "api-endpoint",
+      "name": "API Endpoint",
+      "description": "End-to-end API development from schema design to integration testing",
+      "file": "api-endpoint.json"
+    },
+    {
+      "id": "database-migration",
+      "name": "Database Migration",
+      "description": "Schema changes, data migration, and rollback planning",
+      "file": "database-migration.json"
+    },
+    {
+      "id": "performance-optimization",
+      "name": "Performance Optimization",
+      "description": "Profiling, bottleneck identification, and optimization with benchmarks",
+      "file": "performance-optimization.json"
+    },
+    {
+      "id": "security-audit",
+      "name": "Security Audit",
+      "description": "Vulnerability assessment, threat modeling, and security hardening",
+      "file": "security-audit.json"
+    },
+    {
+      "id": "documentation-update",
+      "name": "Documentation Update",
+      "description": "Technical documentation creation, updates, and consistency verification",
+      "file": "documentation-update.json"
+    },
+    {
+      "id": "dependency-upgrade",
+      "name": "Dependency Upgrade",
+      "description": "Package updates, breaking change assessment, and compatibility testing",
+      "file": "dependency-upgrade.json"
+    }
+  ]
+}

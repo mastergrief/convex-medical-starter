@@ -1,0 +1,12 @@
+{
+  "id": "62efa0e9-48b9-421c-ba5a-02710caddd69",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-30T09:06:20.648Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Rename Actual Time to Best Time label in speed training exercise logging config. Single file change: src/config/exerciseFields/logging/configs.ts - line 77 label, line 80 placeholder."
+  }
+}

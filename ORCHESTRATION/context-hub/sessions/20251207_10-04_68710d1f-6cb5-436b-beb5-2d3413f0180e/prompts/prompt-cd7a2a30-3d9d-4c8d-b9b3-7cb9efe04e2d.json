@@ -1,0 +1,12 @@
+{
+  "id": "cd7a2a30-3d9d-4c8d-b9b3-7cb9efe04e2d",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-30T20:50:55.008Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Custom Metrics Implementation: Enable coaches to create custom metrics beyond 19 hardcoded system metrics. Schema infrastructure exists at convex/schema.ts:492-508 but is unused. Wire to UI and storage with security validation."
+  }
+}

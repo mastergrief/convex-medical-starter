@@ -1,0 +1,12 @@
+{
+  "id": "a7840ad0-63fb-416a-b7ea-ddf139dfffcd",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "3d520aa6-4aef-4637-b133-35453e37d77e",
+    "timestamp": "2025-12-07T09:10:41.566Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Analyze the bottom navigation implementation and document its architecture"
+  }
+}

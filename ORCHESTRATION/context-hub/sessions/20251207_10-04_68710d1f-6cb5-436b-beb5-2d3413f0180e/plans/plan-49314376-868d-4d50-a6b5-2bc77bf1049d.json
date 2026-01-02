@@ -1,0 +1,327 @@
+{
+  "id": "49314376-868d-4d50-a6b5-2bc77bf1049d",
+  "type": "plan",
+  "metadata": {
+    "promptId": "49314376-868d-4d50-a6b5-2bc77bf1049d",
+    "sessionId": "20251225_20-06_49314376-868d-4d50-a6b5-2bc77bf1049d",
+    "timestamp": "2025-12-25T20:08:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Split gateParser.ts (882 LOC) into modular structure with facade pattern. Creates gateParserModules/ directory with 6 focused modules: types.ts, lexer.ts, parser.ts, validators.ts, evaluator.ts, and index.ts barrel. Preserves API compatibility via facade re-exports.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Foundation: Types and Index",
+      "description": "Create gateParserModules directory structure with types.ts (all interfaces, types, GateParseError class) and index.ts barrel file. This establishes the import/export foundation.",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create gateParserModules/types.ts with all type definitions, interfaces, and GateParseError class (lines 26-94 from source)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {},
+          "acceptanceCriteria": [
+            "types.ts created with all type exports",
+            "GateParseError class properly extends Error",
+            "KEYWORDS constant exported for lexer use",
+            "File passes typecheck independently"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Create gateParserModules/index.ts barrel file with placeholder re-exports",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {},
+          "acceptanceCriteria": [
+            "index.ts created with re-exports from types.ts",
+            "Barrel file structure follows project patterns",
+            "File passes typecheck"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-1.1 complete AND task-1.2 complete"
+    },
+    {
+      "id": "phase-2",
+      "name": "Lexer Module",
+      "description": "Extract tokenize() function and related helpers into lexer.ts module.",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create gateParserModules/lexer.ts with tokenize function (lines 107-233 from source)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {},
+          "acceptanceCriteria": [
+            "lexer.ts created with tokenize function",
+            "Imports types from ./types.ts",
+            "Internal helpers (peek, advance, skipWhitespace, readNumber, readIdentifierOrPattern) encapsulated",
+            "File passes typecheck independently"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Update gateParserModules/index.ts to re-export from lexer.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {},
+          "acceptanceCriteria": [
+            "index.ts updated with tokenize export",
+            "File passes typecheck"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-2.1 complete AND task-2.2 complete"
+    },
+    {
+      "id": "phase-3",
+      "name": "Parser Module",
+      "description": "Extract Parser class and parse() facade function into parser.ts module.",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create gateParserModules/parser.ts with Parser class and parse function (lines 239-492 from source)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {},
+          "acceptanceCriteria": [
+            "parser.ts created with Parser class",
+            "parse() facade function exported",
+            "All Parser methods preserved: peek, advance, expect, isOperator, parse, parseExpression, parseTerm, parseFactor, parseCheck, parseColonCheck, parseThreshold",
+            "File passes typecheck independently"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Update gateParserModules/index.ts to re-export from parser.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {},
+          "acceptanceCriteria": [
+            "index.ts updated with Parser and parse exports",
+            "File passes typecheck"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-3.1 complete AND task-3.2 complete"
+    },
+    {
+      "id": "phase-4",
+      "name": "Validators Module",
+      "description": "Extract all 7 check* validator functions into validators.ts module.",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create gateParserModules/validators.ts with all check* functions (lines 498-740 from source)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 6000,
+          "context": {},
+          "acceptanceCriteria": [
+            "validators.ts created with all 7 check* functions",
+            "fs and path imports from node",
+            "Imports GateContext, CheckResult from ./types.ts",
+            "All validator functions are async and return Promise<CheckResult>",
+            "File passes typecheck independently"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Update gateParserModules/index.ts to re-export from validators.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {},
+          "acceptanceCriteria": [
+            "index.ts updated with all validator exports",
+            "File passes typecheck"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-4.1 complete AND task-4.2 complete"
+    },
+    {
+      "id": "phase-5",
+      "name": "Evaluator Module",
+      "description": "Extract evaluateNode recursive walker and evaluateGate public function into evaluator.ts module.",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Create gateParserModules/evaluator.ts with evaluateNode and evaluateGate functions (lines 742-845 from source)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {},
+          "acceptanceCriteria": [
+            "evaluator.ts created with evaluateNode and evaluateGate",
+            "evaluateNode handles all AST node types: and, or, not, check, threshold",
+            "evaluateNode routes to appropriate check* validators",
+            "evaluateGate computes passed/results/blockers",
+            "File passes typecheck independently"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Update gateParserModules/index.ts to re-export from evaluator.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {},
+          "acceptanceCriteria": [
+            "index.ts updated with evaluator exports",
+            "File passes typecheck"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-5.1 complete AND task-5.2 complete"
+    },
+    {
+      "id": "phase-6",
+      "name": "Facade and Migration",
+      "description": "Convert original gateParser.ts to facade file that re-exports from modules. Update consumer imports.",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Replace gateParser.ts content with facade (~50 LOC) that imports from gateParserModules and re-exports public API",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-5.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {},
+          "acceptanceCriteria": [
+            "gateParser.ts reduced to ~50 LOC facade",
+            "parseGateCondition implemented using imported tokenize and parse",
+            "isLegacyFormat function implemented inline",
+            "createDefaultContext implemented using execAsync",
+            "All public exports preserved: parseGateCondition, evaluateGate, isLegacyFormat, createDefaultContext, GateContext, GateEvalResult, GateParseError",
+            "File passes typecheck"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "Verify consumer import path remains valid (contextHubModules/gates.ts)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {},
+          "acceptanceCriteria": [
+            "Consumer file imports unchanged",
+            "No import errors in gates.ts",
+            "Full typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-6.1 complete AND task-6.2 complete"
+    },
+    {
+      "id": "phase-7",
+      "name": "Validation",
+      "description": "Final validation of modular structure, line counts, and API compatibility.",
+      "subtasks": [
+        {
+          "id": "task-7.1",
+          "description": "Run full typecheck and verify all module imports resolve correctly",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-6.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {},
+          "acceptanceCriteria": [
+            "npm run typecheck passes with 0 errors",
+            "No circular dependencies detected",
+            "All imports resolve correctly"
+          ]
+        },
+        {
+          "id": "task-7.2",
+          "description": "Verify final LOC counts match target structure",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-7.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {},
+          "acceptanceCriteria": [
+            "Facade file < 100 LOC",
+            "No module file > 400 LOC",
+            "Total LOC roughly equivalent to original (~900 LOC total)"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND task-7.1 complete AND task-7.2 complete"
+    }
+  ],
+  "totalEstimatedTokens": 37000,
+  "risks": [
+    {
+      "description": "Circular dependency between evaluator.ts and validators.ts",
+      "mitigation": "evaluator imports validators, not vice versa. Types flow from types.ts only.",
+      "severity": "low"
+    },
+    {
+      "description": "execAsync promisify import needed in facade for createDefaultContext",
+      "mitigation": "Keep exec/promisify imports in facade file, not in modules",
+      "severity": "low"
+    },
+    {
+      "description": "TypeScript path resolution for .js extensions in imports",
+      "mitigation": "Use .js extensions in imports to match existing project patterns",
+      "severity": "medium"
+    },
+    {
+      "description": "Consumer import path breakage",
+      "mitigation": "Facade maintains exact same export signatures; verify gates.ts imports unchanged",
+      "severity": "high"
+    }
+  ]
+}

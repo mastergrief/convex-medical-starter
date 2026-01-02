@@ -1,0 +1,116 @@
+{
+  "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "type": "plan",
+  "metadata": {
+    "promptId": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+    "sessionId": "20251227_10-25_8cdea257-0bbe-436f-a4be-23ef06362103",
+    "timestamp": "2025-12-27T11:55:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Test multi-phase execution - verify orchestrator generates all phases",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Analysis Phase",
+      "description": "Analyze the codebase",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze component structure",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "acceptanceCriteria": [
+            "Structure documented"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Review API patterns",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "acceptanceCriteria": [
+            "API patterns documented"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All analysis complete"
+    },
+    {
+      "id": "phase-2",
+      "name": "Implementation Phase",
+      "description": "Implement changes",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Implement feature A",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 10000,
+          "acceptanceCriteria": [
+            "Feature A works"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Implement feature B",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2",
+            "task-2.1"
+          ],
+          "estimatedTokens": 8000,
+          "acceptanceCriteria": [
+            "Feature B works"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Implementation complete, typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation Phase",
+      "description": "Test and validate",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "E2E test feature A",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "acceptanceCriteria": [
+            "Tests pass"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "E2E test feature B",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 6000,
+          "acceptanceCriteria": [
+            "Tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All E2E tests pass"
+    }
+  ],
+  "totalEstimatedTokens": 40000
+}

@@ -1,0 +1,14 @@
+{
+  "phaseId": "phase-5-loading",
+  "passed": true,
+  "checkedAt": "2026-01-01T16:11:33.863Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    }
+  ],
+  "blockers": [],
+  "duration": 955
+}

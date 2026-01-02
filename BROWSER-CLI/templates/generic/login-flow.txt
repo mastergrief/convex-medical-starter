@@ -1,0 +1,35 @@
+# Generic Login Flow Template
+# Universal authentication pattern for any web application
+#
+# Required Variables:
+#   BASE_URL - Application base URL (e.g., http://localhost:3000)
+#   LOGIN_TRIGGER - How to open login (e.g., "navigate", "click")
+#   LOGIN_PATH - Login page path or button selector (e.g., /login or "role:button:Sign In")
+#   EMAIL_FIELD - Email field selector (e.g., "label:Email", "#email", "input[type=email]")
+#   PASSWORD_FIELD - Password field selector (e.g., "label:Password", "#password")
+#   EMAIL - Login email address
+#   PASSWORD - Login password
+#   SUBMIT_BUTTON - Submit button selector (e.g., "role:button:Sign In", "role:button:Login", "#submit")
+#   SUCCESS_WAIT - Wait time after login (e.g., 2000-3000ms)
+#   STATE_NAME - Name for saved state (e.g., authenticated-user, logged-in)
+#
+# Reusable for:
+#   - SaaS applications
+#   - E-commerce sites
+#   - Admin dashboards
+#   - Social platforms
+#   - Any app with email/password auth
+
+navigate {{BASE_URL}}
+wait 2000
+snapshot
+{{LOGIN_TRIGGER}} {{LOGIN_PATH}}
+wait 1500
+snapshot
+type "{{EMAIL_FIELD}}" "{{EMAIL}}"
+type "{{PASSWORD_FIELD}}" "{{PASSWORD}}"
+click "{{SUBMIT_BUTTON}}"
+wait {{SUCCESS_WAIT}}
+snapshot
+saveState {{STATE_NAME}}
+screenshot login-success-{{STATE_NAME}}.png

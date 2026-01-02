@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["url", "cookies", "localStorage", "sessionStorage"],
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "cookies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "value", "domain"],
+        "properties": {
+          "name": { "type": "string" },
+          "value": { "type": "string" },
+          "domain": { "type": "string" },
+          "path": { "type": "string" },
+          "expires": { "type": "number" },
+          "httpOnly": { "type": "boolean" },
+          "secure": { "type": "boolean" },
+          "sameSite": { "enum": ["Strict", "Lax", "None"] }
+        }
+      }
+    },
+    "localStorage": {
+      "type": "string",
+      "description": "JSON-stringified localStorage contents"
+    },
+    "sessionStorage": {
+      "type": "string",
+      "description": "JSON-stringified sessionStorage contents"
+    },
+    "timestamp": { "type": "number" }
+  },
+  "additionalProperties": false
+}

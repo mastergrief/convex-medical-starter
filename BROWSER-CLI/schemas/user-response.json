@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{24}$"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "type": "string",
+      "enum": ["admin", "coach", "client"]
+    },
+    "createdAt": {
+      "type": "number"
+    }
+  },
+  "required": ["id", "email", "name", "role"],
+  "additionalProperties": false
+}

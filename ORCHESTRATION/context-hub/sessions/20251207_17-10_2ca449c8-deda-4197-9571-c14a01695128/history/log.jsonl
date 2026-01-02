@@ -1,0 +1,11 @@
+{"timestamp":"2025-12-07T17:10:57.577Z","type":"prompt","id":"988a0d3e-6af4-4093-ac6d-5fd79487482f"}
+{"timestamp":"2025-12-07T17:11:08.171Z","type":"memory_link","id":"BOTTOM_NAV_ARCHITECTURE"}
+{"timestamp":"2025-12-07T17:11:16.344Z","type":"memory_link","id":"0_PROJECT_OVERVIEW"}
+{"timestamp":"2025-12-07T17:11:17.934Z","type":"plan","id":"550e8400-e29b-41d4-a716-446655440001"}
+{"timestamp":"2025-12-07T17:11:21.072Z","type":"handoff","id":"660e8400-e29b-41d4-a716-446655440002"}
+{"timestamp":"2025-12-07T17:16:14.401Z","type":"gate_check","id":"phase-1"}
+{"timestamp":"2025-12-07T17:16:16.932Z","type":"token_state","id":"770e8400-e29b-41d4-a716-446655440003"}
+{"timestamp":"2025-12-07T17:16:19.200Z","type":"gate_check","id":"phase-1"}
+{"timestamp":"2025-12-07T17:16:24.710Z","type":"gate_check","id":"phase-1"}
+{"timestamp":"2025-12-07T17:19:42.840Z","type":"handoff","id":"770e8400-e29b-41d4-a716-446655440099"}
+{"timestamp":"2025-12-07T17:19:54.053Z","type":"gate_check","id":"phase-1"}

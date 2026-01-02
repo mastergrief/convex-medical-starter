@@ -1,0 +1,12 @@
+{
+  "id": "32fa3a54-b87c-4a88-a389-be1409309070",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251209_09-26_a1b67959-4c56-4d13-ac31-0c9f9b9808b3",
+    "timestamp": "2025-12-09T09:26:41.527Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "E2E test: Verify orchestration system refactor works correctly with subagents"
+  }
+}

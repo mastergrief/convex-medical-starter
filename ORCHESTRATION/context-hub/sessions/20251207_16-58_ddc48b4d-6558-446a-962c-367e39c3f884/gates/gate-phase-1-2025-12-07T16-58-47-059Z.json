@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-1",
+  "passed": true,
+  "checkedAt": "2025-12-07T16:58:47.059Z",
+  "results": [
+    {
+      "check": "memory:SESSION_ORCHESTRATION_*",
+      "passed": true,
+      "message": "Found: SESSION_ORCHESTRATION_INTEGRATION_20251207.md"
+    }
+  ],
+  "blockers": []
+}

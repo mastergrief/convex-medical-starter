@@ -1,0 +1,9 @@
+{
+  "activePlanId": "plan-validation-robustness-20251209",
+  "planPath": "plans/plan-validation-robustness.json",
+  "createdAt": "2025-12-09T10:04:00.000Z",
+  "status": "active",
+  "currentPhase": "phase-1",
+  "completedSubtasks": ["task-1.1"],
+  "pendingSubtasks": ["task-1.2", "task-1.3", "task-2.1", "task-2.2", "task-2.3", "task-3.1", "task-3.2", "task-3.3", "task-4.1", "task-4.2", "task-5.1", "task-5.2"]
+}

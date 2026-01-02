@@ -1,0 +1,307 @@
+{
+  "id": "f8a3b2c1-d4e5-4f67-8a9b-0c1d2e3f4a5b",
+  "type": "plan",
+  "metadata": {
+    "promptId": "da375c21-939e-488f-bf4c-27a23347770d",
+    "sessionId": "20251221_09-15_fd662d3a-b01c-4f39-90f9-b133c83d4d74",
+    "timestamp": "2025-12-21T09:20:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement Gate DSL with Boolean operators, thresholds, evidence integration, and handoff auto-population",
+  "phases": [
+    {
+      "id": "phase-1-dsl-parser",
+      "name": "DSL Parser Implementation",
+      "description": "Create tokenizer, AST parser, and evaluator for gate conditions with AND/OR/NOT operators and thresholds",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create gateParser.ts with tokenizer for AND/OR/NOT, parentheses, operators (>=, <=, etc.)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_GATE_DSL_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File exists: ORCHESTRATION/lib/gateParser.ts",
+            "Exports: tokenize(), Token type, TokenType enum",
+            "Handles: AND, OR, NOT, LPAREN, RPAREN, GTE, LTE, NUMBER, IDENTIFIER, PATTERN"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add AST parser with recursive descent for gate conditions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/gateParser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Exports: parse(), GateAST interface",
+            "AST types: and, or, not, check, threshold",
+            "Handles parenthesized expressions correctly"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add evaluator and public API (parseGateCondition, evaluateGate, isLegacyFormat)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/gateParser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Exports: parseGateCondition(), evaluateGate(), isLegacyFormat()",
+            "evaluate() is async, returns Promise<GateResult>",
+            "isLegacyFormat() detects comma-separated without AND/OR/NOT"
+          ]
+        },
+        {
+          "id": "task-1.4",
+          "description": "Integrate new parser into gates.ts with backward compatibility",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts",
+              "ORCHESTRATION/lib/gateParser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import gateParser in gates.ts",
+            "checkGate uses isLegacyFormat() to route",
+            "Legacy format still works unchanged",
+            "New DSL format uses AST evaluation"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND custom:file_exists:ORCHESTRATION/lib/gateParser.ts"
+    },
+    {
+      "id": "phase-2-evidence-integration",
+      "name": "Evidence Integration",
+      "description": "Add evidence checks to gate validation and CLI",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add requiredEvidence, requiredCoverage, condition fields to GateValidationSchema",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/schemas/schemaModules/execution.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "requiredEvidence: z.boolean().optional()",
+            "requiredCoverage: z.number().min(0).max(100).optional()",
+            "condition: z.string().optional()"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add checkEvidenceCoverage() and checkEvidenceExists() to gates.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/gates.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "checkEvidenceCoverage(config, phaseId, minCoverage) implemented",
+            "checkEvidenceExists(config, chainId) implemented",
+            "Both return CheckResult with check, passed, message"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add --coverage flag to CLI gate check command",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/cli/orchModules/gates.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "--coverage=<number> flag parsed",
+            "Passes requiredCoverage to validation object",
+            "Help text updated"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "typecheck"
+    },
+    {
+      "id": "phase-3-handoff-auto-population",
+      "name": "Handoff Auto-Population",
+      "description": "Create evidence auto-populator and integrate with handoff writes",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create evidenceAutoPopulator.ts with autoPopulateEvidence() function",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidence-chain.ts",
+              "ORCHESTRATION/lib/contextHubModules/handoffs.ts"
+            ],
+            "memories": [
+              "PLAN_ORCHESTRATION_GATE_DSL_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "File exists: ORCHESTRATION/lib/evidenceAutoPopulator.ts",
+            "Exports: autoPopulateEvidence(sessionPath, handoff)",
+            "Returns AutoPopulateResult with created, chainId, error"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Add agent-specific evidence population (analyst, developer, browser)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/evidenceAutoPopulator.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "populateAnalystEvidence() extracts traceabilityData",
+            "populateDeveloperEvidence() extracts file changes",
+            "populateBrowserEvidence() extracts test results"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Integrate autoPopulateEvidence() into handoffs.ts writeHandoff()",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "ORCHESTRATION/lib/contextHubModules/handoffs.ts",
+              "ORCHESTRATION/lib/evidenceAutoPopulator.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import autoPopulateEvidence in handoffs.ts",
+            "Call after successful handoff write",
+            "Log evidence_created to history if chain created",
+            "Catch errors without failing handoff"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "typecheck AND custom:file_exists:ORCHESTRATION/lib/evidenceAutoPopulator.ts"
+    },
+    {
+      "id": "phase-4-validation",
+      "name": "Final Validation",
+      "description": "Run typecheck, verify all exports, write completion memory",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Run npm typecheck and fix any remaining errors",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck exits 0",
+            "No type errors in ORCHESTRATION/"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Write completion memory with implementation summary",
+          "agentType": "analyst",
+          "priority": "low",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [
+              "PLAN_ORCHESTRATION_GATE_DSL_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory created: IMPLEMENTATION_GATE_DSL_20251221",
+            "Documents new APIs and usage examples",
+            "References files created/modified"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "typecheck AND memory:IMPLEMENTATION_GATE_DSL_*"
+    }
+  ],
+  "totalEstimatedTokens": 46000,
+  "risks": [
+    {
+      "description": "Recursive descent parser complexity may introduce edge cases",
+      "mitigation": "Use well-tested grammar patterns, add comprehensive unit tests",
+      "severity": "medium"
+    },
+    {
+      "description": "Evidence chain integration depends on existing evidence-chain.ts API",
+      "mitigation": "Review EvidenceChainBuilder API before implementation",
+      "severity": "low"
+    },
+    {
+      "description": "Backward compatibility must be preserved for legacy gate conditions",
+      "mitigation": "isLegacyFormat() detection routes to existing parser for old format",
+      "severity": "medium"
+    }
+  ]
+}

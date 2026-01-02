@@ -1,0 +1,17 @@
+{
+  "memoryName": "ADD_SWAP_EXERCISE_INDEX",
+  "linkedAt": "2026-01-01T21:50:02.911Z",
+  "serenaPath": ".serena/memories/ADD_SWAP_EXERCISE_INDEX.md",
+  "summary": "Memory ADD_SWAP_EXERCISE_INDEX linked to session",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": {
+    "analyzed_symbols": [],
+    "entry_points": [
+      "success/error"
+    ],
+    "data_flow_map": {}
+  }
+}

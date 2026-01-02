@@ -1,0 +1,33 @@
+# Generic Form Validation Template
+# Universal pattern for testing form validation errors
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   FORM_PATH - Path to form page (e.g., /signup, /contact, /settings)
+#   FIELD_1 - First field selector (e.g., "label:Email", "#username")
+#   FIELD_2 - Second field selector (e.g., "label:Password", "#phone")
+#   FIELD_3 - Third field selector (optional, use empty string to skip)
+#   INVALID_VALUE_1 - Invalid value for field 1 (e.g., "bad-email", "a", "")
+#   INVALID_VALUE_2 - Invalid value for field 2 (e.g., "short", "123", "")
+#   INVALID_VALUE_3 - Invalid value for field 3 (optional)
+#   SUBMIT_BUTTON - Submit button selector (e.g., "role:button:Submit", "#submit")
+#   ERROR_WAIT - Wait time for errors to appear (e.g., 1000-2000ms)
+#
+# Reusable for:
+#   - Signup forms
+#   - Login forms
+#   - Contact forms
+#   - Settings forms
+#   - Payment forms
+#   - Any form with validation
+
+navigate {{BASE_URL}}{{FORM_PATH}}
+wait 2000
+snapshot
+type "{{FIELD_1}}" "{{INVALID_VALUE_1}}"
+type "{{FIELD_2}}" "{{INVALID_VALUE_2}}"
+click "{{SUBMIT_BUTTON}}"
+wait {{ERROR_WAIT}}
+snapshot
+console
+screenshot validation-errors.png

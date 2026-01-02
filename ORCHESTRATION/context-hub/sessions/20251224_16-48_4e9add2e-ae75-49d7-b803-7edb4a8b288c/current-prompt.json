@@ -1,0 +1,12 @@
+{
+  "id": "a1441f43-5a39-4e36-b2eb-7ebefe3696e1",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251224_16-48_4e9add2e-ae75-49d7-b803-7edb4a8b288c",
+    "timestamp": "2025-12-24T16:48:38.734Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "BROWSER-CLI Section 4 Performance Optimizations: (1) Lazy Feature Loading - load 12 non-essential features on-demand, (2) Ref Stability Tracking - track ref stability across snapshots with --stable-refs flag, (3) Parallel Command Batching - run read-only commands in parallel within exec"
+  }
+}

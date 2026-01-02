@@ -1,0 +1,12 @@
+{
+  "id": "2f8abfe5-4577-4b37-8e1a-5fa25c6c7372",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251226_11-32_b8273478-a894-40aa-8adb-2e2c5ac031f2",
+    "timestamp": "2025-12-26T11:32:27.449Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Complete remaining ORCHESTRATION improvements: 1) Add JSDoc to 4 gate methods in context-hub.ts, 2) Document 5 missing CLI commands (execute, agents, trace, dashboard, template), 3) Create unit tests for evidence-chain.ts, evidenceAutoPopulator.ts, template-processor, and gatesModules targeting 300+ tests and 80% coverage"
+  }
+}

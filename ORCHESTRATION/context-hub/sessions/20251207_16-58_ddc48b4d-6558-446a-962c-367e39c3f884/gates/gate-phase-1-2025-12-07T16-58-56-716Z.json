@@ -1,0 +1,15 @@
+{
+  "phaseId": "phase-1",
+  "passed": false,
+  "checkedAt": "2025-12-07T16:58:56.716Z",
+  "results": [
+    {
+      "check": "memory:NONEXISTENT_MEMORY_*",
+      "passed": false,
+      "message": "No memory matching 'NONEXISTENT_MEMORY_*' found"
+    }
+  ],
+  "blockers": [
+    "Missing memory: NONEXISTENT_MEMORY_*"
+  ]
+}

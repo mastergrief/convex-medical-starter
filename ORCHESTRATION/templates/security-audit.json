@@ -1,0 +1,78 @@
+{
+  "id": "security-audit",
+  "name": "Security Audit",
+  "description": "Vulnerability scanning, remediation, and security verification",
+  "tags": ["security", "audit", "vulnerabilities", "auth"],
+  "variables": [
+    {
+      "name": "audit_scope",
+      "description": "Scope: auth, api, frontend, full",
+      "required": true
+    },
+    {
+      "name": "severity_threshold",
+      "description": "Minimum severity: low, medium, high, critical",
+      "default": "medium",
+      "required": false
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Vulnerability Scanning",
+      "parallelizable": true,
+      "gate": { "dsl": "memory:ANALYSIS_SECURITY_*" },
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Run npm audit and dependency vulnerability checks. Document findings at {{severity_threshold}} or above.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 15000
+        },
+        {
+          "id": "task-1.2",
+          "description": "Review {{audit_scope}} security patterns. Check auth flows, input validation, data exposure. Identify vulnerabilities at {{severity_threshold}} or above.",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Remediation",
+      "parallelizable": false,
+      "gate": { "dsl": "typecheck" },
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Fix vulnerabilities in {{audit_scope}} at {{severity_threshold}} or above. Update dependencies, patch security issues, improve auth handling.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1", "task-1.2"],
+          "estimatedTokens": 20000
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "name": "Verification",
+      "parallelizable": false,
+      "gate": { "dsl": "tests" },
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "E2E test security-critical flows in {{audit_scope}}. Verify auth, permissions, and data access controls work correctly.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 15000
+        }
+      ]
+    }
+  ],
+  "estimatedTokens": 70000
+}

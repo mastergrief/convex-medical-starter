@@ -1,0 +1,271 @@
+{
+  "id": "d5b191c3-604a-41fc-bb08-31c3f44e402d",
+  "timestamp": "2026-01-01T14:37:17.392Z",
+  "description": "Orchestration plan",
+  "design": {
+    "id": "deprecate-setnotes-2026-01-01",
+    "title": "Deprecate Set Notes from Athlete Logging Configuration",
+    "objective": "Remove notes from configurable logging metrics - athletes always have hardcoded Set Notes (Optional) textarea",
+    "scope": {
+      "ui": {
+        "files": 2,
+        "lines": 345
+      },
+      "api": {
+        "files": 1,
+        "lines": 80
+      },
+      "tests": {
+        "files": 5,
+        "lines": 981
+      },
+      "total": {
+        "files": 8,
+        "lines": 1406
+      }
+    },
+    "phases": [
+      {
+        "id": "phase-1-backend",
+        "name": "Backend Validation",
+        "description": "Remove notes from VALID_CORE_METRICS in backend validation",
+        "priority": "P1",
+        "estimatedMinutes": 15,
+        "files": [
+          {
+            "path": "convex/lib/loggingMetricsValidation.ts",
+            "lines": 80,
+            "changes": [
+              {
+                "line": 8,
+                "action": "REMOVE",
+                "content": "\"notes\","
+              }
+            ]
+          }
+        ],
+        "verification": [
+          "npm run typecheck",
+          "npx convex typecheck"
+        ],
+        "gate": "Typecheck passes"
+      },
+      {
+        "id": "phase-2-frontend",
+        "name": "Frontend Config",
+        "description": "Remove notes from frontend defaults and field definitions",
+        "priority": "P1",
+        "estimatedMinutes": 25,
+        "dependsOn": [
+          "phase-1-backend"
+        ],
+        "files": [
+          {
+            "path": "src/lib/loggingMetricsDefaults.ts",
+            "lines": 123,
+            "changes": [
+              {
+                "line": 18,
+                "action": "REMOVE",
+                "content": "\"notes\","
+              },
+              {
+                "line": 47,
+                "action": "REMOVE",
+                "content": "notes: \"Set Notes\","
+              },
+              {
+                "lines": "54-69",
+                "action": "MODIFY",
+                "content": "Remove notes from all 8 CATEGORY_AVAILABLE_METRICS arrays"
+              }
+            ]
+          },
+          {
+            "path": "src/config/exerciseFields/logging/configBuilder.ts",
+            "lines": 222,
+            "changes": [
+              {
+                "lines": "117-122",
+                "action": "DELETE",
+                "content": "FIELD_DEFINITIONS notes entry"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          "npm run typecheck"
+        ],
+        "gate": "Typecheck passes"
+      },
+      {
+        "id": "phase-3-tests",
+        "name": "Unit Test Updates",
+        "description": "Update test assertions to verify notes is rejected",
+        "priority": "P2",
+        "estimatedMinutes": 45,
+        "dependsOn": [
+          "phase-2-frontend"
+        ],
+        "files": [
+          {
+            "path": "src/lib/__tests__/loggingMetricsDefaults.test.ts",
+            "lines": 247,
+            "changes": [
+              {
+                "line": 97,
+                "action": "MODIFY",
+                "content": "Change [\"reps\", \"notes\"] to [\"reps\", \"rir\"]"
+              },
+              {
+                "lines": "130-133",
+                "action": "MODIFY",
+                "content": "Change [\"notes\"] fixture"
+              },
+              {
+                "line": 147,
+                "action": "DELETE",
+                "content": "toContain(\"notes\") assertion"
+              },
+              {
+                "line": 157,
+                "action": "DELETE",
+                "content": "toContain(\"notes\") assertion"
+              },
+              {
+                "lines": "229-233",
+                "action": "DELETE",
+                "content": "Entire \"notes in all categories\" test block"
+              }
+            ]
+          },
+          {
+            "path": "src/config/exerciseFields/logging/__tests__/configBuilder.test.ts",
+            "lines": 247,
+            "changes": [
+              {
+                "line": 181,
+                "action": "REMOVE",
+                "content": "\"notes\" from expectedFields array"
+              },
+              {
+                "lines": "221-223",
+                "action": "DELETE",
+                "content": "Entire \"notes type\" test block"
+              }
+            ]
+          },
+          {
+            "path": "src/components/exercise/__tests__/LoggingMetricsSelector.test.tsx",
+            "lines": 150,
+            "changes": [
+              {
+                "line": 31,
+                "action": "MODIFY",
+                "content": "Change to queryByLabelText().not.toBeInTheDocument()"
+              }
+            ]
+          },
+          {
+            "path": "convex/lib/__tests__/loggingMetricsValidation.test.ts",
+            "lines": 229,
+            "changes": [
+              {
+                "line": 19,
+                "action": "REMOVE",
+                "content": "\"notes\" from it.each array"
+              },
+              {
+                "after": 31,
+                "action": "ADD",
+                "content": "Deprecation test for notes"
+              }
+            ]
+          },
+          {
+            "path": "convex/lib/__tests__/loggingMetrics.integration.test.ts",
+            "lines": 108,
+            "changes": [
+              {
+                "line": 49,
+                "action": "REMOVE",
+                "content": "\"notes\" from it.each array"
+              },
+              {
+                "after": 61,
+                "action": "ADD",
+                "content": "Deprecation test block"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          "npm run test"
+        ],
+        "gate": "All tests pass"
+      },
+      {
+        "id": "phase-4-e2e",
+        "name": "E2E Browser Verification",
+        "description": "Verify UI changes with Browser-CLI",
+        "priority": "P2",
+        "estimatedMinutes": 30,
+        "dependsOn": [
+          "phase-3-tests"
+        ],
+        "scenarios": [
+          {
+            "name": "Coach View - Checkbox Removed",
+            "steps": [
+              "restoreState authenticated-coach",
+              "navigate /training-calendar",
+              "open Quick Program",
+              "expand Logging Config",
+              "verify no Set Notes checkbox"
+            ],
+            "evidence": "evidence-coach-no-notes-checkbox.png"
+          },
+          {
+            "name": "Athlete View - Notes Preserved",
+            "steps": [
+              "navigate /workout-logger",
+              "verify Set Notes (Optional) textarea present"
+            ],
+            "evidence": "evidence-athlete-notes-preserved.png"
+          }
+        ],
+        "verification": [
+          "Visual inspection of screenshots"
+        ],
+        "gate": "Evidence collected"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Existing exercises with notes in loggingMetrics",
+        "severity": "MEDIUM",
+        "mitigation": "startWorkout mutation silently filters invalid metrics"
+      },
+      {
+        "risk": "Coach edits old exercise with notes",
+        "severity": "LOW",
+        "mitigation": "UI no longer shows checkbox, validation throws if injected"
+      },
+      {
+        "risk": "Athletes lose notes field",
+        "severity": "NONE",
+        "mitigation": "Hardcoded textarea preserved in ExerciseCard.tsx line 187"
+      }
+    ],
+    "successCriteria": [
+      "isValidLoggingMetric(\"notes\") returns false",
+      "validateLoggingMetrics([\"reps\", \"notes\"]) throws ConvexError",
+      "Set Notes checkbox NOT visible in LoggingMetricsSelector",
+      "Set Notes (Optional) textarea visible in Workout Logger",
+      "All unit tests pass",
+      "TypeScript typecheck passes"
+    ],
+    "rollbackPlan": "Revert commits for Phase 1-3, run typecheck/test, redeploy - no data migration needed"
+  },
+  "status": "archived"
+}

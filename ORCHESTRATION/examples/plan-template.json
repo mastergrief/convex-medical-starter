@@ -1,0 +1,115 @@
+{
+  "id": "550e8400-e29b-41d4-a716-446655440001",
+  "type": "plan",
+  "metadata": {
+    "promptId": "15c54eb3-1cbe-46af-95e9-677386772e5a",
+    "sessionId": "20251207_09-00_add9d29d-062a-4fdb-ac3c-54df345672f7",
+    "timestamp": "2025-12-07T09:10:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement dark mode toggle with theme persistence",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Analysis",
+      "description": "Understand current theme implementation and styling patterns",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze current ThemeContext implementation",
+          "agentType": "analyst",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": ["src/contexts/ThemeContext.tsx"],
+            "memories": ["2_TECH_STACK"]
+          },
+          "acceptanceCriteria": [
+            "Current theme state management documented",
+            "CSS variable usage mapped"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Review Tailwind dark mode configuration",
+          "agentType": "context7",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "acceptanceCriteria": [
+            "Tailwind dark mode strategy identified",
+            "Required config changes documented"
+          ]
+        }
+      ],
+      "gateCondition": "All analysis tasks complete with documented findings"
+    },
+    {
+      "id": "phase-2",
+      "name": "Implementation",
+      "description": "Implement dark mode toggle functionality",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Update ThemeContext with dark mode state and toggle",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 10000,
+          "acceptanceCriteria": [
+            "Dark mode state added to context",
+            "Toggle function implemented",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add dark mode toggle UI component",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 12000,
+          "acceptanceCriteria": [
+            "Toggle component created",
+            "Integrated into navigation",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "Typecheck passes, toggle functional"
+    },
+    {
+      "id": "phase-3",
+      "name": "Validation",
+      "description": "Test dark mode functionality",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "E2E test dark mode toggle",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-2.2"],
+          "estimatedTokens": 8000,
+          "acceptanceCriteria": [
+            "Toggle switches theme",
+            "Theme persists on refresh",
+            "All pages render correctly in dark mode"
+          ]
+        }
+      ],
+      "gateCondition": "All tests pass"
+    }
+  ],
+  "totalEstimatedTokens": 43000,
+  "risks": [
+    {
+      "description": "Some components may have hardcoded colors",
+      "mitigation": "Audit components during analysis phase",
+      "severity": "medium"
+    }
+  ]
+}

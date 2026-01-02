@@ -1,0 +1,369 @@
+{
+  "id": "c6a66c65-4923-445f-b35d-15afc7fa63c4",
+  "type": "plan",
+  "metadata": {
+    "promptId": "6b8b0ab0-e4fd-49b5-b91a-85cdd8333901",
+    "sessionId": "20251227_12-13_d6142370-0b3f-43af-89c4-acdc5db1cf39",
+    "timestamp": "2025-12-27T12:15:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Browser-CLI Phase 2: Clean up command parity gaps between validator/parser/help/formatter layers, create missing response formatters, and synchronize documentation. Removes 16 orphan commands, adds 2 missing commands, creates 4 new formatter modules, and updates documentation with implementation status.",
+  "phases": [
+    {
+      "id": "phase-A",
+      "name": "Validator Cleanup",
+      "description": "Remove orphan selector variant commands and deprecated browserState commands from VALID_COMMANDS. Add missing commands and fix naming mismatches.",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-A.1",
+          "description": "Remove 12 orphan selector variant commands from VALID_COMMANDS (clickByRef, clickBySemantic, dblclickByRef, dblclickBySemantic, typeByRef, typeBySemantic, hoverByRef, hoverBySemantic, dragByRef, dragByCSS, waitForSelectorByRef, waitForSelectorBySemantic) - parser auto-detects selector type",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_BROWSER_CLI_PHASE2_PARITY_DOCUMENTATION"],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/command-validator.ts"]
+          },
+          "acceptanceCriteria": [
+            "12 selector variant commands removed from VALID_COMMANDS",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-A.2",
+          "description": "Remove 4 deprecated browserState commands (saveBrowserState, restoreBrowserState, listBrowserStates, deleteBrowserState) - replaced by shorter saveState/restoreState/listStates/deleteState",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-A.1"],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/command-validator.ts"]
+          },
+          "acceptanceCriteria": [
+            "4 deprecated browserState commands removed",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-A.3",
+          "description": "Fix flaky detection command naming mismatch: rename runTestMultipleTimes to runFlaky, rename analyzeFlakiness to getFlakySummary to match documentation",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-A.2"],
+          "estimatedTokens": 2500,
+          "context": {
+            "memories": [],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/cli/command-validator.ts",
+              "BROWSER-CLI/SCRIPTS/cli/commandHelpModules/flaky-detection.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "runFlaky and getFlakySummary in VALID_COMMANDS",
+            "Help text uses correct command names",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-A.4",
+          "description": "Add 2 missing commands to VALID_COMMANDS: snapshot+ (enhanced snapshot with full element state), stopRecording (video recording stop command)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.3"],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/command-validator.ts"]
+          },
+          "acceptanceCriteria": [
+            "snapshot+ added to VALID_COMMANDS",
+            "stopRecording verified in VALID_COMMANDS",
+            "VALID_COMMANDS count approximately 110",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "All validator cleanup subtasks complete, typecheck passes, VALID_COMMANDS reduced from 124 to ~110"
+    },
+    {
+      "id": "phase-B",
+      "name": "Response Formatter Completion",
+      "description": "Create missing response formatter modules for content, events, DOM, and buffer commands. Update formatter index with new cases.",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-B.1",
+          "description": "Create content.ts response formatter for 4 commands: getPageHTML, getPageText, getElementHTML, getElementText. Format HTML with character count and preview, text with full content.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": [],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/base.ts",
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/types.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "content.ts created with formatContentResponse function",
+            "Handles getPageHTML, getPageText, getElementHTML, getElementText",
+            "HTML shows character count and preview (500 chars)",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-B.2",
+          "description": "Create events.ts response formatter for 5 commands: getEventLog, clearEventLog, waitForEvent, acceptDialog, dismissDialog. Format event logs with timestamps and types.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": [],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/base.ts",
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/types.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "events.ts created with formatEventResponse function",
+            "Handles all 5 event commands",
+            "Event log shows formatted list with timestamps",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-B.3",
+          "description": "Create dom.ts response formatter for 4 commands: countElements, getElementVisibility, getComputedStyle, getOverlayingElements. Format visibility with reasons, overlays with z-index.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": [],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/base.ts",
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/types.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "dom.ts created with formatDOMResponse function",
+            "Handles all 4 DOM inspection commands",
+            "Visibility shows reasons if hidden",
+            "Overlays show selector and z-index",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-B.4",
+          "description": "Create buffer.ts response formatter for 6 commands: getConsoleBufferStats, setConsoleBufferCapacity, getNetworkBufferStats, setNetworkBufferCapacity, getEventBufferStats, setEventBufferCapacity. Format stats with size/capacity/overflow.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": [],
+            "files": [
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/base.ts",
+              "BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/types.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "buffer.ts created with formatBufferResponse function",
+            "Handles all 6 buffer management commands",
+            "Stats show size/capacity/overflow count",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-B.5",
+          "description": "Update responseFormatterModules/index.ts to import and route to new formatters (content, events, dom, buffer). Add switch cases for all 19 new commands.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-B.1", "task-B.2", "task-B.3", "task-B.4"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/responseFormatterModules/index.ts"]
+          },
+          "acceptanceCriteria": [
+            "All 4 new formatters imported",
+            "Switch cases added for all 19 commands",
+            "No commands fall back to generic formatter",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "All 4 formatter modules created, index updated, typecheck passes"
+    },
+    {
+      "id": "phase-C",
+      "name": "Help Text Alignment",
+      "description": "Add missing help text entries and fix naming mismatches in help modules.",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-C.1",
+          "description": "Add snapshot+ help text to commandHelpModules/snapshot.ts with description, usage, examples, and notes about enhanced element state",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/commandHelpModules/snapshot.ts"]
+          },
+          "acceptanceCriteria": [
+            "snapshot+ help text added",
+            "Includes description, usage, examples, notes",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-C.2",
+          "description": "Add setHeadless help text to commandHelpModules/utility.ts with description, usage, and examples for headless mode toggle",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.4"],
+          "estimatedTokens": 2500,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/commandHelpModules/utility.ts"]
+          },
+          "acceptanceCriteria": [
+            "setHeadless help text added",
+            "Includes true/false examples",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-C.3",
+          "description": "Verify flaky detection help text uses correct command names (runFlaky, getFlakySummary) after validator fix in task-A.3",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": ["task-A.3"],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [],
+            "files": ["BROWSER-CLI/SCRIPTS/cli/commandHelpModules/flaky-detection.ts"]
+          },
+          "acceptanceCriteria": [
+            "Help text uses runFlaky (not runTestMultipleTimes)",
+            "Help text uses getFlakySummary (not analyzeFlakiness)",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "All help text entries complete, all 110+ commands have help text"
+    },
+    {
+      "id": "phase-D",
+      "name": "Documentation Sync",
+      "description": "Update CLAUDE.md browser-cli documentation with implementation status table, correct command names, and clarified usage patterns.",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-D.1",
+          "description": "Add feature implementation status table to .claude/rules/cli-suite/browser-cli.md showing category, implemented count, planned count, and percentage complete",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": ["task-B.5", "task-C.1", "task-C.2", "task-C.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": [],
+            "files": [".claude/rules/cli-suite/browser-cli.md"]
+          },
+          "acceptanceCriteria": [
+            "Status table added with all categories",
+            "Shows implemented vs planned counts",
+            "Percentage complete per category"
+          ]
+        },
+        {
+          "id": "task-D.2",
+          "description": "Update flaky detection section in browser-cli.md to use correct command names (runFlaky, getFlakySummary) and remove deprecated command references",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": ["task-A.3"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": [],
+            "files": [".claude/rules/cli-suite/browser-cli.md"]
+          },
+          "acceptanceCriteria": [
+            "runFlaky command documented correctly",
+            "getFlakySummary command documented correctly",
+            "No deprecated command names remain"
+          ]
+        },
+        {
+          "id": "task-D.3",
+          "description": "Clarify tab command usage pattern in browser-cli.md: tabs (list), newTab [url], switchTab <index>, closeTab <index>",
+          "agentType": "developer",
+          "priority": "low",
+          "dependencies": ["task-D.1"],
+          "estimatedTokens": 2500,
+          "context": {
+            "memories": [],
+            "files": [".claude/rules/cli-suite/browser-cli.md"]
+          },
+          "acceptanceCriteria": [
+            "Tab commands section clarified",
+            "Usage patterns documented with examples",
+            "Index-based operations explained"
+          ]
+        }
+      ],
+      "gateCondition": "Documentation fully synchronized with implementation"
+    }
+  ],
+  "totalEstimatedTokens": 50500,
+  "risks": [
+    {
+      "description": "Removing selector variant commands may break external references",
+      "mitigation": "These are internal to parser, not exposed in public API",
+      "severity": "low"
+    },
+    {
+      "description": "Formatter changes may affect existing command output format",
+      "mitigation": "New formatters only added for commands without existing formatters",
+      "severity": "low"
+    },
+    {
+      "description": "Flaky detection command rename may break existing test scripts",
+      "mitigation": "Commands are not yet implemented, only validator entries need updating",
+      "severity": "low"
+    },
+    {
+      "description": "Documentation updates may conflict with CLAUDE.md style conventions",
+      "mitigation": "Follow existing formatting patterns, terse imperative style",
+      "severity": "low"
+    }
+  ],
+  "parallelExecutionGroups": [
+    {
+      "groupId": "validator-sequential",
+      "description": "Validator cleanup must be sequential (single file, dependent changes)",
+      "subtasks": ["task-A.1", "task-A.2", "task-A.3", "task-A.4"]
+    },
+    {
+      "groupId": "formatters-parallel",
+      "description": "Formatter modules can be created in parallel (independent files)",
+      "subtasks": ["task-B.1", "task-B.2", "task-B.3", "task-B.4"]
+    },
+    {
+      "groupId": "help-parallel",
+      "description": "Help text additions can be done in parallel (different files)",
+      "subtasks": ["task-C.1", "task-C.2", "task-C.3"]
+    },
+    {
+      "groupId": "docs-sequential",
+      "description": "Documentation updates sequential (single file, coherent updates)",
+      "subtasks": ["task-D.1", "task-D.2", "task-D.3"]
+    }
+  ]
+}

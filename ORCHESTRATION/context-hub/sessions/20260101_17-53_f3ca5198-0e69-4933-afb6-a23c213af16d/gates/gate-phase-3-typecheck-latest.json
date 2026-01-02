@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-3-typecheck",
+  "passed": true,
+  "checkedAt": "2026-01-01T17:58:51.363Z",
+  "results": [
+    {
+      "check": "default",
+      "passed": true,
+      "message": "No gate conditions defined"
+    }
+  ],
+  "blockers": []
+}

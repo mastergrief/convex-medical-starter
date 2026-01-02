@@ -1,0 +1,12 @@
+{
+  "id": "83617190-a6a9-44e1-b702-037669bb2c1f",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251209_20-05_50bbdeaf-393b-4763-8b36-40d3f0d83399",
+    "timestamp": "2025-12-09T20:05:19.809Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement AI-Powered Auto-Regulation in WorkoutLogger: Add database schema (autoRegulationRecommendations table), backend API (convex/autoRegulation.ts with queries, mutations, GPT-5-mini action), frontend components (AutoRegulationCard + WorkoutStartScreen integration), and E2E testing. Plan available in linked memory PLAN_AUTOREGULATION_IMPLEMENTATION_20251209."
+  }
+}

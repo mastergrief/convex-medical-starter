@@ -1,0 +1,7 @@
+{"timestamp":"2025-12-09T09:26:41.531Z","type":"prompt","id":"32fa3a54-b87c-4a88-a389-be1409309070"}
+{"timestamp":"2025-12-09T09:26:46.300Z","type":"memory_link","id":"0_PROJECT_OVERVIEW"}
+{"timestamp":"2025-12-09T09:26:50.563Z","type":"plan","id":"550e8400-e29b-41d4-a716-446655440001"}
+{"timestamp":"2025-12-09T09:28:20.918Z","type":"gate_check","id":"phase-1"}
+{"timestamp":"2025-12-09T09:28:25.928Z","type":"gate_check","id":"phase-1"}
+{"timestamp":"2025-12-09T09:28:25.930Z","type":"phase_advance","id":"phase-2"}
+{"timestamp":"2025-12-09T09:28:42.313Z","type":"handoff","id":"660e8400-e29b-41d4-a716-446655440002"}

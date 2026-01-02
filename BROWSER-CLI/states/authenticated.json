@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:5173/?auth=signin",
+  "cookies": [],
+  "localStorage": "{\"theme\":\"dark\",\"calendar-view\":\"month\",\"__convexAuthRefreshToken_httpsnotablemouse131convexcloud\":\"jd766qa187mwv6npn8fzb2ht257wbm1y|jh7932nna9tb1qm3rqttze2tj97wbah1\",\"__convexAuthJWT_httpsnotablemouse131convexcloud\":\"eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJqeDc5NjZ4dmFoanpmN2p5emFxcWNueGtnOTdxZ3YydHxqaDc5MzJubmE5dGIxcW0zcnF0dHplMnRqOTd3YmFoMSIsImlhdCI6MTc2NDQwODQ0MywiaXNzIjoiaHR0cHM6Ly9ub3RhYmxlLW1vdXNlLTEzMS5jb252ZXguc2l0ZSIsImF1ZCI6ImNvbnZleCIsImV4cCI6MTc2NDQxMjA0M30.ZPQKy76csOwguiRBx1hYjfh9jlZiMa0WTZMKjnBUHJ97Zsy77ECfVSH9gJQd594Leud1ATlW_PWgPTpxZyJLaLaOREvAXtDJi4nmDxKb7BB86BeR6SxhMUo-W1pa-Nkzoa8cw7sqqKFLEJdeH0dutm5_nmYELgePYu4VhvGdh3a7-C7g7Hq1qMgUaBmu97cpj-fyqqYlKwmuz3UkUZRDA_m66Xwjoa5SlcsUjygMhOH0VN_2gcDKHL16w77050pcBwCbfAuX22zvboox5GTGzQsQvpTV1rpBvlZ___cFg4FYFF5vJ3HSzfnI-z3lZ6uf5lyDbxt_-AKyPFpgAGDslg\",\"templateSidebarCollapsed\":\"false\",\"coachAthleteMode\":\"false\",\"sidebar-collapsed\":\"true\",\"upcoming-workouts-collapsed\":\"false\"}",
+  "sessionStorage": "{}",
+  "timestamp": 1764408464165
+}

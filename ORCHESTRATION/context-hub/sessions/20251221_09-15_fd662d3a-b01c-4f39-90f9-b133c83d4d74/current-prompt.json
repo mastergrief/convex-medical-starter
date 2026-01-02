@@ -1,0 +1,12 @@
+{
+  "id": "3c426d3e-c6b2-4c27-a116-3f9a70f627e8",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251221_09-15_fd662d3a-b01c-4f39-90f9-b133c83d4d74",
+    "timestamp": "2025-12-21T09:15:23.861Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Gate DSL Enhancement Plan (PLAN_ORCHESTRATION_GATE_DSL_20251221): 1) Create gateParser.ts with tokenizer, AST parser, evaluator for Boolean operators (AND/OR/NOT), thresholds, evidence integration. 2) Create evidenceAutoPopulator.ts for handoff-to-evidence chain automation. 3) Modify gates.ts, handoffs.ts, execution schema, CLI. 4) Test all new functionality. 5) Write Serena memory documenting completion."
+  }
+}

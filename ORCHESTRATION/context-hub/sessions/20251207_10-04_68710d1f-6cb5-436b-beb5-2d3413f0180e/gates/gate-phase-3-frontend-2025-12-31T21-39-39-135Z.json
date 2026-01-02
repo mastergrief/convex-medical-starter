@@ -1,0 +1,14 @@
+{
+  "phaseId": "phase-3-frontend",
+  "passed": true,
+  "checkedAt": "2025-12-31T21:39:39.135Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    }
+  ],
+  "blockers": [],
+  "duration": 848
+}

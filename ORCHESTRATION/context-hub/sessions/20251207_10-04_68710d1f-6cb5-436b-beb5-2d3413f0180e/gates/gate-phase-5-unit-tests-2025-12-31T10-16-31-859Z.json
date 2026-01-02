@@ -1,0 +1,15 @@
+{
+  "phaseId": "phase-5-unit-tests",
+  "passed": false,
+  "checkedAt": "2025-12-31T10:16:31.859Z",
+  "results": [
+    {
+      "check": "dsl_parse",
+      "passed": false,
+      "message": "Unknown check type 'All' at position 0, found 'All'"
+    }
+  ],
+  "blockers": [
+    "Failed to parse DSL condition"
+  ]
+}

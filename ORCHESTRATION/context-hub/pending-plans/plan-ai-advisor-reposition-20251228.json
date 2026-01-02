@@ -1,0 +1,269 @@
+{
+  "planId": "ai-advisor-reposition-20251228",
+  "title": "AI Training Advisor Repositioning",
+  "description": "Move AI Training Advisor from workout execution to between readiness check and workout start",
+  "createdAt": "2025-12-28T12:45:00Z",
+  "status": "archived",
+  "scope": {
+    "ui": {
+      "components": 5,
+      "hooks": 3,
+      "newFiles": 1
+    },
+    "api": {
+      "mutations": 0,
+      "queries": 0,
+      "actions": 0
+    },
+    "db": {
+      "tablesAffected": 0
+    },
+    "netLOC": "+164"
+  },
+  "currentFlow": "WorkoutStartScreen (AI here) → PreWorkoutAssessment → Active Workout",
+  "targetFlow": "PreWorkoutAssessment → AIAdvisorScreen (NEW) → Active Workout",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Add showAIAdvisor State",
+      "targetFile": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutState.ts",
+      "currentLOC": 113,
+      "deltaLOC": "+7",
+      "risk": "LOW",
+      "changes": [
+        "Add state variable: const [showAIAdvisor, setShowAIAdvisor] = useState(false)",
+        "Update WorkoutStateResult interface with showAIAdvisor: boolean",
+        "Update WorkoutStateSetters interface with setShowAIAdvisor setter",
+        "Update return object with both state and setter"
+      ],
+      "dependencies": [],
+      "verification": "npm run typecheck"
+    },
+    {
+      "phase": 2,
+      "name": "Modify Session Handlers",
+      "targetFile": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+      "currentLOC": 276,
+      "deltaLOC": "+64",
+      "risk": "MEDIUM",
+      "changes": [
+        "Update SessionHandlersProps interface with setShowAIAdvisor prop",
+        "REFACTOR handlePreWorkoutComplete: transition to AI screen instead of starting workout",
+        "ADD handleAIAdvisorDecision: move modifier application logic here",
+        "Update SessionHandlersResult type and return object"
+      ],
+      "critical": "MOVE modifier application logic from handlePreWorkoutComplete to handleAIAdvisorDecision - do NOT duplicate",
+      "dependencies": [
+        "Phase 1"
+      ],
+      "verification": "npm run typecheck"
+    },
+    {
+      "phase": 3,
+      "name": "Create AIAdvisorScreen Component",
+      "targetFile": "src/components/AIAdvisorScreen.tsx",
+      "newFile": true,
+      "deltaLOC": "+80",
+      "risk": "LOW",
+      "changes": [
+        "Create new component wrapping AutoRegulationCard",
+        "Props: athleteId, workoutName, appliedModifiers, onApplyModifiers, onDecision",
+        "UI: 'Start with Adjustments' button (requires modifiers), 'Skip & Start Original' button",
+        "Display applied modifier percentages"
+      ],
+      "dependencies": [],
+      "verification": "npm run typecheck"
+    },
+    {
+      "phase": 4,
+      "name": "Update WorkoutLogger Integration",
+      "targetFile": "src/components/WorkoutLogger.tsx",
+      "currentLOC": 177,
+      "deltaLOC": "+15",
+      "risk": "LOW",
+      "changes": [
+        "Import AIAdvisorScreen component",
+        "Add conditional block after showPreWorkout: if (state.showAIAdvisor && todaysWorkout)",
+        "Render AIAdvisorScreen with required props"
+      ],
+      "newConditionalOrder": [
+        "showPreWorkout → PreWorkoutAssessment",
+        "showAIAdvisor → AIAdvisorScreen (NEW)",
+        "showPostWorkout → PostWorkoutAssessment",
+        "!todaysWorkout → EmptyState",
+        "!activeWorkout → WorkoutStartScreen",
+        "default → Active Workout"
+      ],
+      "dependencies": [
+        "Phase 1",
+        "Phase 2",
+        "Phase 3"
+      ],
+      "verification": "npm run typecheck + manual browser test"
+    },
+    {
+      "phase": 5,
+      "name": "Remove AutoRegulation from WorkoutStartScreen",
+      "targetFile": "src/components/WorkoutLoggerModules/components/WorkoutStartScreen.tsx",
+      "currentLOC": 133,
+      "deltaLOC": "-33",
+      "risk": "MEDIUM",
+      "changes": [
+        "Remove AutoRegulationCard import",
+        "Remove RotateCcw icon import if unused",
+        "Remove props: appliedModifiers, onApplyAutoRegulation, onResetAutoRegulation",
+        "Remove AutoRegulationCard render block",
+        "Remove Reset button render block",
+        "Update WorkoutLogger.tsx to remove 3 props from WorkoutStartScreen call"
+      ],
+      "dependencies": [
+        "Phase 4 verified working"
+      ],
+      "verification": "npm run typecheck + verify no AutoRegulationCard on start screen"
+    },
+    {
+      "phase": 6,
+      "name": "Add Pre-fetch Optimization",
+      "targetFile": "src/components/PreWorkoutAssessment.tsx",
+      "currentLOC": 196,
+      "deltaLOC": "+24",
+      "risk": "LOW",
+      "changes": [
+        "Add athleteId prop to interface",
+        "Add useQuery for getActiveRecommendation",
+        "Add useAction for generateRecommendations",
+        "Add useEffect to trigger pre-fetch if no cached recommendation",
+        "Update WorkoutLogger.tsx to pass athleteId prop"
+      ],
+      "benefit": "Hides 2-5s OpenAI latency during readiness check",
+      "dependencies": [
+        "Phase 4"
+      ],
+      "verification": "Network tab shows AI call during readiness check"
+    },
+    {
+      "phase": 7,
+      "name": "Update useWorkoutLogger Facade",
+      "targetFile": "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts",
+      "currentLOC": 108,
+      "deltaLOC": "+7",
+      "risk": "LOW",
+      "changes": [
+        "Pass setShowAIAdvisor to useSessionHandlers",
+        "Add showAIAdvisor to returned state object",
+        "Add setShowAIAdvisor to returned setters object"
+      ],
+      "dependencies": [
+        "Phase 1",
+        "Phase 2"
+      ],
+      "verification": "npm run typecheck"
+    }
+  ],
+  "executionOrder": {
+    "recommended": [
+      {
+        "step": 1,
+        "phases": [
+          1,
+          2,
+          7
+        ],
+        "description": "State infrastructure"
+      },
+      {
+        "step": 2,
+        "phases": [
+          3
+        ],
+        "description": "New component (can parallelize with step 1)"
+      },
+      {
+        "step": 3,
+        "phases": [
+          4
+        ],
+        "description": "Integration (requires all above)"
+      },
+      {
+        "step": 4,
+        "phases": [
+          5
+        ],
+        "description": "Cleanup (requires Phase 4 verified)"
+      },
+      {
+        "step": 5,
+        "phases": [
+          6
+        ],
+        "description": "Optimization (anytime after Phase 4)"
+      }
+    ],
+    "criticalPath": "1 → 2 → 7 → 4 → 5"
+  },
+  "risks": [
+    {
+      "phase": 2,
+      "level": "MEDIUM",
+      "description": "Handler refactoring - must MOVE modifier logic, not duplicate",
+      "mitigation": "Carefully extract handlePreWorkoutComplete logic to handleAIAdvisorDecision, preserve edge cases"
+    },
+    {
+      "phase": 5,
+      "level": "MEDIUM",
+      "description": "Removing existing functionality",
+      "mitigation": "Wait for Phase 4 verification before removal"
+    }
+  ],
+  "testingChecklist": {
+    "automated": [
+      "npm run typecheck (BLOCKING after each phase)",
+      "npm test (169 existing tests should pass)"
+    ],
+    "manual": [
+      "Happy Path (Apply): PreWorkoutAssessment → AIAdvisorScreen → Apply → Active Workout with modified targets",
+      "Skip Path: PreWorkoutAssessment → AIAdvisorScreen → Skip → Active Workout with original targets",
+      "Pre-fetch Timing: Network tab shows AI call during readiness check",
+      "Error Recovery: AI generation timeout → Skip still works",
+      "Refresh Handling: Refresh during AIAdvisorScreen → Returns to WorkoutStartScreen"
+    ]
+  },
+  "filesAffected": [
+    {
+      "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutState.ts",
+      "action": "MODIFY",
+      "delta": "+7"
+    },
+    {
+      "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSessionHandlers.ts",
+      "action": "MODIFY",
+      "delta": "+64"
+    },
+    {
+      "path": "src/components/AIAdvisorScreen.tsx",
+      "action": "CREATE",
+      "delta": "+80"
+    },
+    {
+      "path": "src/components/WorkoutLogger.tsx",
+      "action": "MODIFY",
+      "delta": "+15"
+    },
+    {
+      "path": "src/components/WorkoutLoggerModules/components/WorkoutStartScreen.tsx",
+      "action": "MODIFY",
+      "delta": "-33"
+    },
+    {
+      "path": "src/components/PreWorkoutAssessment.tsx",
+      "action": "MODIFY",
+      "delta": "+24"
+    },
+    {
+      "path": "src/components/WorkoutLoggerModules/hooks/useWorkoutLogger.ts",
+      "action": "MODIFY",
+      "delta": "+7"
+    }
+  ]
+}

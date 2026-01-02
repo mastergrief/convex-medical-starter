@@ -1,0 +1,169 @@
+{
+  "id": "e4575b6b-f39f-49c2-a02e-2f5b75438f2e",
+  "timestamp": "2025-12-27T10:20:38.867Z",
+  "description": "Orchestration plan",
+  "design": {
+    "id": "browser-cli-phase1-security-testing",
+    "title": "Browser-CLI Phase 1: Security & Testing",
+    "created": "2025-12-27T10:15:00Z",
+    "status": "pending",
+    "scope": {
+      "ui_cli": {
+        "files": 4,
+        "lines": 1163
+      },
+      "api_features": {
+        "files": 4,
+        "lines": 614
+      },
+      "tests": {
+        "files": 9,
+        "lines": 500
+      }
+    },
+    "phases": [
+      {
+        "id": "1A",
+        "name": "Security Foundation",
+        "priority": "P0",
+        "duration": "2 hours",
+        "agent": "developer",
+        "subtasks": [
+          {
+            "id": "1A.1",
+            "task": "TCP Token Authentication",
+            "files": [
+              "BROWSER-CLI/SCRIPTS/core/server.ts",
+              "BROWSER-CLI/SCRIPTS/browser-cmd.ts",
+              "BROWSER-CLI/SCRIPTS/browser-manager.ts",
+              "BROWSER-CLI/SCRIPTS/core/constants.ts"
+            ],
+            "description": "Generate session token on manager startup, validate in server before command execution"
+          },
+          {
+            "id": "1A.2",
+            "task": "Secrets Protection",
+            "files": [
+              ".gitignore",
+              ".env.local.example"
+            ],
+            "description": "Ensure .env.local in .gitignore, create example template"
+          }
+        ]
+      },
+      {
+        "id": "1B",
+        "name": "Security Hardening",
+        "priority": "P1",
+        "duration": "2 hours",
+        "agent": "developer",
+        "subtasks": [
+          {
+            "id": "1B.1",
+            "task": "Evaluate Sandboxing",
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/coreActionsModules/utilities.ts"
+            ],
+            "description": "Add pattern whitelist for read-only operations, block fetch/eval/XHR, add --unsafe flag"
+          },
+          {
+            "id": "1B.2",
+            "task": "Plugin Path Validation",
+            "files": [
+              "BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts"
+            ],
+            "description": "Validate plugin paths against allowed directories, block path traversal"
+          },
+          {
+            "id": "1B.3",
+            "task": "State File Validation",
+            "files": [
+              "BROWSER-CLI/SCRIPTS/features/browser-state.ts",
+              "BROWSER-CLI/schemas/browser-state.json"
+            ],
+            "description": "Add AJV schema validation for browser state files"
+          }
+        ]
+      },
+      {
+        "id": "1C",
+        "name": "Test Foundation",
+        "priority": "P1",
+        "duration": "3 hours",
+        "agent": "developer",
+        "subtasks": [
+          {
+            "id": "1C.1",
+            "task": "Feature Tests",
+            "files": [
+              "BROWSER-CLI/tests/features/snapshot.test.ts",
+              "BROWSER-CLI/tests/features/semantic-selectors.test.ts",
+              "BROWSER-CLI/tests/features/plugins.test.ts",
+              "BROWSER-CLI/tests/features/multi-command.test.ts",
+              "BROWSER-CLI/tests/features/browser-state.test.ts"
+            ],
+            "description": "Create unit tests for 5 features (44+ test cases total)"
+          },
+          {
+            "id": "1C.2",
+            "task": "Security Tests",
+            "files": [
+              "BROWSER-CLI/tests/security/tcp-auth.test.ts",
+              "BROWSER-CLI/tests/security/evaluate-sandbox.test.ts",
+              "BROWSER-CLI/tests/security/plugin-path.test.ts",
+              "BROWSER-CLI/tests/security/state-schema.test.ts"
+            ],
+            "description": "Create security validation tests"
+          }
+        ]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Token breaks existing workflows",
+        "probability": "Medium",
+        "mitigation": "Clear error messages, migration docs"
+      },
+      {
+        "risk": "Evaluate whitelist too restrictive",
+        "probability": "High",
+        "mitigation": "Start permissive, add --unsafe flag"
+      },
+      {
+        "risk": "Test coverage target missed",
+        "probability": "Medium",
+        "mitigation": "Prioritize core paths"
+      }
+    ],
+    "successCriteria": [
+      "Zero critical security vulnerabilities",
+      "All 5 security fixes implemented",
+      "Test coverage increased to 35%+",
+      "All tests passing",
+      "TypeScript compilation clean"
+    ],
+    "criticalFiles": [
+      {
+        "path": "BROWSER-CLI/SCRIPTS/core/server.ts",
+        "lines": 158,
+        "change": "Add TCP token validation at line 61"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/features/coreActionsModules/utilities.ts",
+        "lines": 53,
+        "change": "Add evaluate sandboxing"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/plugins/plugin-loader.ts",
+        "lines": 260,
+        "change": "Add path validation"
+      },
+      {
+        "path": "BROWSER-CLI/SCRIPTS/features/browser-state.ts",
+        "lines": 151,
+        "change": "Add AJV schema validation"
+      }
+    ]
+  },
+  "status": "archived"
+}

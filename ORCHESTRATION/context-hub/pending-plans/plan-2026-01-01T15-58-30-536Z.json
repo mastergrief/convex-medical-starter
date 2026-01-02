@@ -1,0 +1,186 @@
+{
+  "id": "e2e25da0-4646-42c0-852d-06ba01956400",
+  "timestamp": "2026-01-01T15:58:30.536Z",
+  "description": "Fix exercise parameter fields (sets, reps, weight) rendering as empty gray areas due to silent fallback chain in ExerciseEditor.tsx",
+  "design": {
+    "title": "Training Anchors Edit Weekly Bug Fix",
+    "description": "Fix exercise parameter fields (sets, reps, weight) rendering as empty gray areas due to silent fallback chain in ExerciseEditor.tsx",
+    "phases": [
+      {
+        "id": "phase-1-logging",
+        "name": "Diagnostic Logging",
+        "description": "Add console warnings at each fallback point to identify exact failure location",
+        "priority": 1,
+        "agent": "developer",
+        "files": [
+          "src/components/coach/calendar/MarkerWeeklyView/components/ExerciseEditor.tsx",
+          "src/hooks/useTrainingTypeMetrics.ts"
+        ],
+        "tasks": [
+          "Add logging after exerciseRecord lookup (line 45)",
+          "Add logging after useTrainingTypeMetrics (line 56)",
+          "Add logging before DynamicExerciseFields render (line 189)",
+          "Add fallback logging in useTrainingTypeMetrics (lines 476-484)"
+        ],
+        "dependencies": []
+      },
+      {
+        "id": "phase-2-unlinked-handler",
+        "name": "Fix Unlinked Category Handler",
+        "description": "Ensure Unlinked category always gets valid General field configuration",
+        "priority": 1,
+        "agent": "developer",
+        "files": [
+          "src/config/exerciseFields/categories/index.ts"
+        ],
+        "tasks": [
+          "Add explicit Unlinked/empty string check in getCategoryConfig",
+          "Return General config for unlinked exercises"
+        ],
+        "dependencies": []
+      },
+      {
+        "id": "phase-3-empty-guard",
+        "name": "Add Empty Fields Guard",
+        "description": "Prevent gray areas by showing fallback message when no fields configured",
+        "priority": 1,
+        "agent": "developer",
+        "files": [
+          "src/components/shared/DynamicExerciseFields.tsx"
+        ],
+        "tasks": [
+          "Add conditional check for config.fields.length === 0",
+          "Render user-friendly message instead of empty grid"
+        ],
+        "dependencies": []
+      },
+      {
+        "id": "phase-4-type-fix",
+        "name": "Fix RPE Type Mismatch",
+        "description": "Change rpe type from number to string to support ranges like 7-8",
+        "priority": 2,
+        "agent": "developer",
+        "files": [
+          "src/components/coach/calendar/MarkerWeeklyView/types/trainingAnchor.ts"
+        ],
+        "tasks": [
+          "Change rpe type from number to string | number"
+        ],
+        "dependencies": []
+      },
+      {
+        "id": "phase-5-loading-state",
+        "name": "Verify Loading State Handling",
+        "description": "Ensure loading state does not get stuck indefinitely",
+        "priority": 2,
+        "agent": "developer",
+        "files": [
+          "src/hooks/useTrainingTypeMetrics.ts"
+        ],
+        "tasks": [
+          "Verify TrainingTypeContext resolves correctly",
+          "Add timeout fallback if needed"
+        ],
+        "dependencies": [
+          "phase-1-logging"
+        ]
+      },
+      {
+        "id": "phase-6-unit-tests",
+        "name": "Unit Tests",
+        "description": "Add unit tests for edge cases",
+        "priority": 3,
+        "agent": "developer",
+        "files": [
+          "src/components/coach/calendar/MarkerWeeklyView/__tests__/ExerciseEditor.test.tsx",
+          "src/hooks/__tests__/useTrainingTypeMetrics.test.ts"
+        ],
+        "tasks": [
+          "Test rendering with undefined exerciseId",
+          "Test rendering with Unlinked category",
+          "Test rpe as string and number",
+          "Test loading timeout"
+        ],
+        "dependencies": [
+          "phase-1-logging",
+          "phase-2-unlinked-handler",
+          "phase-3-empty-guard",
+          "phase-4-type-fix"
+        ]
+      },
+      {
+        "id": "phase-7-e2e",
+        "name": "Browser E2E Verification",
+        "description": "Verify fix via browser agent testing",
+        "priority": 3,
+        "agent": "browser",
+        "files": [],
+        "tasks": [
+          "Navigate to Training Calendar as coach",
+          "Open marker with AI-generated exercises",
+          "Verify exercise fields are visible",
+          "Check console for warnings"
+        ],
+        "dependencies": [
+          "phase-2-unlinked-handler",
+          "phase-3-empty-guard"
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "src/components/coach/calendar/MarkerWeeklyView/components/ExerciseEditor.tsx",
+        "lines": 201,
+        "change": "Add diagnostic logging"
+      },
+      {
+        "path": "src/config/exerciseFields/categories/index.ts",
+        "lines": 69,
+        "change": "Fix Unlinked handler"
+      },
+      {
+        "path": "src/components/shared/DynamicExerciseFields.tsx",
+        "lines": 306,
+        "change": "Add empty fields guard"
+      },
+      {
+        "path": "src/hooks/useTrainingTypeMetrics.ts",
+        "lines": 519,
+        "change": "Add fallback logging"
+      },
+      {
+        "path": "src/components/coach/calendar/MarkerWeeklyView/types/trainingAnchor.ts",
+        "lines": 121,
+        "change": "Fix rpe type"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "Breaking existing field rendering",
+        "likelihood": "Low",
+        "impact": "High",
+        "mitigation": "Add unit tests before changes"
+      },
+      {
+        "risk": "Type change breaks save",
+        "likelihood": "Medium",
+        "impact": "High",
+        "mitigation": "Test save flow after rpe type change"
+      },
+      {
+        "risk": "Console spam in production",
+        "likelihood": "Low",
+        "impact": "Low",
+        "mitigation": "Use console.debug for non-error logs"
+      }
+    ],
+    "successCriteria": [
+      "Exercise parameter fields visible for all exercises in Edit Weekly view",
+      "AI-generated exercises (no exerciseId) render fields correctly",
+      "Deleted/missing exercises render with General category fields",
+      "No console errors related to field rendering",
+      "All existing tests pass"
+    ]
+  },
+  "status": "archived"
+}

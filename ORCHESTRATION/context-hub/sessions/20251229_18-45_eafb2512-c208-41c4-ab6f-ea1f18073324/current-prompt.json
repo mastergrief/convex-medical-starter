@@ -1,0 +1,12 @@
+{
+  "id": "735145db-d4a8-443b-8824-2d979a9c24b1",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251229_18-45_eafb2512-c208-41c4-ab6f-ea1f18073324",
+    "timestamp": "2025-12-29T18:46:16.156Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "AI Training Advisor TODAY Priority Fix: Fix race condition in PreWorkoutAssessment, implement tiered weighting (TODAY 40%, 10-day 35%, 30-day 25%), add floor system safety net, and validate AI text consistency"
+  }
+}

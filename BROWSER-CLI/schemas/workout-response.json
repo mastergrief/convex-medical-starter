@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "sets": { "type": "number", "minimum": 1 },
+          "reps": { "type": "number", "minimum": 1 }
+        },
+        "required": ["name", "sets", "reps"]
+      }
+    },
+    "clientId": {
+      "type": "string"
+    }
+  },
+  "required": ["_id", "name", "exercises"],
+  "additionalProperties": true
+}

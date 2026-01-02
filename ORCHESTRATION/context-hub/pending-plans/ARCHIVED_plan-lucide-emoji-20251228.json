@@ -1,0 +1,241 @@
+{
+  "id": "lucide-emoji-replacement-20251228",
+  "title": "Lucide Emoji Replacement Sprint",
+  "created": "2025-12-28T17:30:00Z",
+  "status": "pending",
+  "summary": "Replace 32 native emojis with Lucide React icons across readiness check system + fix 830KB bundle issue",
+
+  "metrics": {
+    "emojiCount": { "before": 32, "after": 0 },
+    "lucideIcons": { "before": 12, "after": 30 },
+    "bundleSize": { "before": "830KB", "after": "~30KB", "savings": "~800KB" },
+    "a11yViolations": { "before": 6, "after": 0 },
+    "testCoverage": { "before": "0%", "after": "~80%" }
+  },
+
+  "phases": [
+    {
+      "id": 1,
+      "name": "Foundation - Icon Mapping & MetricSlider Interface",
+      "priority": "P1",
+      "dependencies": [],
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Create centralized icon mapping file",
+          "file": "src/lib/iconMapping.ts",
+          "action": "create",
+          "agentType": "developer"
+        },
+        {
+          "id": "1.2",
+          "description": "Update MetricSlider interface: icons prop string[] → ReactNode[]",
+          "file": "src/components/MetricSlider.tsx",
+          "lines": [12, "47-48", "88-101", "110-152"],
+          "action": "modify",
+          "agentType": "developer"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Assessment Component Updates",
+      "priority": "P1",
+      "dependencies": [1],
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Replace emoji functions with icon functions in PreWorkoutAssessment (FIX getEnergyEmoji bug)",
+          "file": "src/components/PreWorkoutAssessment.tsx",
+          "lines": ["10", "65-79", "100", "122-146", "157"],
+          "action": "modify",
+          "agentType": "developer",
+          "bugs": ["getEnergyEmoji returns same 🔋 for values 1-7"]
+        },
+        {
+          "id": "2.2",
+          "description": "Replace emoji functions with icon functions in PostWorkoutAssessment",
+          "file": "src/components/PostWorkoutAssessment.tsx",
+          "lines": ["11", "73-95", "123", "147", "171"],
+          "action": "modify",
+          "agentType": "developer"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Check & Feedback Component Updates",
+      "priority": "P2",
+      "dependencies": [1],
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Update ReadinessCheck recovery options array + success message",
+          "file": "src/components/ReadinessCheck.tsx",
+          "lines": ["17", "85", "124-128", "144"],
+          "action": "modify",
+          "agentType": "developer"
+        },
+        {
+          "id": "3.2",
+          "description": "Update RecoveryFeedback MUSCLE_GROUPS array + success message",
+          "file": "src/components/RecoveryFeedback.tsx",
+          "lines": ["16", "31-40", "126", "175"],
+          "action": "modify",
+          "agentType": "developer"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Bundle Optimization (INDEPENDENT)",
+      "priority": "P1",
+      "dependencies": [],
+      "parallelWith": [2, 3],
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Fix DynamicExerciseFields wildcard import → icon registry pattern",
+          "file": "src/components/shared/DynamicExerciseFields.tsx",
+          "lines": ["18", "111-114"],
+          "action": "modify",
+          "agentType": "developer",
+          "impact": "830KB → ~30KB bundle reduction"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Accessibility Enhancements",
+      "priority": "P2",
+      "dependencies": [2, 3, 4],
+      "tasks": [
+        {
+          "id": "5.1",
+          "description": "Add ARIA labels to all icon renders",
+          "files": ["MetricSlider.tsx", "PreWorkoutAssessment.tsx", "PostWorkoutAssessment.tsx", "ReadinessCheck.tsx", "RecoveryFeedback.tsx"],
+          "action": "modify",
+          "agentType": "developer"
+        },
+        {
+          "id": "5.2",
+          "description": "Add aria-valuetext to Slider components",
+          "files": ["MetricSlider.tsx"],
+          "action": "modify",
+          "agentType": "developer"
+        },
+        {
+          "id": "5.3",
+          "description": "Add focus management to success states",
+          "files": ["ReadinessCheck.tsx", "RecoveryFeedback.tsx"],
+          "action": "modify",
+          "agentType": "developer"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Verification & Cleanup",
+      "priority": "P3",
+      "dependencies": [5],
+      "tasks": [
+        {
+          "id": "6.1",
+          "description": "Run typecheck",
+          "command": "npm run typecheck",
+          "agentType": "developer"
+        },
+        {
+          "id": "6.2",
+          "description": "Run build and verify bundle reduction",
+          "command": "npm run build",
+          "agentType": "developer",
+          "verification": "DynamicExerciseFields chunk < 50KB"
+        },
+        {
+          "id": "6.3",
+          "description": "Run lint check",
+          "command": "npm run lint",
+          "agentType": "developer"
+        }
+      ]
+    }
+  ],
+
+  "files": {
+    "create": [
+      {
+        "path": "src/lib/iconMapping.ts",
+        "purpose": "Centralized icon constants",
+        "phase": 1
+      }
+    ],
+    "modify": [
+      {
+        "path": "src/components/MetricSlider.tsx",
+        "loc": 152,
+        "changes": "Interface + 4 variants",
+        "phase": 1
+      },
+      {
+        "path": "src/components/PreWorkoutAssessment.tsx",
+        "loc": 216,
+        "changes": "2 functions + recovery radio (FIX BUG)",
+        "phase": 2
+      },
+      {
+        "path": "src/components/PostWorkoutAssessment.tsx",
+        "loc": 302,
+        "changes": "3 functions",
+        "phase": 2
+      },
+      {
+        "path": "src/components/ReadinessCheck.tsx",
+        "loc": 196,
+        "changes": "Recovery array + inline",
+        "phase": 3
+      },
+      {
+        "path": "src/components/RecoveryFeedback.tsx",
+        "loc": 256,
+        "changes": "Muscle groups array + inline",
+        "phase": 3
+      },
+      {
+        "path": "src/components/shared/DynamicExerciseFields.tsx",
+        "loc": 203,
+        "changes": "Wildcard import → icon registry",
+        "phase": 4,
+        "critical": true
+      }
+    ]
+  },
+
+  "risks": [
+    {
+      "risk": "MetricSlider type change breaks consumers",
+      "likelihood": "Low",
+      "impact": "Medium",
+      "mitigation": "Type widening is backward compatible"
+    },
+    {
+      "risk": "Missing icons cause runtime errors",
+      "likelihood": "Low",
+      "impact": "High",
+      "mitigation": "Fallback to Activity icon in registry"
+    },
+    {
+      "risk": "Bundle fix breaks icon rendering",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Test all training types after change"
+    }
+  ],
+
+  "executionOrder": [
+    { "phase": 1, "parallel": false },
+    { "phases": [2, 3, 4], "parallel": true },
+    { "phase": 5, "parallel": false },
+    { "phase": 6, "parallel": false }
+  ]
+}

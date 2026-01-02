@@ -1,0 +1,111 @@
+{
+  "id": "b0d03dcc-582c-421f-8dfc-1f17efd056a8",
+  "timestamp": "2025-12-31T19:40:40.263Z",
+  "description": "Fix bug where coach-configured logging metrics (best_time) are not appearing in athlete workout logger UI",
+  "design": {
+    "title": "Custom Logging Metrics Bug Fix",
+    "description": "Fix bug where coach-configured logging metrics (best_time) are not appearing in athlete workout logger UI",
+    "phases": [
+      {
+        "id": "phase-1-types",
+        "name": "Backend Type Definitions",
+        "priority": "P0",
+        "status": "pending",
+        "tasks": [
+          {
+            "file": "convex/types/workoutTypes.ts",
+            "change": "Add loggingMetrics?: string[] to CategorySpecificFields interface (line 63)",
+            "lines": 1
+          },
+          {
+            "file": "convex/types/workoutTypes.ts",
+            "change": "Add loggingMetrics?: string[] to RawCalendarExercise interface (line 114)",
+            "lines": 1
+          },
+          {
+            "file": "convex/types/workoutTypes.ts",
+            "change": "Add loggingMetrics?: string[] to RawMarkerExercise interface (line 141)",
+            "lines": 1
+          }
+        ],
+        "verification": "npm run typecheck"
+      },
+      {
+        "id": "phase-2-transforms",
+        "name": "Backend Transform Functions",
+        "priority": "P0",
+        "status": "pending",
+        "dependencies": [
+          "phase-1-types"
+        ],
+        "tasks": [
+          {
+            "file": "convex/workoutLogsModules/helpers.ts",
+            "change": "Add loggingMetrics: ex.loggingMetrics to transformCalendarExerciseFull return (line 228)",
+            "lines": 1
+          },
+          {
+            "file": "convex/workoutLogsModules/helpers.ts",
+            "change": "Add loggingMetrics: ex.loggingMetrics to transformMarkerExerciseFull return (line 277)",
+            "lines": 1
+          }
+        ],
+        "verification": "npm run typecheck"
+      },
+      {
+        "id": "phase-3-frontend-types",
+        "name": "Frontend Type Definitions",
+        "priority": "P1",
+        "status": "pending",
+        "dependencies": [
+          "phase-2-transforms"
+        ],
+        "tasks": [
+          {
+            "file": "src/components/CategoryLoggingFields.tsx",
+            "change": "Add bestTime?: number to ActualData interface (line 64)",
+            "lines": 1
+          },
+          {
+            "file": "src/components/WorkoutLoggerModules/types.ts",
+            "change": "Add bestTime?: number to SetFormData interface",
+            "lines": 1
+          }
+        ],
+        "verification": "npm run typecheck"
+      },
+      {
+        "id": "phase-4-e2e-test",
+        "name": "E2E Browser Verification",
+        "priority": "P2",
+        "status": "pending",
+        "dependencies": [
+          "phase-3-frontend-types"
+        ],
+        "tasks": [
+          {
+            "action": "Browser test coach configuration",
+            "steps": [
+              "restoreState authenticated-coach",
+              "navigate /training-calendar",
+              "verify best_time checkbox works"
+            ]
+          },
+          {
+            "action": "Browser test athlete logging",
+            "steps": [
+              "Login as athlete",
+              "navigate to workout",
+              "verify best_time field appears"
+            ]
+          }
+        ],
+        "verification": "Screenshot evidence of best_time field appearing"
+      }
+    ],
+    "totalLinesOfCode": 8,
+    "riskLevel": "low",
+    "estimatedComplexity": "simple"
+  },
+  "status": "archived"
+}

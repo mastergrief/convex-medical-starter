@@ -1,0 +1,12 @@
+{
+  "id": "8ec546c6-f577-4b04-802b-26c17bf3d389",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251209_10-24_f13b8418-8739-4101-b25b-891278b42afa",
+    "timestamp": "2025-12-09T10:25:03.781Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "E2E test WorkoutLogger validation robustness: Test all validation paths (contacts-based, distance-based, time-based, reps-only) across different exercise categories. Verify Log All Sets button enables correctly for each exercise type."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "f11b9380-30ef-4a2f-9d32-5139900cf76a",
+  "timestamp": "2025-12-26T15:11:37.390Z",
+  "description": "Test workout templates feature",
+  "design": {
+    "description": "Test workout templates feature",
+    "approach": "Implement workout template system",
+    "phases": [
+      "Schema design",
+      "API endpoints",
+      "UI components"
+    ],
+    "risks": [
+      "Data migration"
+    ]
+  },
+  "status": "archived"
+}

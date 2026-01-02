@@ -1,0 +1,177 @@
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "type": "plan",
+  "metadata": {
+    "promptId": "534382a5-a10b-43b6-b57e-980e37b8786c",
+    "sessionId": "20251230_17-51_a9a61e86-ef49-4168-80e1-471e8175e0e0",
+    "timestamp": "2025-12-30T17:55:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix 4 critical/high security vulnerabilities in workout logging API: add authentication and authorization to getWorkoutById, add coach-athlete relationship checks to getAthleteHistory and getWorkoutLogForDate, and add input validation for 6 category-specific fields in logSet mutation",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Authorization Fixes",
+      "description": "Add authentication and authorization checks to 3 query functions that currently lack proper access control",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "C1: Add authentication and ownership/relationship check to getWorkoutById - currently returns workout data to ANY caller without auth. Must: (1) require authentication via getAuthUserId, (2) verify caller owns workout OR is coach with active relationship to workout owner",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/queries.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "getAuthUserId() called and throws if null",
+            "Workout fetched and existence verified",
+            "Ownership check: workout.athleteId === userId allows access",
+            "Coach check: user.role === 'coach' AND active coachAthleteRelationships entry exists",
+            "Throws 'Not authorized' if neither condition met"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "C2: Add coach-athlete relationship verification to getAthleteHistory - currently only checks user.role === 'coach' but allows ANY coach to view ANY athlete's history. Must verify active relationship exists between requesting coach and target athlete",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/queries.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "After role check, query coachAthleteRelationships table",
+            "Use by_coach index with coachId = user._id",
+            "Filter for athleteId = args.athleteId",
+            "Verify relationship.status === 'active'",
+            "Throw 'No active relationship with this athlete' if not found/inactive"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "C2b: Add coach-athlete relationship verification to getWorkoutLogForDate - currently checks role === 'coach' OR userId === athleteId, but allows ANY coach to view ANY athlete's logs. Must verify active relationship for coach access",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/queries.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Keep existing athlete self-access check (userId === args.athleteId)",
+            "For coaches: add relationship query before allowing access",
+            "Use coachAthleteRelationships with by_coach index",
+            "Verify status === 'active'",
+            "Throw if coach lacks relationship"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All 3 authorization subtasks complete, no new errors introduced"
+    },
+    {
+      "id": "phase-2",
+      "name": "Input Validation",
+      "description": "Add bounds validation for 6 category-specific fields in logSet mutation that currently accept any number",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "C3: Add validation for 6 unvalidated fields in logSet mutation: actualTime (0-86400 seconds), actualDistance (0-100000 meters), actualVelocity (0-50 m/s), actualJumpHeight (0-300 cm), actualPowerOutput (0-10000 watts), actualAverageHeartRate (30-250 BPM)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "actualTime: 0-86400 (seconds in a day)",
+            "actualDistance: 0-100000 (100km max)",
+            "actualVelocity: 0-50 (m/s, sprint max)",
+            "actualJumpHeight: 0-300 (cm, world record ~250)",
+            "actualPowerOutput: 0-10000 (watts, elite cyclist peak)",
+            "actualAverageHeartRate: 30-250 (physiological range)",
+            "All use same pattern as existing validation",
+            "Clear error messages with valid range"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All 6 validation checks added with appropriate bounds"
+    },
+    {
+      "id": "phase-3",
+      "name": "Verification",
+      "description": "Run typecheck and verify all security patterns are correctly implemented",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Run TypeScript typecheck to verify no type errors introduced",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-1.2",
+            "task-1.3",
+            "task-2.1"
+          ],
+          "estimatedTokens": 1000,
+          "context": {},
+          "acceptanceCriteria": [
+            "TypeScript compiles without errors",
+            "No new type warnings in modified files"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Verify security patterns match established codebase conventions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {},
+          "acceptanceCriteria": [
+            "getWorkoutById has auth + ownership/relationship check",
+            "getAthleteHistory has relationship verification",
+            "getWorkoutLogForDate has relationship verification for coaches",
+            "logSet has 6 additional validation blocks",
+            "All error messages are descriptive"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Typecheck passes, all security patterns verified"
+    }
+  ],
+  "totalEstimatedTokens": 15000,
+  "risks": [
+    {
+      "description": "Breaking existing functionality - coaches may currently rely on unrestricted access",
+      "mitigation": "The relationship check uses established pattern from trainingBlockMarkers; existing coach-athlete relationships will continue to work",
+      "severity": "low"
+    },
+    {
+      "description": "Validation bounds too restrictive for edge cases",
+      "mitigation": "Bounds based on physiological limits with generous margins (e.g., 300cm jump height vs 250cm world record)",
+      "severity": "low"
+    },
+    {
+      "description": "Import of coachAthleteRelationships types may be needed",
+      "mitigation": "Queries already use this table elsewhere in codebase; pattern is established",
+      "severity": "low"
+    }
+  ]
+}

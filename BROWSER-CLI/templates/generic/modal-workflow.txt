@@ -1,0 +1,35 @@
+# Generic Modal Workflow Template
+# Universal pattern for testing modal interactions
+#
+# Required Variables:
+#   BASE_URL - Application base URL
+#   PAGE_PATH - Path to page with modal (e.g., /dashboard, /products)
+#   TRIGGER_TYPE - Trigger type (click, dblclick)
+#   TRIGGER_SELECTOR - Element that opens modal (e.g., "role:button:Edit", "e42", ".open-modal")
+#   MODAL_WAIT - Wait time for modal to open (e.g., 1000)
+#   INTERACTION - Optional interaction inside modal (e.g., type "label:Name" "New Name")
+#   CLOSE_TYPE - How to close modal (click, pressKey)
+#   CLOSE_TARGET - Close button/key (e.g., "role:button:Cancel", "Escape")
+#   CLOSE_WAIT - Wait time after close (e.g., 2000)
+#   SCREENSHOT_PREFIX - Prefix for screenshots (e.g., edit-modal, create-modal)
+#
+# Reusable for:
+#   - Edit dialogs
+#   - Create forms
+#   - Confirmation dialogs
+#   - Image lightboxes
+#   - Settings panels
+#   - Any modal/dialog interaction
+
+navigate {{BASE_URL}}{{PAGE_PATH}}
+wait 2000
+snapshot
+{{TRIGGER_TYPE}} {{TRIGGER_SELECTOR}}
+wait {{MODAL_WAIT}}
+snapshot
+screenshot {{SCREENSHOT_PREFIX}}-opened.png
+{{CLOSE_TYPE}} {{CLOSE_TARGET}}
+wait {{CLOSE_WAIT}}
+console
+snapshot
+screenshot {{SCREENSHOT_PREFIX}}-closed.png

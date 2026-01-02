@@ -1,0 +1,127 @@
+{
+  "id": "5a65d7db-0600-435b-936f-fd071ae1a883",
+  "timestamp": "2026-01-01T17:51:48.967Z",
+  "description": "Fix exercise parameter fields (sets, reps, weight, RPE) rendering as empty gray areas in Edit Weekly modal",
+  "design": {
+    "title": "Markers Edit Weekly Fields Bug Fix",
+    "description": "Fix exercise parameter fields (sets, reps, weight, RPE) rendering as empty gray areas in Edit Weekly modal",
+    "created": "2026-01-01T17:45:00Z",
+    "severity": "HIGH",
+    "rootCauses": [
+      {
+        "id": 1,
+        "description": "Missing TrainingTypeProvider wrapper in MarkerWeeklyView",
+        "file": "src/components/coach/calendar/MarkerWeeklyView.tsx",
+        "line": 252,
+        "severity": "P0 CRITICAL"
+      },
+      {
+        "id": 2,
+        "description": "Missing duration case in DynamicFieldRenderer switch",
+        "file": "src/components/DynamicFieldRenderer.tsx",
+        "line": 244,
+        "severity": "P2 LOW"
+      },
+      {
+        "id": 3,
+        "description": "Missing scale case in DynamicFieldRenderer switch",
+        "file": "src/components/DynamicFieldRenderer.tsx",
+        "line": 244,
+        "severity": "P2 LOW"
+      }
+    ],
+    "phases": [
+      {
+        "id": 1,
+        "name": "TrainingTypeProvider Fix",
+        "description": "Add TrainingTypeProvider wrapper around DialogContent in MarkerWeeklyView",
+        "priority": "P0",
+        "files": [
+          "src/components/coach/calendar/MarkerWeeklyView.tsx"
+        ],
+        "changes": [
+          "Add import for TrainingTypeProvider from @/contexts/TrainingTypeContext",
+          "Wrap DialogContent with TrainingTypeProvider tags"
+        ],
+        "estimatedLines": 3
+      },
+      {
+        "id": 2,
+        "name": "Defensive Field Handlers",
+        "description": "Add duration and scale switch cases to DynamicFieldRenderer",
+        "priority": "P2",
+        "files": [
+          "src/components/DynamicFieldRenderer.tsx"
+        ],
+        "changes": [
+          "Add case duration with number input rendering",
+          "Add case scale with select dropdown rendering",
+          "Update default case with console.warn"
+        ],
+        "estimatedLines": 50
+      },
+      {
+        "id": 3,
+        "name": "TypeScript Validation",
+        "description": "Run npm run typecheck to verify no type errors",
+        "priority": "BLOCKING",
+        "command": "npm run typecheck",
+        "dependsOn": [
+          1,
+          2
+        ]
+      },
+      {
+        "id": 4,
+        "name": "E2E Verification",
+        "description": "Browser-CLI testing to verify fields render correctly",
+        "priority": "P1",
+        "commands": [
+          "restoreState authenticated-coach",
+          "navigate http://localhost:5173/training-calendar",
+          "Open marker modal",
+          "Verify input count > 5",
+          "Check console for errors"
+        ],
+        "dependsOn": [
+          3
+        ]
+      }
+    ],
+    "criticalFiles": [
+      {
+        "path": "src/components/coach/calendar/MarkerWeeklyView.tsx",
+        "lines": 336,
+        "role": "PRIMARY FIX - Add TrainingTypeProvider"
+      },
+      {
+        "path": "src/components/DynamicFieldRenderer.tsx",
+        "lines": 259,
+        "role": "DEFENSIVE FIX - Add duration/scale cases"
+      }
+    ],
+    "risks": [
+      {
+        "risk": "TrainingTypeProvider adds extra Convex queries",
+        "probability": "LOW",
+        "impact": "LOW",
+        "mitigation": "Context already caches queries"
+      },
+      {
+        "risk": "TypeScript errors after edit",
+        "probability": "LOW",
+        "impact": "HIGH",
+        "mitigation": "Run typecheck immediately"
+      }
+    ],
+    "verification": [
+      "npm run typecheck passes",
+      "MarkerWeeklyView opens without errors",
+      "Exercise fields render (sets, reps, weight, RPE visible)",
+      "Fields accept input",
+      "Save button persists changes",
+      "No console errors"
+    ]
+  },
+  "status": "archived"
+}

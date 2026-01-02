@@ -1,0 +1,241 @@
+{
+  "id": "e6ec4b5b-1f3f-42f4-85f8-b2f30f75b4bb",
+  "type": "plan",
+  "metadata": {
+    "promptId": "d1b28e19-307d-4246-8dcc-390c10e78501",
+    "sessionId": "20251231_18-28_33370410-5e2a-43f3-92c0-918a71b56228",
+    "timestamp": "2025-12-31T18:40:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Fix custom metrics prefix bug at DynamicExerciseFields.tsx:175 where custom metric keys are extracted without the required custom_ prefix, causing backend validation rejection and frontend rendering failures. Includes unit tests, logging improvements, and E2E validation.",
+  "phases": [
+    {
+      "id": "phase-1-p0-fix",
+      "name": "P0: Primary Bug Fix",
+      "description": "Add custom_ prefix when extracting custom metric keys from trainingType",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Edit DynamicExerciseFields.tsx line 175 to add custom_ prefix. Change the map function from (m) => m.key to (m) => custom_${m.key} using template literal",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/shared/DynamicExerciseFields.tsx"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_04_REMEDIATION_PLAN"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Line 175 updated to prefix keys with custom_",
+            "TypeScript compiles without errors"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "TypeScript typecheck passes after edit"
+    },
+    {
+      "id": "phase-2-p1-logging",
+      "name": "P1: Add Diagnostic Logging",
+      "description": "Add console.warn to startWorkout mutation when invalid metrics are filtered out",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add console.warn logging in startWorkout mutation (convex/workoutLogsModules/mutations.ts line 145) to report filtered metrics. Capture removed metrics before filtering and log them with exercise context.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_02_ERROR_ANALYSIS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "console.warn emitted when invalid metrics removed",
+            "Logged message includes exercise name and removed metric keys"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Backend compiles and serves without error"
+    },
+    {
+      "id": "phase-3-p1-unit-test",
+      "name": "P1: Unit Test Coverage",
+      "description": "Create unit tests for customMetricKeys extraction logic",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create src/components/shared/__tests__/DynamicExerciseFields.test.tsx with 3 test cases: (1) should prefix custom metric keys with custom_, (2) should handle empty customMetrics array, (3) should handle undefined customMetrics. Reference existing test at src/components/exercise/__tests__/LoggingMetricsSelector.test.tsx for patterns.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "src/components/shared/DynamicExerciseFields.tsx",
+              "src/components/exercise/__tests__/LoggingMetricsSelector.test.tsx"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_04_REMEDIATION_PLAN"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test file created with 3 test cases",
+            "All tests pass with npm test"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "npm test passes for new test file"
+    },
+    {
+      "id": "phase-4-p2-duplicate-fix",
+      "name": "P2: Fix duplicateWorkoutToDate",
+      "description": "Ensure loggingMetrics are preserved when duplicating workouts",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Verify loggingMetrics field is included in duplicateWorkoutToDate mutation in convex/calendarWorkoutsModules/mutations.ts. If missing, add loggingMetrics to the exercise copy/spread operation.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_BUG_INDEX"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics included in exercise spread/copy",
+            "TypeScript compiles"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "TypeScript compiles"
+    },
+    {
+      "id": "phase-5-p2-integration-test",
+      "name": "P2: Integration Test Coverage",
+      "description": "Add integration tests for custom metrics prefix validation",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Add test cases to convex/lib/__tests__/loggingMetrics.integration.test.ts for custom_ prefix validation: (1) custom_* keys pass validation, (2) non-prefixed custom keys fail validation, (3) mixed valid/invalid keys filter correctly.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.1",
+            "task-2.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "convex/lib/__tests__/loggingMetrics.integration.test.ts"
+            ],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_04_REMEDIATION_PLAN"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Test cases added for custom prefix validation",
+            "Integration tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "Integration tests pass"
+    },
+    {
+      "id": "phase-6-e2e-validation",
+      "name": "E2E: Browser Validation",
+      "description": "End-to-end browser test to validate full custom metrics flow",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Browser E2E test - Coach flow: (1) restoreState authenticated-coach, (2) Navigate to training calendar, (3) Double-click workout card to open Edit Workout modal, (4) Expand Logging Configuration section, (5) Find and enable custom metric checkbox, (6) Save workout, (7) Reopen modal, (8) Verify custom metric checkbox is still checked, (9) Capture network logs to verify mutation success.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-2.1",
+            "task-3.1"
+          ],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_03_BROWSER_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom metric checkbox visible with proper label",
+            "Save mutation succeeds",
+            "Custom metric persists on modal reopen",
+            "No console errors during flow"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "Browser E2E test - Athlete flow: (1) restoreState authenticated-coach in athlete mode, (2) Navigate to workout logger for workout with custom metric, (3) Verify custom metric input field is rendered, (4) Enter value in custom metric field, (5) Verify logSet mutation includes custom metric value, (6) Capture screenshot as evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [],
+            "memories": [
+              "CUSTOM_METRICS_BUG_SPRINT_03_BROWSER_E2E_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Custom metric field rendered with correct label",
+            "Field accepts input",
+            "Mutation includes customMetricValues in payload",
+            "Screenshot captured as evidence"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All browser E2E tests pass with evidence captured"
+    }
+  ],
+  "totalEstimatedTokens": 46000,
+  "risks": [
+    {
+      "description": "Fix may break existing saved workouts with non-prefixed custom metric keys",
+      "mitigation": "Validation already filters invalid keys silently - existing data continues working",
+      "severity": "low"
+    },
+    {
+      "description": "Custom metrics may not be configured in test environment",
+      "mitigation": "E2E tests use coach account with known trainingType configuration",
+      "severity": "medium"
+    },
+    {
+      "description": "best_time workaround may conflict with fix",
+      "mitigation": "best_time is in VALID_CORE_METRICS - not affected by custom_ prefix logic",
+      "severity": "low"
+    }
+  ]
+}

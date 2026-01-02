@@ -1,0 +1,12 @@
+{
+  "id": "f27dee03-8e6f-4832-a198-303aa1f6328d",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251222_21-10_a03fb513-8db0-4a86-aecd-1397c67d322a",
+    "timestamp": "2025-12-22T21:11:00.859Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Resume Browser-CLI modularization from SESSION_BROWSER_CLI_MODULARIZATION_PLAN_20251221. Complete Phase 3 (command-help.ts), run tests, document with Serena write_memory."
+  }
+}

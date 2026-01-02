@@ -1,0 +1,169 @@
+{
+  "id": "a1b2c3d4-e5f6-41d4-a716-446655440001",
+  "type": "plan",
+  "metadata": {
+    "promptId": "29abbb73-9f45-4da0-9e2c-4d3df3d5fede",
+    "sessionId": "20251207_17-50_dfdb96af-44cc-4e43-b41e-de8f707271c1",
+    "timestamp": "2025-12-07T17:50:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Comprehensive analysis and E2E testing of WorkoutLogger to verify recent dynamic metrics fixes",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Analysis",
+      "description": "Analyze WorkoutLogger architecture, data flows, and recent fixes",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze backend transform functions (getEffectiveTargetReps, transform helpers)",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/helpers.ts",
+              "convex/types/workoutTypes.ts"
+            ],
+            "memories": [
+              "SESSION_WORKOUTLOGGER_DYNAMIC_METRICS_20251206"
+            ]
+          },
+          "acceptanceCriteria": [
+            "getEffectiveTargetReps() logic documented",
+            "All transform functions mapped",
+            "contacts vs reps decision logic confirmed"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Analyze frontend config selection (getLoggingCategoryConfig with programmedData)",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/index.ts",
+              "src/config/exerciseFields/logging/configs.ts"
+            ],
+            "memories": [
+              "WORKOUTLOGGER_PROGRAMMED_METRICS_LOGIC"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Config selection logic mapped",
+            "plyometric vs plyometric-distance conditions documented",
+            "showWhen field behavior confirmed"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Map complete data flow from calendarExercises to UI display",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx",
+              "src/components/CategoryLoggingFields.tsx"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Backend to frontend data flow documented",
+            "ProgrammedData interface usage mapped",
+            "Target display and form fields correlation confirmed"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All analysis tasks complete with documented findings in Serena memory"
+    },
+    {
+      "id": "phase-2",
+      "name": "Testing",
+      "description": "E2E UI testing to verify WorkoutLogger functionality",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Test contacts-based exercise (Pogo's) - verify contacts display",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1",
+            "task-1.2",
+            "task-1.3"
+          ],
+          "estimatedTokens": 12000,
+          "acceptanceCriteria": [
+            "Pogo's shows correct contacts value (not default 10)",
+            "Form field shows 'Actual Contacts'",
+            "Set completion works correctly"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Test reps+distance exercise (Straight Leg Bounds) - verify display format",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 12000,
+          "acceptanceCriteria": [
+            "Target shows 'X reps × Ym' format",
+            "PROGRAMMED TARGET shows 'X reps × Y m'",
+            "Form shows both Actual Reps and Actual Distance fields"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Test date navigation with active workout session",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 10000,
+          "acceptanceCriteria": [
+            "Clicking different date shows that date's workout",
+            "Active session state clears on date change",
+            "Returning to original date shows workout again"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Capture evidence and document test results",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-2.3"
+          ],
+          "estimatedTokens": 8000,
+          "acceptanceCriteria": [
+            "Screenshots captured for each test",
+            "Console logs checked for errors",
+            "Network/backend logs verified"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All tests pass with evidence captured"
+    }
+  ],
+  "totalEstimatedTokens": 74000,
+  "risks": [
+    {
+      "description": "Test data may not have all exercise types",
+      "mitigation": "Use existing Dec 06 workout with Pogo's and Straight Leg Bounds",
+      "severity": "low"
+    },
+    {
+      "description": "Active workout session may interfere with date navigation test",
+      "mitigation": "Complete or abandon session before testing navigation",
+      "severity": "medium"
+    }
+  ]
+}

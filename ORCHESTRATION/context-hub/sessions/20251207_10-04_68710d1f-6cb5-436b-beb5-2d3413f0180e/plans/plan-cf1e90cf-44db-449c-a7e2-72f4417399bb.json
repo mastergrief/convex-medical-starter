@@ -1,0 +1,239 @@
+{
+  "id": "cf1e90cf-44db-449c-a7e2-72f4417399bb",
+  "type": "plan",
+  "metadata": {
+    "promptId": "faafe58d-20c5-49c6-b4a4-e4569c88cfae",
+    "sessionId": "20251228_19-57_9a728e67-01cb-4926-9630-deb3f288e49b",
+    "timestamp": "2025-12-28T20:05:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Edit Workout Modal improvements covering performance optimization (React.memo, context lifting, race condition fix), security hardening (relationship checks, text validation, error retry), and feature completeness (custom metrics rendering). Total 7 subtasks across 3 phases.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Performance Optimization",
+      "description": "Address N+1 query pattern, add memoization to prevent unnecessary re-renders, and fix race condition in data population",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add React.memo wrapper to ExerciseCardBase component with custom comparison function for exercise, isFirst, isLast props. This prevents 10+ exercise cards from re-rendering when any single field changes.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/shared/ExerciseCard/ExerciseCardBase.tsx"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_05_PERFORMANCE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ExerciseCardBase wrapped in React.memo",
+            "Custom comparison function compares exercise object reference, isFirst, isLast",
+            "Typecheck passes",
+            "No regression in exercise card rendering behavior"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Create TrainingTypeProvider context to lift useQuery calls (api.trainingTypes.getTrainingTypes, api.exercises.getCategories) from useTrainingTypeMetrics hook. Each ExerciseCardBase currently triggers these queries - with 10 exercises that means 20+ subscriptions instead of 2.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/hooks/useTrainingTypeMetrics.ts",
+              "/home/gabe/projects/zenith-fitness/src/components/QuickProgramSheet/index.tsx"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_05_PERFORMANCE",
+              "EDIT_WORKOUT_SPRINT_03_DYNAMIC_FIELDS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "New file: src/contexts/TrainingTypeContext.tsx created",
+            "TrainingTypeProvider wraps QuickProgramSheet content",
+            "useTrainingTypeMetrics uses context instead of direct useQuery",
+            "Query count reduced from N*2 to 2 (verified in React DevTools)",
+            "Typecheck passes",
+            "Modal opens and displays exercises correctly"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Fix race condition in QuickProgramSheet useEffect that populates form data. Add cleanup flag to prevent stale data when user rapidly switches between workouts.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/QuickProgramSheet/index.tsx"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_05_PERFORMANCE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "useEffect at lines 112-161 includes cleanup return function",
+            "Cancelled flag prevents stale data population",
+            "Typecheck passes",
+            "Rapid workout switching does not show stale data"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All performance subtasks complete, typecheck passes, modal opens correctly"
+    },
+    {
+      "id": "phase-2",
+      "name": "Security Hardening",
+      "description": "Add missing relationship check to updateCalendarWorkout, implement text field validation for XSS prevention, and add retry mechanism to save flow",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add coach-athlete relationship check to updateCalendarWorkout mutation. Currently createCalendarWorkout checks relationship but updateCalendarWorkout does not - workout can be edited even after relationship ends.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_04_BACKEND_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "updateCalendarWorkout checks coachAthleteRelationships.by_coach_athlete index",
+            "Throws error if relationship is not active",
+            "Error message: 'No active relationship with this athlete'",
+            "Typecheck passes",
+            "npx convex dev succeeds"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Add text field validation for workoutName, description, and notes fields. Currently no length limits or sanitization - vulnerable to XSS and database bloat.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/convex/calendarWorkoutsModules/validators.ts",
+              "/home/gabe/projects/zenith-fitness/convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_04_BACKEND_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateTextFields function added to validators.ts",
+            "workoutName: 1-100 chars, trimmed, no HTML tags",
+            "description: max 500 chars, trimmed, no HTML tags",
+            "notes (per exercise): max 1000 chars, trimmed, no HTML tags",
+            "Validation called in updateCalendarWorkout and createCalendarWorkout",
+            "ConvexError with descriptive message on validation failure",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add retry mechanism to useQuickProgramMutations hook. Currently failed saves show error toast but don't offer retry action.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/QuickProgramSheet/hooks/useQuickProgramMutations.ts"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_04_BACKEND_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Error toast includes 'Retry' action button",
+            "Clicking retry re-attempts the save with same parameters",
+            "Retry action clears previous error state",
+            "Maximum 3 retry attempts before disabling retry button",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All security subtasks complete, validation errors display correctly, retry mechanism works"
+    },
+    {
+      "id": "phase-3",
+      "name": "Feature Completeness",
+      "description": "Implement custom metrics rendering for coach-created training type metrics",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Implement customMetrics rendering in trainingTypeToConfig function. Currently trainingType.customMetrics array exists in schema but is NOT processed - coach-created custom metrics are stored but never displayed in the Edit Workout modal.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/hooks/useTrainingTypeMetrics.ts",
+              "/home/gabe/projects/zenith-fitness/src/components/shared/DynamicExerciseFields.tsx"
+            ],
+            "memories": [
+              "EDIT_WORKOUT_SPRINT_03_DYNAMIC_FIELDS"
+            ]
+          },
+          "acceptanceCriteria": [
+            "trainingTypeToConfig processes customMetrics array",
+            "Custom metrics rendered after built-in metrics",
+            "Custom metrics respect fieldType, label, required, options",
+            "DynamicFieldsData interface extended for dynamic custom field names",
+            "Typecheck passes",
+            "Custom metrics visible in Edit Workout modal for training types that have them"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Custom metrics render correctly for training types that have them defined"
+    }
+  ],
+  "totalEstimatedTokens": 43500,
+  "risks": [
+    {
+      "description": "Task 1.2 and 1.3 modify same file (QuickProgramSheet/index.tsx) - cannot run in parallel",
+      "mitigation": "Task 1.3 depends on 1.2, ensuring sequential execution",
+      "severity": "high"
+    },
+    {
+      "description": "TrainingTypeContext may affect component tree outside QuickProgramSheet",
+      "mitigation": "Scope provider to QuickProgramSheet content only, maintain fallback in useTrainingTypeMetrics for non-context usage",
+      "severity": "medium"
+    },
+    {
+      "description": "Text validation may reject existing workout names that exceed new limits",
+      "mitigation": "Set reasonable limits (100 chars for name) that accommodate existing data; consider truncation migration if needed",
+      "severity": "low"
+    },
+    {
+      "description": "Custom metrics feature depends on trainingTypes table having customMetrics data",
+      "mitigation": "Graceful handling when customMetrics is undefined/empty; feature is additive",
+      "severity": "low"
+    },
+    {
+      "description": "React.memo comparison may cause issues if exercise objects are recreated unnecessarily",
+      "mitigation": "Verify updateExercise callback uses functional updates; add deep comparison if needed",
+      "severity": "medium"
+    }
+  ]
+}

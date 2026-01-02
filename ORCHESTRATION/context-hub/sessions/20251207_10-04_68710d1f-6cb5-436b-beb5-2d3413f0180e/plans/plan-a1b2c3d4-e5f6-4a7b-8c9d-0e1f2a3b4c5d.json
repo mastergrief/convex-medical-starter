@@ -1,0 +1,713 @@
+{
+  "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "type": "plan",
+  "metadata": {
+    "promptId": "b2b9a86c-907e-47ac-afc4-bca2785e3005",
+    "sessionId": "20251231_09-30_01274003-c8c2-42be-b0fc-f5d7d90cd594",
+    "timestamp": "2025-12-31T09:45:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Enable coaches to select which metrics athletes must log per exercise. Add loggingMetrics field to schema, wire backend mutations, create LoggingMetricsSelector UI for coaches, update CategoryLoggingFields for dynamic athlete rendering.",
+  "phases": [
+    {
+      "id": "phase-1-schema",
+      "name": "Schema & Type Changes",
+      "description": "Add loggingMetrics field to 3 database tables and frontend types",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Add loggingMetrics field to calendarExercises table in schema.ts (line ~1755)",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "convex/schema.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_02_SCHEMA"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics: v.optional(v.array(v.string())) added to calendarExercises",
+            "Schema pushes without errors"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Add loggingMetrics field to workoutLogs.exercises nested object in schema.ts (line ~941)",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "convex/schema.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_02_SCHEMA"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics field added to workoutLogs.exercises array",
+            "Schema pushes without errors"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Add loggingMetrics field to blockExercises table in schema.ts (line ~633)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "convex/schema.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_02_SCHEMA"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics field added to blockExercises",
+            "Schema pushes without errors",
+            "npm run typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.4",
+          "description": "Add LoggingMetricKey type and update WorkoutExercise interface in frontend types",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "src/types/exercise.ts",
+              "src/components/WorkoutLoggerModules/types.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_02_SCHEMA"
+            ]
+          },
+          "acceptanceCriteria": [
+            "LoggingMetricKey type exported",
+            "WorkoutExercise interface includes loggingMetrics?: string[]",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All schema changes pushed successfully, typecheck passes"
+    },
+    {
+      "id": "phase-2-backend",
+      "name": "Backend Mutations & Validation",
+      "description": "Create validation helper and wire loggingMetrics through mutations",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create convex/lib/loggingMetricsValidation.ts with isValidLoggingMetric, validateLoggingMetrics, getDefaultLoggingMetrics functions",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-1.4"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/lib/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "isValidLoggingMetric validates core metrics and custom_* pattern",
+            "validateLoggingMetrics deduplicates and throws ConvexError on invalid",
+            "getDefaultLoggingMetrics returns category-appropriate defaults",
+            "File created at convex/lib/loggingMetricsValidation.ts"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Update updateCalendarWorkout mutation to accept and validate loggingMetrics in exercise args",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-2.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts",
+              "convex/calendarWorkoutsModules/validators.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics added to exercise validator args",
+            "validateLoggingMetrics called on exercise processing",
+            "loggingMetrics persisted to calendarExercises"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Update createCalendarWorkout mutation to accept loggingMetrics",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "convex/calendarWorkoutsModules/mutations.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics in create exercise args",
+            "Validation applied on create",
+            "loggingMetrics stored with new exercises"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Update startWorkout mutation to copy loggingMetrics from calendarExercises to workoutLogs.exercises",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-2.3"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "convex/workoutLogsModules/mutations.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "startWorkout copies loggingMetrics from calendar exercise",
+            "Default to [] when undefined",
+            "Athlete's workoutLog.exercises includes loggingMetrics"
+          ]
+        },
+        {
+          "id": "task-2.5",
+          "description": "Verify backend changes with manual Convex CLI tests",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_03_BACKEND"
+            ]
+          },
+          "acceptanceCriteria": [
+            "createCalendarWorkout with loggingMetrics succeeds",
+            "updateCalendarWorkout with loggingMetrics succeeds",
+            "Invalid key throws ConvexError",
+            "startWorkout copies loggingMetrics correctly"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All mutations accept loggingMetrics, validation rejects invalid keys, startWorkout copies field"
+    },
+    {
+      "id": "phase-3-edit-ui",
+      "name": "Coach Edit UI - LoggingMetricsSelector",
+      "description": "Create checkbox UI for coaches to select logging metrics in Edit Workout Modal",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create src/lib/loggingMetricsDefaults.ts with getDefaultLoggingMetrics and initializeLoggingMetrics functions",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.4"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "src/lib/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_04_EDIT_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "getDefaultLoggingMetrics returns category-specific defaults",
+            "initializeLoggingMetrics preserves existing or returns defaults",
+            "File created at src/lib/loggingMetricsDefaults.ts"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create src/components/exercise/LoggingMetricsSelector.tsx collapsible checkbox component",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "src/components/ui/checkbox.tsx",
+              "src/components/ui/collapsible.tsx"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_04_EDIT_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Collapsible section with 'Athlete Logging Configuration' title",
+            "Checkbox grid for category-specific metrics",
+            "Reset to Category Defaults button",
+            "Custom metrics from props supported",
+            "onChange callback fires with updated metrics array"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Update useWorkoutForm hook to track loggingMetrics state and expose handleLoggingMetricsChange",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/hooks/useWorkoutForm.ts"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_04_EDIT_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ExerciseFormState includes loggingMetrics: string[]",
+            "handleLoggingMetricsChange updates exercise state",
+            "loggingMetrics included in save payload"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Integrate LoggingMetricsSelector into DynamicExerciseFields component",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-3.3"
+          ],
+          "estimatedTokens": 4500,
+          "context": {
+            "files": [
+              "src/components/shared/DynamicExerciseFields.tsx"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_04_EDIT_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "LoggingMetricsSelector rendered below programming fields",
+            "Props wired: category, selectedMetrics, onChange",
+            "Custom metrics from trainingType passed through",
+            "Collapsed by default (progressive disclosure)"
+          ]
+        },
+        {
+          "id": "task-3.5",
+          "description": "Run typecheck and fix any type errors in Edit UI changes",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.4"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck passes",
+            "No TypeScript errors in modified files"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "LoggingMetricsSelector visible in Edit Workout Modal, selections persist on save"
+    },
+    {
+      "id": "phase-4-logger-ui",
+      "name": "Athlete Logger UI - Dynamic Field Rendering",
+      "description": "Update CategoryLoggingFields to render coach-selected metrics dynamically",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create src/config/exerciseFields/logging/configBuilder.ts with buildConfigFromMetrics and FIELD_DEFINITIONS",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 5500,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_05_LOGGER_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "FIELD_DEFINITIONS maps all 13 core metrics",
+            "buildConfigFromMetrics creates LoggingCategoryConfig from selections",
+            "Custom metric (custom_*) handling implemented",
+            "Targets built from programmedData"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Update CategoryLoggingFields to accept loggingMetrics prop and conditionally use buildConfigFromMetrics",
+          "agentType": "developer",
+          "priority": "critical",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 4500,
+          "context": {
+            "files": [
+              "src/components/CategoryLoggingFields.tsx"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_05_LOGGER_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "loggingMetrics prop added to interface",
+            "If loggingMetrics.length > 0, use buildConfigFromMetrics",
+            "Else fallback to getLoggingCategoryConfig (existing behavior)",
+            "Backward compatibility verified"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Update ExerciseCard in WorkoutLoggerModules to pass loggingMetrics to CategoryLoggingFields",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_05_LOGGER_UI"
+            ]
+          },
+          "acceptanceCriteria": [
+            "exercise.loggingMetrics passed to CategoryLoggingFields",
+            "No breaking changes to existing props"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Run typecheck and verify Logger UI renders correctly",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck passes",
+            "Dev server shows no console errors",
+            "Logger fields render based on loggingMetrics"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "CategoryLoggingFields renders selected metrics only, fallback to defaults works"
+    },
+    {
+      "id": "phase-5-unit-tests",
+      "name": "Unit Tests",
+      "description": "Create unit tests for validation, config builder, and components",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Create validation tests in src/lib/__tests__/loggingMetricsValidation.test.ts (12+ test cases)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.1",
+            "task-3.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "src/lib/__tests__/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_06_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "isValidLoggingMetric tests for core, custom, invalid",
+            "validateLoggingMetrics tests for empty, valid, duplicates, invalid",
+            "getDefaultLoggingMetrics tests for each category",
+            "12+ test cases pass"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Create config builder tests in src/config/exerciseFields/logging/__tests__/configBuilder.test.ts (8+ cases)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 4500,
+          "context": {
+            "files": [
+              "src/config/exerciseFields/logging/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_06_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "buildConfigFromMetrics creates correct fields",
+            "Custom metric handling tested",
+            "showRpe flag tested",
+            "FIELD_DEFINITIONS completeness verified",
+            "8+ test cases pass"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Create LoggingMetricsSelector component tests (8+ cases)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "src/components/__tests__/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_06_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Collapsible expand/collapse tested",
+            "Checkbox toggle calls onChange",
+            "Reset button restores defaults",
+            "Category-specific metrics shown",
+            "Custom metrics rendered"
+          ]
+        },
+        {
+          "id": "task-5.4",
+          "description": "Create CategoryLoggingFields conditional rendering tests (6+ cases)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "src/components/__tests__/"
+            ],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_06_TESTING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Default behavior when loggingMetrics undefined",
+            "Default behavior when loggingMetrics empty",
+            "Selected metrics only rendered",
+            "Custom metric rendering",
+            "RPE visibility toggle"
+          ]
+        },
+        {
+          "id": "task-5.5",
+          "description": "Run full test suite and verify >80% coverage on new code",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-5.1",
+            "task-5.2",
+            "task-5.3",
+            "task-5.4"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "npm test passes all new tests",
+            "Coverage >80% for new files",
+            "No test flakiness"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All unit tests pass with >80% coverage on new code"
+    },
+    {
+      "id": "phase-6-e2e",
+      "name": "E2E Browser Tests",
+      "description": "End-to-end tests using Browser CLI to validate full workflow",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "E2E Test: Coach configures logging metrics in Edit Workout Modal",
+          "agentType": "browser",
+          "priority": "critical",
+          "dependencies": [
+            "task-5.5"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Coach can expand Athlete Logging Configuration section",
+            "Checkboxes visible for category metrics",
+            "Selections persist after save",
+            "Network request includes loggingMetrics",
+            "Screenshot evidence captured"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "E2E Test: Selected metrics appear in athlete Workout Logger",
+          "agentType": "browser",
+          "priority": "critical",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Athlete sees only coach-selected metric inputs",
+            "Non-selected metrics NOT visible",
+            "Values log successfully via logSet",
+            "No console errors",
+            "Screenshot evidence captured"
+          ]
+        },
+        {
+          "id": "task-6.3",
+          "description": "E2E Test: Default behavior preserved for exercises without loggingMetrics",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-6.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Exercise without loggingMetrics shows category defaults",
+            "Backward compatibility maintained",
+            "No console errors"
+          ]
+        },
+        {
+          "id": "task-6.4",
+          "description": "E2E Test: Data persistence verification across sessions",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.3"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [],
+            "memories": [
+              "LOGGING_METRICS_SPRINT_07_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Coach config survives browser reload",
+            "Athlete sees persisted config",
+            "Database correctly stores loggingMetrics"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All E2E tests pass, screenshots captured as evidence"
+    }
+  ],
+  "totalEstimatedTokens": 108500,
+  "risks": [
+    {
+      "description": "Breaking existing workout logging - loggingMetrics is additive but incorrect fallback could break existing exercises",
+      "mitigation": "Explicit backward compatibility check: if loggingMetrics undefined or [], use existing category config",
+      "severity": "high"
+    },
+    {
+      "description": "Type mismatches between backend and frontend loggingMetrics arrays",
+      "mitigation": "Use v.array(v.string()) in schema, string[] in frontend types consistently",
+      "severity": "medium"
+    },
+    {
+      "description": "startWorkout not copying loggingMetrics correctly could cause athlete logger to show wrong fields",
+      "mitigation": "Manual verification step (task-2.5) before UI implementation, E2E test specifically for this flow",
+      "severity": "high"
+    },
+    {
+      "description": "Custom metrics (custom_*) not rendering correctly in logger",
+      "mitigation": "Config builder explicitly handles custom_ prefix, unit test coverage",
+      "severity": "medium"
+    },
+    {
+      "description": "UI complexity - too many checkboxes could overwhelm coaches",
+      "mitigation": "Progressive disclosure pattern - collapsed by default, category-specific metrics only",
+      "severity": "low"
+    }
+  ]
+}

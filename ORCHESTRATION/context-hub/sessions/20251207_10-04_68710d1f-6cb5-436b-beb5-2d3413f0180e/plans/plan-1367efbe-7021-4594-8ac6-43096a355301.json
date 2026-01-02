@@ -1,0 +1,640 @@
+{
+  "id": "1367efbe-7021-4594-8ac6-43096a355301",
+  "type": "plan",
+  "metadata": {
+    "promptId": "1f112746-0bb6-4033-adb9-cd20e4f1d32e",
+    "sessionId": "20251221_20-05_400f1164-74c9-4796-83b8-a8fface5f71d",
+    "timestamp": "2025-12-21T20:10:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Modularize 3 oversized CLI files (2,025 lines total) into 27 focused modules following facade pattern, add comprehensive Vitest unit tests (~50+ cases), and document with Serena memory. No UI changes - pure backend refactoring.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Test Infrastructure Setup",
+      "description": "Create BROWSER-CLI test infrastructure with Vitest configuration and shared mocks",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create BROWSER-CLI/tests/setup.ts with Playwright page mocks and test utilities",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/vitest.config.ts",
+              "/home/gabe/projects/zenith-fitness/src/tests/setup.ts"
+            ],
+            "memories": [
+              "11_BROWSER_CLI_MODULAR_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "BROWSER-CLI/tests/setup.ts created with mock Page interface",
+            "Mock CommandResponse factory functions defined",
+            "Test utilities for snapshot/network mocking available"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Update vitest.config.ts with BROWSER-CLI test path and node environment",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 2000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/vitest.config.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "vitest.config.ts includes BROWSER-CLI test pattern",
+            "Node environment configured for CLI tests",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, test infrastructure files exist"
+    },
+    {
+      "id": "phase-2",
+      "name": "Unit Test Suite Creation",
+      "description": "Create comprehensive unit tests for existing CLI modules before refactoring",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Create command-parser.test.ts (~15 test cases for selector detection, command parsing)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for ref detection (e123, e5a)",
+            "Tests for semantic selector detection (role:button:Text)",
+            "Tests for CSS selector fallback",
+            "Tests for all command types (navigate, click, type, snapshot, etc.)",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Create error-context.test.ts (~10 test cases for 9 error patterns)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/error-context.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for connection error pattern",
+            "Tests for timeout error pattern",
+            "Tests for selector not found pattern",
+            "Tests for recovery suggestion generation",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Create response-formatter.test.ts (~15 test cases for output formatting)",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for snapshot formatting",
+            "Tests for network response formatting",
+            "Tests for click/type interaction formatting",
+            "Tests for error response formatting",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "task-2.4",
+          "description": "Create command-help.test.ts (~10 test cases for help text generation)",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Tests for getCommandHelp() for each command category",
+            "Tests for help text content accuracy",
+            "Tests for unknown command handling",
+            "All tests pass"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All 4 test files created, npm run test passes for BROWSER-CLI tests"
+    },
+    {
+      "id": "phase-3",
+      "name": "command-help.ts Modularization",
+      "description": "Split command-help.ts (814 lines) into 11 focused modules following facade pattern",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Create commandHelpModules/ directory structure and types.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-2.4"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ],
+            "memories": [
+              "ANALYSIS_BROWSER_CLI_IMPROVEMENTS_20251221"
+            ]
+          },
+          "acceptanceCriteria": [
+            "commandHelpModules/ directory created",
+            "types.ts with HelpEntry interface defined",
+            "index.ts facade skeleton created"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Extract navigation help (start, navigate, wait, waitForSelector) to navigation.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "navigation.ts created with ~100 lines",
+            "Re-exported from index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Extract interaction help (click, dblclick, type, hover, drag, pressKey) to interaction.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "interaction.ts created with ~180 lines",
+            "Re-exported from index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.4",
+          "description": "Extract snapshot help (snapshot, screenshot, changes, baselines) to snapshot.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "snapshot.ts created with ~120 lines",
+            "Re-exported from index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.5",
+          "description": "Extract state help (saveState, restoreState, tabs) to state.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "state.ts created with ~100 lines",
+            "Re-exported from index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.6",
+          "description": "Extract network help (network, mockRoute, listMocks, schemas) to network.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "network.ts created with ~120 lines",
+            "Re-exported from index.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.7",
+          "description": "Extract performance help to performance.ts and update facade index.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.2",
+            "task-3.3",
+            "task-3.4",
+            "task-3.5",
+            "task-3.6"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-help.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "performance.ts created with ~60 lines",
+            "index.ts facade complete with getCommandHelp() dispatcher",
+            "Original command-help.ts replaced with facade re-export",
+            "All existing tests pass",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, command-help tests still pass, facade exports verified"
+    },
+    {
+      "id": "phase-4",
+      "name": "response-formatter.ts Modularization",
+      "description": "Split response-formatter.ts (652 lines) into 9 focused modules",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Create responseFormatterModules/ directory with types.ts and registry.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-3.7"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "responseFormatterModules/ directory created",
+            "types.ts with FormatterFunction interface",
+            "registry.ts with command-to-formatter map",
+            "index.ts facade skeleton"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Extract base utilities (formatWithCode, common helpers) to base.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "base.ts created with ~100 lines",
+            "formatWithCode utility exported",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Extract snapshot formatters to snapshot.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "snapshot.ts created with ~80 lines",
+            "Snapshot, changes, baselines formatters moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Extract interaction formatters (click, dblclick, type) to interaction.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "interaction.ts created with ~100 lines",
+            "Click, dblclick, type formatters moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.5",
+          "description": "Extract network formatters to network.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "network.ts created with ~80 lines",
+            "Network, mocks formatters moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.6",
+          "description": "Extract state and comparison formatters, complete facade",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.3",
+            "task-4.4",
+            "task-4.5"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/response-formatter.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "state.ts created with ~70 lines",
+            "comparison.ts created with ~80 lines",
+            "index.ts facade complete with ResponseFormatter class",
+            "Original file replaced with facade",
+            "All tests pass",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, response-formatter tests pass, facade verified"
+    },
+    {
+      "id": "phase-5",
+      "name": "command-parser.ts Modularization",
+      "description": "Split command-parser.ts (559 lines) into 7 focused modules",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "Create commandParserModules/ directory with types.ts and selector-detection.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-4.6"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "commandParserModules/ directory created",
+            "types.ts with ParsedCommand interface",
+            "selector-detection.ts with ref/semantic/CSS detection logic",
+            "index.ts facade skeleton"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "Extract navigation parsers (start, navigate) to navigation.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "navigation.ts created with ~60 lines",
+            "Navigate and start command parsing moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.3",
+          "description": "Extract interaction parsers (click, type, drag) to interaction.ts",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "interaction.ts created with ~150 lines",
+            "Click, type, drag parsing with selector detection moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.4",
+          "description": "Extract snapshot parsers to snapshot.ts",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.1"
+          ],
+          "estimatedTokens": 3500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "snapshot.ts created with ~80 lines",
+            "Snapshot flags parsing moved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-5.5",
+          "description": "Extract state and network parsers, complete facade",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-5.2",
+            "task-5.3",
+            "task-5.4"
+          ],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/BROWSER-CLI/SCRIPTS/cli/command-parser.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "state.ts created with ~60 lines",
+            "network.ts created with ~80 lines",
+            "index.ts facade complete with parseCommand dispatcher",
+            "Original file replaced with facade",
+            "All tests pass",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "npm run typecheck passes, command-parser tests pass, all 27 modules created"
+    },
+    {
+      "id": "phase-6",
+      "name": "Documentation and Validation",
+      "description": "Write Serena memory documenting the refactoring and run full validation",
+      "subtasks": [
+        {
+          "id": "task-6.1",
+          "description": "Run full test suite and typecheck to validate all changes",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-5.5"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "npm run typecheck passes",
+            "npm run test passes for all BROWSER-CLI tests",
+            "No regressions in existing functionality"
+          ]
+        },
+        {
+          "id": "task-6.2",
+          "description": "Write Serena memory documenting CLI modularization completion",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-6.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": [
+              "ANALYSIS_BROWSER_CLI_IMPROVEMENTS_20251221",
+              "11_BROWSER_CLI_MODULAR_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Memory BROWSER_CLI_MODULARIZATION_COMPLETE_20251221 created",
+            "Documents all 27 new modules",
+            "Documents test coverage",
+            "Includes updated architecture diagram"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "All tests pass, Serena memory written, documentation complete"
+    }
+  ],
+  "totalEstimatedTokens": 110000,
+  "risks": [
+    {
+      "description": "Breaking API compatibility during facade extraction",
+      "mitigation": "Write comprehensive tests BEFORE modularization (Phase 2), verify exports match original",
+      "severity": "high"
+    },
+    {
+      "description": "Circular dependencies between new modules",
+      "mitigation": "Keep types in dedicated types.ts, use dependency injection pattern from existing features",
+      "severity": "medium"
+    },
+    {
+      "description": "Test mocking complexity for Playwright Page object",
+      "mitigation": "Create minimal mock interface in setup.ts, only mock what tests need",
+      "severity": "medium"
+    },
+    {
+      "description": "Vitest configuration conflicts with existing React tests",
+      "mitigation": "Use separate test paths, verify existing tests still pass after config changes",
+      "severity": "low"
+    }
+  ]
+}

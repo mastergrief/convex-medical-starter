@@ -1,0 +1,176 @@
+=== SNAPSHOT+ ===
+
+ELEMENT STATE
+All elements enabled, no values captured
+
+
+FORMS
+No forms detected on page
+
+ACCESSIBILITY TREE
+- region "Notifications alt+T"
+- main:
+  - heading "Zenith" [level=2]
+  - paragraph: coach
+  - paragraph: Active
+  - text: Navigation
+  - list:
+    - listitem:
+      - button "Dashboard" [ref=e1]
+    - listitem:
+      - button "Training Calendar" [ref=e2]
+    - listitem:
+      - button "Athletes" [ref=e3]
+    - listitem:
+      - button "Subscription" [ref=e4]
+    - listitem:
+      - button "AI Insights" [ref=e5]
+    - listitem:
+      - button "Exercise Library" [ref=e6]
+    - listitem:
+      - button "Training Blocks" [ref=e7]
+    - listitem:
+      - button "Knowledge Base" [ref=e8]
+    - listitem:
+      - button "Nutrition" [ref=e9]
+    - listitem:
+      - button "Analytics" [ref=e10]
+    - listitem:
+      - button "Export/Import" [ref=e11]
+    - listitem:
+      - button "Community" [ref=e12]
+  - button "Toggle theme": Light [ref=e13]
+  - button "Collapse sidebar" [ref=e14]
+  - list:
+    - listitem:
+      - button "Settings" [ref=e15]
+  - button "Toggle Sidebar" [ref=e16]
+  - main:
+    - heading "Zenith Performance Platform" [level=1]
+    - button "Switch to Athlete Mode" [ref=e17]
+    - button "Sign out" [ref=e18]
+    - tabpanel:
+<changed>       - link "Skip to main content": [ref=e19]
+<changed>         - /url: "#main-content"
+<changed>       - heading "Coach's Training Calendar" [level=1]
+<changed>       - paragraph: View and manage all athletes' training schedules
+<changed>       - tablist "Athlete selector":
+<changed>         - tab "Overview" [ref=e20]
+<changed>         - tab "My Training" [selected] [ref=e21]
+<changed>         - tab "Silver" [ref=e22]
+<changed>         - tab "Gold" [ref=e23]
+<changed>         - tab "Platinum" [ref=e24]
+<changed>         - tab "Coach" [ref=e25]
+<changed>       - tabpanel "My Training":
+<changed>         - button "Collapse template sidebar" [ref=e26]
+<changed>         - heading "Block Templates" [level=2]
+<changed>         - paragraph: Drag blocks to assign to My Training
+<changed>         - button "test3 4 weeks No description": [ref=e27]
+<changed>           - text: test3 4 weeks
+<changed>           - paragraph: No description
+<changed>         - paragraph: 1 template available
+<changed>         - heading "My Training's Training Calendar" [level=2]
+<changed>         - paragraph: View and manage training schedule
+<changed>         - button "Month" [ref=e28]
+<changed>         - button "Week" [ref=e29]
+<changed>         - button "Today" [ref=e30]
+<changed>         - button "View Training Anchors" [ref=e31]
+<changed>         - button [ref=e32]
+<changed>         - heading "December 2025" [level=3]
+<changed>         - button [ref=e33]
+<changed>         - text: Mon Tue Wed Thu Fri Sat Sun 1
+<changed>         - button [ref=e34]
+<changed>         - text: "2"
+<changed>         - button [ref=e35]
+<changed>         - text: "3"
+<changed>         - button [ref=e36]
+<changed>         - text: "4"
+<changed>         - button [ref=e37]
+<changed>         - text: "5"
+<changed>         - button [ref=e38]
+<changed>         - text: "6"
+<changed>         - button [ref=e39]
+<changed>         - text: "7"
+<changed>         - button [ref=e40]
+<changed>         - text: "8"
+<changed>         - button [ref=e41]
+<changed>         - text: "9"
+<changed>         - button [ref=e42]
+<changed>         - text: "10"
+<changed>         - button [ref=e43]
+<changed>         - text: "11"
+<changed>         - button [ref=e44]
+<changed>         - text: "12"
+<changed>         - button [ref=e45]
+<changed>         - text: "13"
+<changed>         - button [ref=e46]
+<changed>         - text: 14 1
+<changed>         - button "Quick Workout - Dec 05 Strength Fly Sprints Barbell Hip Hinge": [ref=e47]
+<changed>           - paragraph: Quick Workout - Dec 05
+<changed>           - paragraph: Strength
+<changed>           - text: Fly Sprints Barbell Hip Hinge
+<changed>         - text: "15"
+<changed>         - button [ref=e48]
+<changed>         - text: "16"
+<changed>         - button [ref=e49]
+<changed>         - text: 17 1
+        - button "Quick Workout - Dec 05 Strength Fly Sprints Barbell Hip Hinge": [ref=e50]
+          - paragraph: Quick Workout - Dec 05
+          - paragraph: Strength
+          - text: Fly Sprints Barbell Hip Hinge
+        - text: 18 1
+        - button "Quick Workout - Dec 18 Strength Fly Sprints Bounds Leaps +3": [ref=e51]
+          - paragraph: Quick Workout - Dec 18
+          - paragraph: Strength
+          - text: Fly Sprints Bounds Leaps +3
+        - text: 19 1
+        - button "Quick Workout - Dec 18 Strength Fly Sprints Bounds Leaps +3": [ref=e52]
+          - paragraph: Quick Workout - Dec 18
+          - paragraph: Strength
+          - text: Fly Sprints Bounds Leaps +3
+        - text: 20 1
+        - button "Quick Workout - Dec 18 Strength Fly Sprints Bounds Leaps +3": [ref=e53]
+          - paragraph: Quick Workout - Dec 18
+          - paragraph: Strength
+          - text: Fly Sprints Bounds Leaps +3
+        - text: 21 1
+        - button "Quick Workout - Dec 21 Strength Pogo's Long Accelerations": [ref=e54]
+          - paragraph: Quick Workout - Dec 21
+          - paragraph: Strength
+          - text: Pogo's Long Accelerations
+        - text: 22 1
+        - button "Quick Workout - Dec 05 Strength Fly Sprints Barbell Hip Hinge": [ref=e55]
+          - paragraph: Quick Workout - Dec 05
+          - paragraph: Strength
+          - text: Fly Sprints Barbell Hip Hinge
+        - text: "23"
+        - button [ref=e56]
+        - text: "24"
+        - button [ref=e57]
+        - text: "25"
+        - button [ref=e58]
+        - text: "26"
+        - button [ref=e59]
+        - text: "27"
+        - button [ref=e60]
+        - text: "28"
+        - button [ref=e61]
+        - text: "29"
+        - button [ref=e62]
+        - text: "30"
+        - button [ref=e63]
+        - text: "31"
+        - button [ref=e64]
+        - text: "1"
+        - button [ref=e65]
+        - text: "2"
+        - button [ref=e66]
+        - text: "3"
+        - button [ref=e67]
+        - text: "4"
+        - button [ref=e68]
+        - heading "Upcoming Workouts (Next 7 Days)" [level=3]
+        - button "Collapse upcoming workouts" [ref=e69]
+        - paragraph: No upcoming workouts scheduled
+        - paragraph: Check back later or contact your coach
+      - status

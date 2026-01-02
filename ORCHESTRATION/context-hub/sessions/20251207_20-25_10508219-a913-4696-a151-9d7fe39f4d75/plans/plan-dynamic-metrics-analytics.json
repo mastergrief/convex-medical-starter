@@ -1,0 +1,305 @@
+{
+  "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "type": "plan",
+  "metadata": {
+    "promptId": "d398283c-3d50-4f2c-8691-fbd5ee9765af",
+    "sessionId": "20251207_20-25_10508219-a913-4696-a151-9d7fe39f4d75",
+    "timestamp": "2025-12-07T20:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement dynamic metrics display for Performance Analytics Personal Records. Replace hardcoded weight/reps with training-type-appropriate metrics (distance, velocity, contacts, duration, heart rate, power) based on exercise category lookup. Four-phase implementation: Types -> Backend -> Frontend -> Test.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Type Definitions",
+      "description": "Create PersonalRecord TypeScript interface with all metric fields to prevent type errors in subsequent phases",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create PersonalRecord interface in convex/types/analytics.ts with all metric fields: maxWeight, maxReps, maxVolume, bestSet, maxDistance, bestVelocity, bestTime, maxContacts, maxJumpHeight, maxDuration, bestHeartRate, maxPowerOutput, recentPerformance. Include trainingTypeSlug and enabledMetrics array.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": [
+              "convex/analytics.ts",
+              "convex/schema.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "PersonalRecord interface exported from convex/types/analytics.ts",
+            "All metric fields defined with proper types",
+            "trainingTypeSlug: string field present",
+            "enabledMetrics: string[] field present",
+            "recentPerformance nested object typed correctly",
+            "npm run typecheck passes"
+          ]
+        }
+      ],
+      "gateCondition": "PersonalRecord interface exists and typecheck passes"
+    },
+    {
+      "id": "phase-2",
+      "name": "Backend Implementation",
+      "description": "Rewrite getPersonalRecords query in convex/analytics.ts to lookup exercise->category->trainingType chain and track all metric types dynamically",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add exercise/category/trainingType lookup maps to getPersonalRecords query. Query exercises, exerciseCategories, and trainingTypes tables. Build Map<Id, Entity> for each. Create helper function getExerciseTrainingType(exerciseId) that traverses the chain.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-1.1"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": [
+              "convex/analytics.ts",
+              "convex/schema.ts",
+              "convex/types/analytics.ts"
+            ]
+          },
+          "acceptanceCriteria": [
+            "exercises, exerciseCategories, trainingTypes queries added",
+            "Lookup maps created for each entity type",
+            "getExerciseTrainingType helper returns trainingType or null",
+            "No type errors in query handler"
+          ]
+        },
+        {
+          "id": "task-2.2",
+          "description": "Expand personalRecords Map value type to include all metrics. Initialize with all metric fields: maxWeight, maxReps, maxVolume, bestSet (strength); maxDistance, bestVelocity, bestTime (speed); maxContacts, maxJumpHeight (plyometric); maxDuration, bestHeartRate (conditioning); maxPowerOutput (power); recentPerformance (common).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["convex/analytics.ts"]
+          },
+          "acceptanceCriteria": [
+            "personalRecords Map typed with PersonalRecord interface",
+            "All metric fields initialized with defaults (0 for numbers, Infinity for bestTime, empty objects for nested)",
+            "trainingTypeSlug and enabledMetrics populated from lookup"
+          ]
+        },
+        {
+          "id": "task-2.3",
+          "description": "Add metric tracking logic in set iteration loop. Track: actualDistance/actualVelocity/actualTime for speed; actualContacts/actualJumpHeight for plyometric; actualTime/actualAverageHeartRate for conditioning; actualPowerOutput for power. Update recentPerformance with all metrics.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.2"],
+          "estimatedTokens": 6000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["convex/analytics.ts"]
+          },
+          "acceptanceCriteria": [
+            "Speed metrics tracked when actualDistance/actualVelocity/actualTime present",
+            "Plyometric metrics tracked when actualContacts/actualJumpHeight present",
+            "Conditioning metrics tracked when actualTime/actualAverageHeartRate present",
+            "Power metrics tracked when actualPowerOutput present",
+            "recentPerformance includes all metric types",
+            "npm run typecheck passes",
+            "npx convex dev shows no deployment errors"
+          ]
+        }
+      ],
+      "gateCondition": "Backend query returns PersonalRecord[] with all metric fields populated, typecheck passes"
+    },
+    {
+      "id": "phase-3",
+      "name": "Frontend Implementation",
+      "description": "Update PerformanceAnalytics.tsx to display training-type-appropriate metrics using formatPRDisplay switch logic",
+      "parallelizable": false,
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add utility functions formatTime(seconds) and formatRecentPerformance(pr). formatTime converts seconds to mm:ss or Ns format. formatRecentPerformance returns training-type-specific string based on trainingTypeSlug.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-2.3"],
+          "estimatedTokens": 3000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "formatTime handles 0, Infinity, seconds < 60, seconds >= 60",
+            "formatRecentPerformance switches on trainingTypeSlug",
+            "Returns fallback format for unknown training types"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Create formatPRDisplay(pr) function that returns {primary, secondary, tertiary} display config based on trainingTypeSlug. Handle cases: strength/power (weight/reps/volume), speed (distance/velocity/time), plyometric (contacts/distance/jumpHeight), conditioning (duration/heartRate/hrRange), isometric (holdTime/weight/intensity), general (fallback to strength format).",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-3.1"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Switch statement covers all training type slugs",
+            "Returns {primary: {label, value}, secondary: {label, value}, tertiary: {label, value}}",
+            "Uses formatTime for time-based metrics",
+            "Handles missing values with fallback display"
+          ]
+        },
+        {
+          "id": "task-3.3",
+          "description": "Update PR card rendering to use formatPRDisplay. Replace hardcoded Max Weight/Max Reps/Best Set with dynamic display.primary/secondary/tertiary. Add recent performance section showing formatted recent metrics and date.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": ["task-3.2"],
+          "estimatedTokens": 4000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "PR cards use formatPRDisplay for metric labels and values",
+            "Grid displays primary/secondary/tertiary metrics",
+            "Recent performance section shows formatted string and date",
+            "npm run typecheck passes",
+            "No runtime errors when viewing Performance Analytics"
+          ]
+        }
+      ],
+      "gateCondition": "Frontend displays training-type-appropriate metrics for all PR cards, typecheck passes"
+    },
+    {
+      "id": "phase-4",
+      "name": "Testing and Validation",
+      "description": "Browser-based testing to verify correct metric display across all training types",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Test strength exercise PR display. Navigate to Performance Analytics, verify Barbell Back Squat (or similar strength exercise) shows Max Weight, Max Reps, Best Set format. Capture screenshot evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Strength exercise PR card shows Max Weight label",
+            "Max Reps label displayed",
+            "Best Set formatted as weight x reps",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Test plyometric exercise PR display. Navigate to Performance Analytics, verify plyometric exercises (Pogos, Bounds, etc.) show Max Contacts, Max Distance, Max Jump Height format instead of weight/reps. Capture screenshot evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207", "BROWSER_TEST_POGOS_CONTACTS_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Plyometric exercise PR card shows Max Contacts label",
+            "Max Distance label displayed (or placeholder if no data)",
+            "Max Jump Height label displayed (or placeholder if no data)",
+            "No weight/reps labels shown for plyometric exercises",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Test speed exercise PR display. Navigate to Performance Analytics, verify speed exercises show Best Distance, Best Velocity, Best Time format. Capture screenshot evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Speed exercise PR card shows Best Distance label",
+            "Best Velocity label displayed",
+            "Best Time formatted as mm:ss or Ns",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Test conditioning exercise PR display. Navigate to Performance Analytics, verify conditioning exercises show Max Duration, Avg Heart Rate, HR Range format. Capture screenshot evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": ["task-3.3"],
+          "estimatedTokens": 5000,
+          "context": {
+            "memories": ["PLAN_ANALYTICS_DYNAMIC_METRICS_FIX_20251207"],
+            "files": ["src/components/PerformanceAnalytics.tsx"]
+          },
+          "acceptanceCriteria": [
+            "Conditioning exercise PR card shows Max Duration label",
+            "Avg Heart Rate label displayed with bpm unit",
+            "HR Range label displayed (or placeholder if no data)",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-4.5",
+          "description": "Write test results memory. Document all test outcomes, screenshots taken, any issues found, and overall validation status. Memory name: BROWSER_TEST_ANALYTICS_DYNAMIC_METRICS_20251207.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": ["task-4.1", "task-4.2", "task-4.3", "task-4.4"],
+          "estimatedTokens": 2000,
+          "context": {
+            "memories": [],
+            "files": []
+          },
+          "acceptanceCriteria": [
+            "Memory written with test results",
+            "All training types documented",
+            "Screenshots referenced",
+            "Pass/fail status clear"
+          ]
+        }
+      ],
+      "gateCondition": "All training type PR displays verified correct, test memory written with evidence"
+    }
+  ],
+  "totalEstimatedTokens": 51000,
+  "risks": [
+    {
+      "description": "Performance impact from additional DB queries (exercises, categories, trainingTypes)",
+      "mitigation": "Use batch queries and consider denormalizing trainingTypeSlug on exercises table if needed",
+      "severity": "medium"
+    },
+    {
+      "description": "Missing actual* fields on some exercises causing empty displays",
+      "mitigation": "Use fallback values (0, Infinity) and display placeholder text for empty metrics",
+      "severity": "low"
+    },
+    {
+      "description": "Backwards compatibility - existing strength PRs must still display correctly",
+      "mitigation": "Default to 'general' training type format which uses weight/reps format",
+      "severity": "low"
+    },
+    {
+      "description": "Type errors during migration between phases",
+      "mitigation": "Phase 1 creates types first, each phase runs typecheck before proceeding",
+      "severity": "medium"
+    },
+    {
+      "description": "Test data may not have all training types represented",
+      "mitigation": "Use WorkoutLogger to create test workouts for missing training types before testing",
+      "severity": "medium"
+    }
+  ]
+}

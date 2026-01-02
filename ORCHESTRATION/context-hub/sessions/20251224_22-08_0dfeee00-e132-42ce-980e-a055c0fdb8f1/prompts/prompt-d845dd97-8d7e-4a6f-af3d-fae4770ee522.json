@@ -1,0 +1,12 @@
+{
+  "id": "d845dd97-8d7e-4a6f-af3d-fae4770ee522",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251224_22-08_0dfeee00-e132-42ce-980e-a055c0fdb8f1",
+    "timestamp": "2025-12-24T22:08:59.768Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Implement Browser-CLI Phase 1: config system, assertions, JUnit reporter, exit codes, screenshot-on-failure"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "ba12ed3e-1482-44a0-8978-1de7ce3fc533",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251231_18-28_33370410-5e2a-43f3-92c0-918a71b56228",
+    "timestamp": "2025-12-31T18:28:24.056Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Custom Metrics Prefix Bug Fix: Fix bug at DynamicExerciseFields.tsx:175 where custom metric keys extracted without custom_ prefix, causing validation failures and silent data loss. 5 phases: P0 fix, P1 logging, P1 unit test, P2 duplicate fix, P2 integration test. Includes Browser E2E validation."
+  }
+}

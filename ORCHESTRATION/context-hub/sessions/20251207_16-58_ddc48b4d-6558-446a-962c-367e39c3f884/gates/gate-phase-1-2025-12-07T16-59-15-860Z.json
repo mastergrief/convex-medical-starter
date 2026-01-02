@@ -1,0 +1,13 @@
+{
+  "phaseId": "phase-1",
+  "passed": true,
+  "checkedAt": "2025-12-07T16:59:15.860Z",
+  "results": [
+    {
+      "check": "typecheck",
+      "passed": true,
+      "message": "0 errors"
+    }
+  ],
+  "blockers": []
+}

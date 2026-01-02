@@ -1,0 +1,395 @@
+{
+  "id": "a7f2c3d4-5e6f-7890-abcd-ef1234567890",
+  "type": "plan",
+  "metadata": {
+    "promptId": "faafe58d-20c5-49c6-b4a4-e4569c88cfae",
+    "sessionId": "20251228_21-25_f82bdb85-0344-4537-82db-1c51687dcae3",
+    "timestamp": "2025-12-28T21:30:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Implement RPE slider conversion (button grid to slider), accessibility fixes for current RpeSelector, error handling/validation improvements, and add/remove set functionality. Total 10 subtasks across 4 phases with E2E validation.",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "RPE Slider Conversion",
+      "description": "Create slider-based RPE selector to replace button grid, maintaining same props interface for drop-in replacement",
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Create RpeSelectorSlider.tsx component using Radix UI Slider from ui/slider.tsx. Component must accept identical RpeSelectorProps interface (value, onChange, label, showScaleHints, disabled). Render: value badge, horizontal slider (min=1, max=10, step=1), scale hints below. Memoize with React.memo.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/exercise/RpeSelector.tsx",
+              "/home/gabe/projects/zenith-fitness/src/components/ui/slider.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_03_EXTENSION_POINTS",
+              "SET_MANAGEMENT_RPE_DISCOVERY_20251228"
+            ]
+          },
+          "acceptanceCriteria": [
+            "New file created: src/components/exercise/RpeSelectorSlider.tsx (~45 LOC)",
+            "Props interface identical to RpeSelector (RpeSelectorProps)",
+            "Uses Slider component from ui/slider.tsx",
+            "Displays current value in text/badge next to slider",
+            "Scale hints (Easy/Maximal) displayed when showScaleHints=true",
+            "Component wrapped in React.memo",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Export RpeSelectorSlider from src/components/exercise/index.ts facade. Add single line export to maintain module boundary pattern.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.1"
+          ],
+          "estimatedTokens": 1500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/exercise/index.ts"
+            ],
+            "memories": []
+          },
+          "acceptanceCriteria": [
+            "RpeSelectorSlider exported from exercise/index.ts",
+            "Existing RpeSelector export preserved",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-1.3",
+          "description": "Update CategoryLoggingFields.tsx to use RpeSelectorSlider instead of RpeSelector for RPE input. Change import statement and component usage. No prop changes needed due to identical interface.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [
+            "task-1.2"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/CategoryLoggingFields.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_02_DATA_FLOW"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Import changed from RpeSelector to RpeSelectorSlider",
+            "Component usage updated to RpeSelectorSlider",
+            "All existing props passed through unchanged",
+            "Typecheck passes",
+            "RPE selection functional in workout logging UI"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Typecheck passes, slider renders correctly in CategoryLoggingFields, onChange fires with values 1-10"
+    },
+    {
+      "id": "phase-2",
+      "name": "Accessibility Fixes",
+      "description": "Add WCAG compliance to existing RpeSelector (button grid) for users who prefer explicit selection",
+      "subtasks": [
+        {
+          "id": "task-2.1",
+          "description": "Add ARIA attributes to RpeSelector.tsx button grid: role='radiogroup' on container, role='radio' on each button, aria-checked for active state, aria-label for each value. Add keyboard navigation with arrow keys.",
+          "agentType": "developer",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/exercise/RpeSelector.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_06_SECURITY"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Container div has role='radiogroup' and aria-label='RPE selection'",
+            "Each button has role='radio' and aria-checked={value === buttonValue}",
+            "Each button has aria-label='RPE {value}'",
+            "Arrow key navigation cycles through values",
+            "Tab focuses the container, arrow keys move selection",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "ARIA attributes added, keyboard navigation works with arrow keys"
+    },
+    {
+      "id": "phase-3",
+      "name": "Error Handling and Validation",
+      "description": "Add frontend RPE validation before mutation call to provide immediate user feedback",
+      "subtasks": [
+        {
+          "id": "task-3.1",
+          "description": "Add validateRpe helper function to src/components/WorkoutLoggerModules/utils.ts. Function validates RPE is number between 1-10, returns error message or null. Aligns with backend validation in logSet mutation.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 2500,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/WorkoutLoggerModules/utils.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_04_ERROR_HANDLING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateRpe(rpe: number | undefined): string | null function added",
+            "Returns 'RPE must be between 1 and 10' for out-of-range values",
+            "Returns null for valid values (1-10 inclusive)",
+            "Handles undefined gracefully (returns null - optional field)",
+            "Function exported from utils.ts",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-3.2",
+          "description": "Integrate validateRpe in useSetHandlers.ts handleLogSet function. Call validation before logSetMutation, show toast on validation failure, prevent mutation call if invalid.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-3.1"
+          ],
+          "estimatedTokens": 4000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_04_ERROR_HANDLING"
+            ]
+          },
+          "acceptanceCriteria": [
+            "validateRpe imported from utils",
+            "handleLogSet calls validateRpe before mutation",
+            "If invalid, shows error toast with validation message",
+            "If invalid, returns early without calling logSetMutation",
+            "Valid values proceed to mutation as before",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Validation function works, invalid RPE shows toast and blocks mutation"
+    },
+    {
+      "id": "phase-4",
+      "name": "Add/Remove Sets",
+      "description": "Implement dynamic set management allowing athletes to add or remove sets from exercises during workout",
+      "subtasks": [
+        {
+          "id": "task-4.1",
+          "description": "Add addSetToWorkoutLog and removeSetFromWorkoutLog mutations to convex/workoutLogsModules/mutations.ts. addSet appends new set to exercise with default values. removeSet removes uncompleted set by index (cannot remove completed sets). Both validate workoutLogId ownership.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [],
+          "estimatedTokens": 12000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/convex/workoutLogsModules/mutations.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_03_EXTENSION_POINTS",
+              "WORKOUT_LOGGER_SET_MANAGEMENT_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "addSetToWorkoutLog mutation created with args: workoutLogId, exerciseIndex",
+            "New set has setNumber = existingSets.length + 1, targetReps = previous set targetReps (or 10), completed = false",
+            "removeSetFromWorkoutLog mutation created with args: workoutLogId, exerciseIndex, setIndex",
+            "Cannot remove completed sets - throws error 'Cannot remove completed set'",
+            "Both mutations verify workout belongs to current user (athleteId check)",
+            "npx convex dev succeeds",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.2",
+          "description": "Wire mutations in useWorkoutMutations.ts hook. Add addSetMutation and removeSetMutation using useMutation hook pattern.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.1"
+          ],
+          "estimatedTokens": 3000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useWorkoutMutations.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_02_DATA_FLOW"
+            ]
+          },
+          "acceptanceCriteria": [
+            "addSetMutation = useMutation(api.workoutLogs.addSetToWorkoutLog)",
+            "removeSetMutation = useMutation(api.workoutLogs.removeSetFromWorkoutLog)",
+            "Both mutations exported from hook return object",
+            "WorkoutMutationsResult type updated to include new mutations",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.3",
+          "description": "Add handleAddSet and handleRemoveSet handlers to useSetHandlers.ts. handleAddSet calls addSetMutation and updates formDataByExercise state. handleRemoveSet calls removeSetMutation, updates state, and adjusts currentSetIndex if needed.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.2"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/WorkoutLoggerModules/hooks/useWorkoutLoggerModules/useSetHandlers.ts"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_SET_MANAGEMENT_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "handleAddSet(exerciseIndex) async handler added",
+            "Calls addSetMutation, shows success toast on completion",
+            "handleRemoveSet(exerciseIndex, setIndex) async handler added",
+            "Validates set is not completed before calling mutation",
+            "If removing current set, adjusts currentSetByExercise to previous set",
+            "Shows error toast if removal fails",
+            "Both handlers exported in SetHandlersResult return type",
+            "Typecheck passes"
+          ]
+        },
+        {
+          "id": "task-4.4",
+          "description": "Add Add Set and Remove Set buttons to ExerciseCard.tsx UI. Add Set button appears below set navigation. Remove Set button appears next to each uncompleted set (icon button with trash icon). Wire to handler callbacks.",
+          "agentType": "developer",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.3"
+          ],
+          "estimatedTokens": 6000,
+          "context": {
+            "files": [
+              "/home/gabe/projects/zenith-fitness/src/components/WorkoutLoggerModules/components/ExerciseCard.tsx"
+            ],
+            "memories": [
+              "WORKOUT_LOGGER_SET_MANAGEMENT_ARCHITECTURE"
+            ]
+          },
+          "acceptanceCriteria": [
+            "ExerciseCardProps extended with onAddSet and onRemoveSet callbacks",
+            "Add Set button rendered below set navigation buttons",
+            "Add Set button has + icon and text 'Add Set'",
+            "Remove Set button (Trash2 icon, variant='ghost', size='sm') next to each uncompleted set",
+            "Remove Set disabled for completed sets (hidden or disabled state)",
+            "Buttons call respective handlers with correct indices",
+            "Typecheck passes"
+          ]
+        }
+      ],
+      "parallelizable": false,
+      "gateCondition": "Add/Remove set buttons visible, mutations succeed, state updates correctly"
+    },
+    {
+      "id": "phase-5",
+      "name": "E2E Validation",
+      "description": "Browser-CLI end-to-end testing of RPE slider and set management features",
+      "subtasks": [
+        {
+          "id": "task-5.1",
+          "description": "E2E test RPE slider functionality using Browser-CLI. Navigate to workout logger, start workout, verify slider renders, test value changes 1-10, verify onChange fires correctly, capture screenshot evidence.",
+          "agentType": "browser",
+          "priority": "high",
+          "dependencies": [
+            "task-1.3"
+          ],
+          "estimatedTokens": 8000,
+          "context": {
+            "files": [],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_07_BROWSER_CLI_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Login as test athlete",
+            "Navigate to workout logger",
+            "Start a workout session",
+            "Verify slider component renders (snapshot shows Slider)",
+            "Drag slider to different values (1, 5, 10)",
+            "Verify value updates visually",
+            "Log set and verify RPE value persisted",
+            "Screenshot captured as evidence"
+          ]
+        },
+        {
+          "id": "task-5.2",
+          "description": "E2E test add/remove set functionality using Browser-CLI. Navigate to workout logger, start workout, add new set, verify set count increases, remove set, verify set count decreases, verify cannot remove completed sets.",
+          "agentType": "browser",
+          "priority": "medium",
+          "dependencies": [
+            "task-4.4"
+          ],
+          "estimatedTokens": 10000,
+          "context": {
+            "files": [],
+            "memories": [
+              "WORKOUT_LOGGER_RPE_SETS_SPRINT_07_BROWSER_CLI_E2E"
+            ]
+          },
+          "acceptanceCriteria": [
+            "Login as test athlete",
+            "Navigate to workout logger and start workout",
+            "Verify initial set count (e.g., 3 sets)",
+            "Click Add Set button",
+            "Verify set count increases to 4",
+            "Snapshot shows new set in UI",
+            "Log first set (mark as completed)",
+            "Verify Remove button hidden/disabled for completed set",
+            "Click Remove Set on uncompleted set",
+            "Verify set count decreases",
+            "Network requests show mutation calls succeeded",
+            "Screenshot captured as evidence"
+          ]
+        }
+      ],
+      "parallelizable": true,
+      "gateCondition": "All E2E tests pass, screenshots captured, no console errors"
+    }
+  ],
+  "totalEstimatedTokens": 67000,
+  "risks": [
+    {
+      "description": "Slider precision on mobile devices may be difficult for users with motor impairments",
+      "mitigation": "Keep button grid RpeSelector available as alternative; slider step=1 ensures whole numbers only",
+      "severity": "medium"
+    },
+    {
+      "description": "Add/remove set mutations modify workout structure during active session - potential for race conditions",
+      "mitigation": "Mutations are atomic operations on single exercise; UI disables buttons during mutation execution",
+      "severity": "medium"
+    },
+    {
+      "description": "Removing sets may affect currentSetIndex calculation if user is viewing a later set",
+      "mitigation": "handleRemoveSet adjusts currentSetByExercise to valid index; bounds checking prevents out-of-range",
+      "severity": "low"
+    },
+    {
+      "description": "Backend logSet mutation has RPE validation (1-10) - frontend must align",
+      "mitigation": "Phase 3 adds frontend validation matching backend rules; prevents wasted API calls",
+      "severity": "low"
+    },
+    {
+      "description": "Task 4.1-4.4 must be sequential as they build on each other (mutation -> hook -> handler -> UI)",
+      "mitigation": "Dependencies enforced in plan; parallelizable=false for Phase 4",
+      "severity": "high"
+    }
+  ]
+}

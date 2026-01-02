@@ -1,0 +1,116 @@
+=== SNAPSHOT+ ===
+
+ELEMENT STATE
+All elements enabled, no values captured
+
+
+FORMS
+No forms detected on page
+
+ACCESSIBILITY TREE
+<changed> - region "Notifications alt+T"
+<changed> - main:
+<changed>   - heading "Zenith" [level=2]
+<changed>   - paragraph: coach
+<changed>   - paragraph: Active
+<changed>   - text: Navigation
+<changed>   - list:
+<changed>     - listitem:
+      - button "Dashboard" [ref=e1]
+    - listitem:
+      - button "Training Calendar" [ref=e2]
+    - listitem:
+      - button "Athletes" [ref=e3]
+    - listitem:
+      - button "Subscription" [ref=e4]
+    - listitem:
+      - button "AI Insights" [ref=e5]
+    - listitem:
+      - button "Exercise Library" [ref=e6]
+    - listitem:
+      - button "Training Blocks" [ref=e7]
+    - listitem:
+      - button "Knowledge Base" [ref=e8]
+    - listitem:
+      - button "Nutrition" [ref=e9]
+    - listitem:
+      - button "Analytics" [ref=e10]
+    - listitem:
+      - button "Export/Import" [ref=e11]
+    - listitem:
+      - button "Community" [ref=e12]
+  - button "Toggle theme": Light [ref=e13]
+  - button "Collapse sidebar" [ref=e14]
+  - list:
+    - listitem:
+      - button "Settings" [ref=e15]
+  - button "Toggle Sidebar" [ref=e16]
+  - main:
+    - heading "Zenith Performance Platform" [level=1]
+    - button "Switch to Athlete Mode" [ref=e17]
+    - button "Sign out" [ref=e18]
+    - tabpanel:
+      - heading "Athlete Dashboard" [level=1]
+      - paragraph: Monitor and manage your athletes' progress
+      - button "Refresh All" [ref=e19]
+      - text: Total Athletes 4
+      - paragraph: Active relationships
+      - text: Avg Completion 5%
+      - progressbar
+      - text: Active Alerts 4
+      - paragraph: Need attention
+      - text: Priority Alerts 5
+      - paragraph: High/Critical
+      - text: Test Data Management Development Only Generate test athletes with realistic workout history for testing AI features
+      - button "Generate 3 Test Athletes" [ref=e20]
+      - button "Clear Test Data" [ref=e21]
+      - button "Show Stats" [ref=e22]
+      - heading "Plateau Detection Dashboard" [level=2]
+      - paragraph: Monitor and address training plateaus across your athletes
+      - text: "Total Alerts 0 Critical 0 High Priority 0 Athletes Affected 0 Show:"
+      - button "Unacknowledged Only" [ref=e23]
+      - tablist:
+        - tab "Active Alerts" [selected] [ref=e24]
+        - tab "By Athlete" [ref=e25]
+        - tab "Timeline" [ref=e26]
+      - tabpanel "Active Alerts":
+        - alert: No Active Plateau Alerts All your athletes are progressing well. Keep up the great coaching!
+      - button "All Athletes" [ref=e27]
+      - button "With Alerts" [ref=e28]
+      - button "Recently Active" [ref=e29]
+      - text: Coach coach@zenith.co.uk
+      - button [ref=e30]
+      - text: "Program: No program assigned Weekly Completion 20%"
+      - progressbar
+      - text: Week 14 1d 4 days ago
+      - paragraph: No workouts completed in the last 3 days
+      - button [ref=e31]
+      - button "View" [ref=e32]
+      - button "Message" [ref=e33]
+      - text: Silver silver@zenith-athlete.com
+      - button [ref=e34]
+      - text: "Program: No program assigned Weekly Completion 0%"
+      - progressbar
+      - text: Week 10 0d
+      - paragraph: Weekly completion rate is 0%
+      - button [ref=e35]
+      - button "View" [ref=e36]
+      - button "Message" [ref=e37]
+      - text: Gold gold@zenith-athlete.com
+      - button [ref=e38]
+      - text: "Program: No program assigned Weekly Completion 0%"
+      - progressbar
+      - text: Week 14 0d
+      - paragraph: Weekly completion rate is 0%
+      - button [ref=e39]
+      - button "View" [ref=e40]
+      - button "Message" [ref=e41]
+      - text: Platinum platinum@zenith-athlete.com
+      - button [ref=e42]
+      - text: "Program: No program assigned Weekly Completion 0%"
+      - progressbar
+      - text: Week 15 0d
+      - paragraph: Weekly completion rate is 0%
+      - button [ref=e43]
+      - button "View" [ref=e44]
+      - button "Message" [ref=e45]

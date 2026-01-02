@@ -1,0 +1,47 @@
+{
+  "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "type": "plan",
+  "metadata": {
+    "promptId": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+    "sessionId": "20251207_10-14_a3e439d7-4f42-48ec-9277-3a61d86c867d",
+    "timestamp": "2025-12-07T10:15:00.000Z",
+    "version": "1.0.0"
+  },
+  "summary": "Test orchestrator agent spawning - analyze BottomNav component",
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Parallel Analysis",
+      "description": "Spawn two agents in parallel to analyze BottomNav",
+      "parallelizable": true,
+      "subtasks": [
+        {
+          "id": "task-1.1",
+          "description": "Analyze BottomNav.tsx component structure using Serena symbolic tools - get symbols overview and document the NavItem interface",
+          "agentType": "serena",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "acceptanceCriteria": [
+            "NavItem interface documented",
+            "Component props identified"
+          ]
+        },
+        {
+          "id": "task-1.2",
+          "description": "Explore the useMediaQuery hook to understand breakpoint detection - document the mobile/tablet/desktop thresholds",
+          "agentType": "explore",
+          "priority": "high",
+          "dependencies": [],
+          "estimatedTokens": 5000,
+          "acceptanceCriteria": [
+            "Breakpoint values documented",
+            "Hook implementation understood"
+          ]
+        }
+      ],
+      "gateCondition": "Both analysis tasks complete"
+    }
+  ],
+  "totalEstimatedTokens": 10000
+}

@@ -1,0 +1,12 @@
+{
+  "id": "534382a5-a10b-43b6-b57e-980e37b8786c",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251207_10-04_68710d1f-6cb5-436b-beb5-2d3413f0180e",
+    "timestamp": "2025-12-30T17:51:54.510Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "Best Time Security Remediation - Fix 4 critical/high security vulnerabilities in workout logging API: C1 (getWorkoutById no auth), C2 (getAthleteHistory missing relationship), C2b (getWorkoutLogForDate missing relationship), C3 (6 fields missing validation)"
+  }
+}

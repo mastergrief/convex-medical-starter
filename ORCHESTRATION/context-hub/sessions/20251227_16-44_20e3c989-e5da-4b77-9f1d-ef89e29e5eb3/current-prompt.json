@@ -1,0 +1,12 @@
+{
+  "id": "d91bd8f9-c58e-4226-af5c-28b4fa40caee",
+  "type": "prompt",
+  "metadata": {
+    "sessionId": "20251227_16-44_20e3c989-e5da-4b77-9f1d-ef89e29e5eb3",
+    "timestamp": "2025-12-27T16:44:57.074Z",
+    "version": "1.0.0"
+  },
+  "request": {
+    "description": "BROWSER-CLI Short-Term Remediation: Fix documentation gaps (2 command name mismatches, 4 missing commands), add 12 missing feature unit tests, wire 2 plugin hooks (onNavigate, onSnapshot)"
+  }
+}

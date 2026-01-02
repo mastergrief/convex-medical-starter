@@ -1,0 +1,11 @@
+{
+  "memoryName": "BOTTOM_NAV_ARCHITECTURE",
+  "linkedAt": "2025-12-07T17:11:08.171Z",
+  "serenaPath": ".serena/memories/BOTTOM_NAV_ARCHITECTURE.md",
+  "summary": "Navigation architecture documentation",
+  "forAgents": [
+    "developer",
+    "browser"
+  ],
+  "traceabilityData": null
+}
