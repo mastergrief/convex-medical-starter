@@ -1,0 +1,3 @@
+# System Audit Command
+
+Prompt: Read .env.local and /DOCUMENTS/PRD.md then with a detailed plan perform comprehensive (100% coverage and content) navigational and functional testing using PLAYTEST agents in SERIES with the task tool and upon completion synthesise and create markdown file called AUDIT.md at /DOCUMENTS. Extensively test everything, all pages, all features, workflows, what works, what doesn’t etc, and how close we are to PRD.md specification. Be comprehensive, 100% coverage and content. ULTRATHINK

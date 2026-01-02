@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-09-05T12:12:20.095612",
+  "command_file": ".claude/commands/prd-audit.md",
+  "command_name": "prd-audit",
+  "valid": true,
+  "errors": [],
+  "warnings": [
+    "Referenced file may not exist: /DOCUMENTS/PRD.md"
+  ],
+  "info": [
+    "\u2705 File structure is valid",
+    "\u2705 Description: Comprehensive PRD audit with PLAYTEST agents testing all features and workflows",
+    "\u2705 Allowed tools defined: Read, Task, Write, mcp__serena__list_dir, mcp__serena__find_file, mcp__serena__search_for_pattern, m...",
+    "\u2705 Argument hint: [focus-area] [output-format]",
+    "\u2705 Model specified: claude-3-5-sonnet-20241022",
+    "\u2705 Uses positional arguments: $1, $2",
+    "\u2705 References files: 1 found",
+    "   - @/DOCUMENTS/PRD.md",
+    "\u2705 Uses ULTRATHINK for deep reasoning",
+    "\u2705 Command body length: 6431 characters",
+    "\u2705 Regular tools: Read, Task, Write",
+    "\u2705 MCP tools: 21 defined"
+  ],
+  "summary": {
+    "total_errors": 0,
+    "total_warnings": 1,
+    "total_info": 12
+  }
+}
