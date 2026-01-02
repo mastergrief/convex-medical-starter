@@ -19,9 +19,17 @@
     "preview": "vite preview",
     "convex:deploy": "npm run typecheck && convex deploy --typecheck=disable",
     "convex:deploy:prod": "npm run typecheck && convex deploy --typecheck=disable --prod",
-    "semble:sync": "npx convex run semble:syncPatients"
+    "semble:sync": "npx convex run semble:syncPatients",
+    "cap:sync": "npx cap sync",
+    "cap:ios": "npx cap open ios",
+    "cap:android": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
+    "@capacitor/network": "^7.0.2",
+    "@capacitor/preferences": "^7.0.2",
     "@convex-dev/auth": "^0.0.81",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
@@ -30,9 +38,11 @@
     "lucide-react": "^0.544.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
     "@eslint/js": "^9.21.0",
     "@tailwindcss/vite": "^4.0.14",
     "@types/node": "^22.13.10",
@@ -60,6 +70,8 @@
     "medical",
     "graphql",
     "react",
-    "typescript"
+    "typescript",
+    "capacitor",
+    "mobile"
   ]
 }

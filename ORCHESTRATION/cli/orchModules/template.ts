@@ -227,7 +227,7 @@ export async function handleTemplateValidate(filePath: string): Promise<void> {
         printJson({
           success: false,
           valid: false,
-          schemaErrors: schemaResult.error.issues.map((issue) => ({
+          schemaErrors: schemaResult.error.issues.map((issue: { path: (string | number)[]; message: string }) => ({
             path: issue.path.join("."),
             message: issue.message
           }))

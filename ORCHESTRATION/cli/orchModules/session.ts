@@ -5,7 +5,7 @@
 import * as path from "path";
 import { ContextHub, createContextHub } from "../../lib/context-hub.js";
 import { createSessionId } from "../../schemas/index.js";
-import { createTemplateProcessor } from "../../lib/template-processor.js";
+import { createTemplateProcessor, type TemplateVariable } from "../../lib/template-processor.js";
 import {
   printHeader,
   printSuccess,
@@ -299,7 +299,7 @@ export async function handleSessionNewFromTemplate(
         if (result.missingVariables.length > 0) {
           console.log("\n  Missing required variables:");
           for (const varName of result.missingVariables) {
-            const varDef = template.variables.find(v => v.name === varName);
+            const varDef = template.variables.find((v: TemplateVariable) => v.name === varName);
             console.log(`    --var ${varName}="<value>"`);
             if (varDef) {
               console.log(`      ${varDef.description}`);
