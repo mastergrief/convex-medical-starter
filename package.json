@@ -15,7 +15,7 @@
     "build:app": "vite build",
     "typecheck": "tsgo --noEmit --project tsconfig.app.json",
     "typecheck:tsc": "tsc --noEmit",
-    "lint": "tsgo --noEmit --project tsconfig.app.json && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "tsgo --noEmit --project tsconfig.app.json && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "convex:deploy": "npm run typecheck && convex deploy --typecheck=disable",
     "convex:deploy:prod": "npm run typecheck && convex deploy --typecheck=disable --prod",
